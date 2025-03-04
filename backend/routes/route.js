@@ -8,7 +8,7 @@ const complainRouter = require('./complain.router')
 const teacherRouter = require('./teacher.router')
 const classRouter = require('./class.router')
 const adminRouter = require('./admin.router')
-const newsRouter = require('./news.router')
+const newsRouter = require('./newsRouter')
 const commentRouter = require('./comment.router')
 
 router.use('/', studentRouter)

@@ -4,6 +4,7 @@ const dbConnect = require('./config/db.config')
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 const Routes = require('./routes/route.js')
+const newsRoutes = require('./routes/newsRouter.js');
 
 const PORT = process.env.PORT || 5000
 const app = express()
@@ -19,7 +20,9 @@ app.use(cors())
 dbConnect()
 
 app.use('/', Routes)
+app.use('/api/news', newsRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server started at port ${PORT}`)
 })
+
