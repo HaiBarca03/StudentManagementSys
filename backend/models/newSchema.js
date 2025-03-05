@@ -23,7 +23,8 @@ const newsSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      maxlength: 100
+      maxlength: 100,
+      unique: true
     },
     images: [
       {
@@ -67,6 +68,11 @@ const newsSchema = new mongoose.Schema(
     userType: {
       type: String,
       enum: ['student', 'teacher', 'admin'],
+      required: true
+    },
+    topicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'admin',
       required: true
     }
   },
