@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const Admin = require('../models/adminSchema.js')
 const Sclass = require('../models/sclassSchema.js')
 const Student = require('../models/studentSchema.js')
@@ -37,25 +39,53 @@ const adminRegister = async (req, res) => {
 }
 
 const adminLogIn = async (req, res) => {
-  if (req.body.email && req.body.password) {
-    let admin = await Admin.findOne({ email: req.body.email })
-    if (admin) {
-      const validated = await bcrypt.compare(req.body.password, admin.password)
-      if (validated) {
-        admin.password = undefined
-        res.send(admin)
-      } else {
-        res.send({ message: 'Invalid password' })
-      }
-    } else {
-      res.send({ message: 'User not found' })
+  try {
+    if (!req.body.email || !req.body.password) {
+      return res
+        .status(400)
+        .json({ message: 'Email and password are required' })
     }
-  } else {
-    res.send({ message: 'Email and password are required' })
+
+    let admin = await Admin.findOne({ email: req.body.email })
+    if (!admin) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    const validated = await bcrypt.compare(req.body.password, admin.password)
+    if (!validated) {
+      return res.status(400).json({ message: 'Invalid password' })
+    }
+
+    const token = jwt.sign(
+      {
+        id: admin._id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role,
+        schoolName: admin.schoolName
+      },
+      process.env.ACCESS_TOKEN,
+      { expiresIn: '1h' }
+    )
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      _id: admin._id,
+      email: admin.email,
+      name: admin.name,
+      role: admin.role,
+      schoolName: admin.schoolName
+    })
+  } catch (error) {
+    console.error('Login error:', error.message)
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
 const getAdminDetail = async (req, res) => {
+  const userId = req.user.id
+  console.log('userId', userId)
   try {
     let admin = await Admin.findById(req.params.id)
     if (admin) {
