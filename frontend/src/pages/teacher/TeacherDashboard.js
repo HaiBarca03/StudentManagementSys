@@ -25,6 +25,7 @@ import TeacherViewStudent from './TeacherViewStudent'
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks'
 import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
+import CreatePostForum from '../../components/forum/create-post-forum'
 
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -105,6 +106,7 @@ const TeacherDashboard = () => {
             {/* Forum */}
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />
           </Routes>
