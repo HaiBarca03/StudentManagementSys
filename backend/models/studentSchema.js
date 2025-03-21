@@ -24,6 +24,17 @@ const studentSchema = new mongoose.Schema(
       ref: 'admin',
       required: true
     },
+    images: [
+      {
+        public_id: {
+          type: String,
+          required: true
+        },
+        url: {
+          type: String,
+          required: true
+        }
+      }],
     email: {
       type: String,
       required: false

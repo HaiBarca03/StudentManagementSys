@@ -15,6 +15,7 @@ const {
   removeStudentAttendanceBySubject,
   removeStudentAttendance
 } = require('../controllers/student_controller.js')
+const { uploadImages } = require('../middlewares/uploadCloudinary.js')
 studentRouter = express.Router()
 
 studentRouter.post('/StudentReg', studentRegister)
@@ -24,7 +25,7 @@ studentRouter.get('/Student/:id', getStudentDetail)
 studentRouter.delete('/Students/:id', deleteStudents)
 studentRouter.delete('/StudentsClass/:id', deleteStudentsByClass)
 studentRouter.delete('/Student/:id', deleteStudent)
-studentRouter.put('/Student/:id', updateStudent)
+studentRouter.put('/Student/:id', uploadImages, updateStudent)
 studentRouter.put('/UpdateExamResult/:id', updateExamResult)
 studentRouter.put('/StudentAttendance/:id', studentAttendance)
 studentRouter.put(

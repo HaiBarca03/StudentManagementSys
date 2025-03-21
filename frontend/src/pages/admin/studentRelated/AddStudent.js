@@ -6,137 +6,154 @@ import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { CircularProgress } from '@mui/material';
+import "../../../css/addStudent.css";
 
 const AddStudent = ({ situation }) => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const params = useParams()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const params = useParams();
 
     const userState = useSelector(state => state.user);
     const { status, currentUser, response, error } = userState;
     const { sclassesList } = useSelector((state) => state.sclass);
 
-    const [name, setName] = useState('');
-    const [rollNum, setRollNum] = useState('');
-    const [password, setPassword] = useState('')
-    const [className, setClassName] = useState('')
-    const [sclassName, setSclassName] = useState('')
+    const [formData, setFormData] = useState({
+        name: '',
+        rollNum: '',
+        password: '',
+        className: '',
+        sclassName: '',
+        major: 'Công nghệ thông tin',
+        schoolEntryDay: '',
+        statusField: 'Đang học',
+        nation: 'Kinh',
+        religion: 'Phật',
+        nationality: 'Việt Nam',
+        typeOfTraining: 'Chính quy',
+        trainingLevel: 'Đại học'
+    });
 
-    const adminID = currentUser._id
-    const role = "Student"
-    const attendance = []
+    const adminID = currentUser._id;
+    const role = "Student";
+    const attendance = [];
 
     useEffect(() => {
         if (situation === "Class") {
-            setSclassName(params.id);
+            setFormData(prev => ({ ...prev, sclassName: params.id }));
         }
     }, [params.id, situation]);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
-    const [loader, setLoader] = useState(false)
+    const [loader, setLoader] = useState(false);
 
     useEffect(() => {
         dispatch(getAllSclasses(adminID, "Sclass"));
     }, [adminID, dispatch]);
 
     const changeHandler = (event) => {
-        if (event.target.value === 'Select Class') {
-            setClassName('Select Class');
-            setSclassName('');
-        } else {
-            const selectedClass = sclassesList.find(
-                (classItem) => classItem.sclassName === event.target.value
-            );
-            setClassName(selectedClass.sclassName);
-            setSclassName(selectedClass._id);
-        }
-    }
-
-    const fields = { name, rollNum, password, sclassName, adminID, role, attendance }
+        const { name, value } = event.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     const submitHandler = (event) => {
-        event.preventDefault()
-        if (sclassName === "") {
-            setMessage("Please select a classname")
-            setShowPopup(true)
+        event.preventDefault();
+        if (formData.sclassName === "") {
+            setMessage("Please select a classname");
+            setShowPopup(true);
+        } else {
+            setLoader(true);
+            dispatch(registerUser({ ...formData, adminID, role, attendance }, role));
         }
-        else {
-            setLoader(true)
-            dispatch(registerUser(fields, role))
-        }
-    }
+    };
 
     useEffect(() => {
         if (status === 'added') {
-            dispatch(underControl())
-            navigate(-1)
-        }
-        else if (status === 'failed') {
-            setMessage(response)
-            setShowPopup(true)
-            setLoader(false)
-        }
-        else if (status === 'error') {
-            setMessage("Network Error")
-            setShowPopup(true)
-            setLoader(false)
+            dispatch(underControl());
+            navigate(-1);
+        } else if (status === 'failed' || status === 'error') {
+            setMessage(status === 'failed' ? response : "Network Error");
+            setShowPopup(true);
+            setLoader(false);
         }
     }, [status, navigate, error, response, dispatch]);
 
     return (
-        <>
-            <div className="register">
-                <form className="registerForm" onSubmit={submitHandler}>
-                    <span className="registerTitle">Add Student</span>
-                    <label>Name</label>
-                    <input className="registerInput" type="text" placeholder="Enter student's name..."
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        autoComplete="name" required />
+        <div className="register-container">
+            <form className="register-form" onSubmit={submitHandler}>
+                <h2 className="register-title">Add Student</h2>
+                <div className="form-columns">
+                    <div className="left-column">
+                        <label>Name</label>
+                        <input name="name" type="text" value={formData.name} onChange={changeHandler} required />
 
-                    {
-                        situation === "Student" &&
-                        <>
-                            <label>Class</label>
-                            <select
-                                className="registerInput"
-                                value={className}
-                                onChange={changeHandler} required>
-                                <option value='Select Class'>Select Class</option>
-                                {sclassesList.map((classItem, index) => (
-                                    <option key={index} value={classItem.sclassName}>
-                                        {classItem.sclassName}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    }
-
-                    <label>Roll Number</label>
-                    <input className="registerInput" type="number" placeholder="Enter student's Roll Number..."
-                        value={rollNum}
-                        onChange={(event) => setRollNum(event.target.value)}
-                        required />
-
-                    <label>Password</label>
-                    <input className="registerInput" type="password" placeholder="Enter student's password..."
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        autoComplete="new-password" required />
-
-                    <button className="registerButton" type="submit" disabled={loader}>
-                        {loader ? (
-                            <CircularProgress size={24} color="inherit" />
-                        ) : (
-                            'Add'
+                        {situation === "Student" && (
+                            <>
+                                <label>Class</label>
+                                <select name="className" value={formData.className} onChange={changeHandler} required>
+                                    <option value="">Select Class</option>
+                                    {sclassesList.map((classItem) => (
+                                        <option key={classItem._id} value={classItem.sclassName}>
+                                            {classItem.sclassName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </>
                         )}
-                    </button>
-                </form>
-            </div>
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
-    )
-}
 
-export default AddStudent
+                        <label>Roll Number</label>
+                        <input name="rollNum" type="number" value={formData.rollNum} onChange={changeHandler} required />
+
+                        <label>Password</label>
+                        <input name="password" type="password" value={formData.password} onChange={changeHandler} required />
+
+                        <label>Major</label>
+                        <select name="major" value={formData.major} onChange={changeHandler}>
+                            {["Công nghệ thông tin", "Quản trị kinh doanh", "Kế toán", "Du lịch", "Ngôn ngữ Anh", "Kỹ thuật ô tô", "Kỹ thuật điện", "Cơ điện tử", "Thiết kế đồ hoạ"].map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="right-column">
+                        <label>School Entry Day</label>
+                        <input name="schoolEntryDay" type="date" value={formData.schoolEntryDay} onChange={changeHandler} required />
+
+                        <label>Status</label>
+                        <select name="statusField" value={formData.statusField} onChange={changeHandler}>
+                            {["Đang học", "Đã học xong", "Đã nghỉ học", "Đã chuyển trường"].map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+
+                        <label>Nation</label>
+                        <select name="nation" value={formData.nation} onChange={changeHandler}>
+                            {["Kinh", "Mường", "Tày", "Nùng"].map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+
+                        <label>Religion</label>
+                        <select name="religion" value={formData.religion} onChange={changeHandler}>
+                            {["Phật", "Cao đài", "Hồi giáo", "Kito", "Tin lành"].map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+
+                        <label>Nationality</label>
+                        <select name="nationality" value={formData.nationality} onChange={changeHandler}>
+                            {["Việt Nam", "Lào", "Campuchia", "Thái Lan", "Indonesia"].map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                <button className="register-button" type="submit" disabled={loader}>
+                    {loader ? <CircularProgress size={24} color="inherit" /> : 'Add'}
+                </button>
+            </form>
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+        </div>
+    );
+};
+
+export default AddStudent;
