@@ -1,38 +1,47 @@
 var bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const cloudinary = require('../config/cloudinaryConfig');
 require('dotenv').config()
 const Student = require('../models/studentSchema.js')
 const Subject = require('../models/subjectSchema.js')
 
 const studentRegister = async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(10)
-    const hashedPass = await bcrypt.hash(req.body.password, salt)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(req.body.password, salt);
 
     const existingStudent = await Student.findOne({
       rollNum: req.body.rollNum,
       school: req.body.adminID,
       sclassName: req.body.sclassName
-    })
+    });
 
     if (existingStudent) {
-      res.send({ message: 'Roll Number already exists' })
-    } else {
-      const student = new Student({
-        ...req.body,
-        school: req.body.adminID,
-        password: hashedPass
-      })
-
-      let result = await student.save()
-
-      result.password = undefined
-      res.send(result)
+      return res.status(400).json({ message: 'Roll Number already exists' });
     }
+
+    const { password, adminID, ...otherData } = req.body;
+    const studentData = {
+      ...otherData,
+      password: hashedPass,
+      school: adminID,
+      role: 'Student',
+      examResult: req.body.examResult || [],
+      attendance: req.body.attendance || []
+    };
+
+    const student = new Student(studentData);
+    const result = await student.save();
+
+    res.status(201).json({
+      message: 'Student registered successfully',
+      student: { ...result.toObject(), password: undefined }
+    });
   } catch (err) {
-    res.status(500).json(err)
+    console.error('Error registering student:', err);
+    res.status(500).json({ message: 'Internal server error', error: err });
   }
-}
+};
 
 const studentLogIn = async (req, res) => {
   try {
@@ -105,6 +114,7 @@ const getStudentDetail = async (req, res) => {
       .populate('sclassName', 'sclassName')
       .populate('examResult.subName', 'subName')
       .populate('attendance.subName', 'subName sessions')
+      .select('-password');
     if (student) {
       student.password = undefined
       res.send(student)
@@ -154,21 +164,43 @@ const deleteStudentsByClass = async (req, res) => {
 const updateStudent = async (req, res) => {
   try {
     if (req.body.password) {
-      const salt = await bcrypt.genSalt(10)
-      res.body.password = await bcrypt.hash(res.body.password, salt)
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
     }
+
+    let imageData = [];
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const uploadedImage = await cloudinary.uploader.upload(file.path, {
+          folder: 'student-managements/students'
+        });
+        imageData.push({ public_id: uploadedImage.public_id, url: uploadedImage.secure_url });
+      }
+    }
+
+    let updateData = { ...req.body };
+    if (imageData.length > 0) {
+      updateData.images = imageData;
+    }
+
     let result = await Student.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: updateData },
       { new: true }
-    )
+    );
 
-    result.password = undefined
-    res.send(result)
+    if (!result) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    result.password = undefined;
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json(error)
+    console.error("Error updating student:", error);
+    res.status(500).json({ message: "Internal server error", error });
   }
-}
+};
 
 const updateExamResult = async (req, res) => {
   const { subName, marksObtained } = req.body
