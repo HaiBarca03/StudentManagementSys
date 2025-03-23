@@ -34,7 +34,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="Trang chủ" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/classes">
           <ListItemIcon>
