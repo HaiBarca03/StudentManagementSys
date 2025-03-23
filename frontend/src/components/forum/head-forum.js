@@ -12,9 +12,13 @@ import {
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-const HeadForum = ({ onOpenCreatePost }) => {
+const HeadForum = () => {
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const { currentUser } = useSelector((state) => state.user)
+  const navigate = useNavigate()
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -31,7 +35,6 @@ const HeadForum = ({ onOpenCreatePost }) => {
       sx={{ boxShadow: 1, padding: '5px' }}
     >
       <Toolbar>
-        {/* Logo & Forum Name */}
         <Typography
           variant="h6"
           sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}
@@ -43,7 +46,6 @@ const HeadForum = ({ onOpenCreatePost }) => {
           </IconButton>
         </Typography>
 
-        {/* Search Bar */}
         <TextField
           variant="outlined"
           placeholder="Search Topics"
@@ -54,20 +56,28 @@ const HeadForum = ({ onOpenCreatePost }) => {
           }}
         />
 
-        {/* Start New Topic Button */}
         <Button
           variant="contained"
           color="success"
           sx={{ mr: 2 }}
-          onClick={onOpenCreatePost}
+          onClick={() => navigate('/forum/create/post')}
         >
-          Start New Topic
+          Bài viết mới
         </Button>
 
-        {/* User Avatar */}
+        {currentUser?.role === 'Admin' && (
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ mr: 2 }}
+            onClick={() => navigate('/forum/topic/dashboard')}
+          >
+            Chủ đề
+          </Button>
+        )}
+
         <Avatar src="https://i.pravatar.cc/40" />
 
-        {/* Dropdown Menu */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}

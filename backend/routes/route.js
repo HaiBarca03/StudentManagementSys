@@ -20,7 +20,7 @@ router.use('/', teacherRouter)
 router.use('/', classRouter)
 router.use('/', adminRouter)
 router.use('/', newsRouter)
-router.use('/', commentRouter)
+router.use('/comment', commentRouter)
 router.use('/topic', topicRouter)
 
 module.exports = router

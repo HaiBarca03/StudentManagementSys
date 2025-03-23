@@ -22,6 +22,7 @@ import AccountMenu from '../../components/AccountMenu'
 import { AppBar, Drawer } from '../../components/styles'
 import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
+import CreatePostForum from '../../components/forum/create-post-forum'
 
 const StudentDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -89,6 +90,7 @@ const StudentDashboard = () => {
             {/* Forum */}
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />
           </Routes>

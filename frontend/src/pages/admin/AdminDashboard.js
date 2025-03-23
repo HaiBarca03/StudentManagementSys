@@ -43,6 +43,8 @@ import ShowClasses from './classRelated/ShowClasses'
 import AccountMenu from '../../components/AccountMenu'
 import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
+import CreatePostForum from '../../components/forum/create-post-forum'
+import TopicDashboard from '../../components/forum/topic-dashboard'
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false)
@@ -107,6 +109,8 @@ const AdminDashboard = () => {
             {/* Forum */}
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/create/post" element={<CreatePostForum />} />
+            <Route path="/forum/topic/dashboard" element={<TopicDashboard />} />
 
             {/* Notice */}
             <Route path="/Admin/addnotice" element={<AddNotice />} />

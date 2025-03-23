@@ -49,6 +49,7 @@ const newsSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    // số lượng cmt
     comments: {
       type: Number,
       default: 0
@@ -57,26 +58,35 @@ const newsSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    // đc đăng hay chưa hay đã xóa. Vì có cả admin duyệt bài
     published: {
       type: Boolean,
       default: false
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
+      required: true,
+      refPath: 'userRef'
     },
     userType: {
       type: String,
-      enum: ['student', 'teacher', 'admin'],
+      enum: ['Student', 'Teacher', 'Admin'],
       required: true
     },
     topicId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'admin',
+      ref: 'topic',
       required: true
     }
   },
   { timestamps: true }
 )
-
+newsSchema.virtual('userRef').get(function () {
+  const typeToCollection = {
+    Student: 'student',
+    Teacher: 'teacher',
+    Admin: 'admin'
+  };
+  return typeToCollection[this.userType];
+});
 module.exports = mongoose.model('news', newsSchema)

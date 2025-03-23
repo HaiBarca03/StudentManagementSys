@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const Teacher = require('../models/teacherSchema.js')
 const Subject = require('../models/subjectSchema.js')
 
@@ -37,25 +39,41 @@ const teacherRegister = async (req, res) => {
 const teacherLogIn = async (req, res) => {
   try {
     let teacher = await Teacher.findOne({ email: req.body.email })
-    if (teacher) {
-      const validated = await bcrypt.compare(
-        req.body.password,
-        teacher.password
-      )
-      if (validated) {
-        teacher = await teacher.populate('teachSubject', 'subName sessions')
-        teacher = await teacher.populate('school', 'schoolName')
-        teacher = await teacher.populate('teachSclass', 'sclassName')
-        teacher.password = undefined
-        res.send(teacher)
-      } else {
-        res.send({ message: 'Invalid password' })
-      }
-    } else {
-      res.send({ message: 'Teacher not found' })
+
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' })
     }
+
+    const validated = await bcrypt.compare(req.body.password, teacher.password)
+
+    if (!validated) {
+      return res.status(401).json({ message: 'Invalid password' })
+    }
+
+    const token = jwt.sign(
+      {
+        id: teacher._id,
+        email: teacher.email,
+        name: teacher.name,
+        role: teacher.role
+      },
+      process.env.ACCESS_TOKEN,
+      { expiresIn: '1h' }
+    )
+
+    teacher = await teacher.populate('teachSubject', 'subName sessions')
+    teacher = await teacher.populate('school', 'schoolName')
+    teacher = await teacher.populate('teachSclass', 'sclassName')
+
+    teacher.password = undefined
+
+    res.status(200).json({
+      ...teacher.toObject(),
+      token
+    })
   } catch (err) {
-    res.status(500).json(err)
+    console.error(err)
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 

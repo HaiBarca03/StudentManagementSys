@@ -68,7 +68,7 @@ const deleteTopic = async (req, res) => {
     if (!existingTopic) {
       return res.status(404).json({ message: 'Topic not found' })
     }
-    await existingTopic.remove()
+    await existingTopic.deleteOne()
     res.status(200).json({ message: 'Topic deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: error.message })

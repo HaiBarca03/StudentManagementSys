@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteUser, getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container } from '@mui/material';
+import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Avatar, Grid, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Card, CardContent, TextField } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -30,7 +30,7 @@ const ViewStudent = () => {
 
     const studentID = params.id
     const address = "Student"
-
+    console.log('userDetails', studentID)
     useEffect(() => {
         dispatch(getUserDetails(studentID, address));
     }, [dispatch, studentID])
@@ -40,7 +40,7 @@ const ViewStudent = () => {
             dispatch(getSubjectList(userDetails.sclassName._id, "ClassSubjects"));
         }
     }, [dispatch, userDetails]);
-
+    console.log('userDetails', userDetails)
     if (response) { console.log(response) }
     else if (error) { console.log(error) }
 
@@ -99,6 +99,10 @@ const ViewStudent = () => {
             .catch((error) => {
                 console.error(error)
             })
+    }
+
+    const setUserDetails = (e) => {
+
     }
 
     const deleteHandler = () => {
@@ -341,59 +345,55 @@ const ViewStudent = () => {
 
     const StudentDetailsSection = () => {
         return (
-            <div>
-                Name: {userDetails.name}
-                <br />
-                Roll Number: {userDetails.rollNum}
-                <br />
-                Class: {sclassName.sclassName}
-                <br />
-                School: {studentSchool.schoolName}
-                {
-                    subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 && (
-                        <CustomPieChart data={chartData} />
-                    )
-                }
-                <Button variant="contained" sx={styles.styledButton} onClick={deleteHandler}>
-                    Delete
-                </Button>
-                <br />
-                {/* <Button variant="contained" sx={styles.styledButton} className="show-tab" onClick={() => { setShowTab(!showTab) }}>
-                    {
-                        showTab
-                            ? <KeyboardArrowUp />
-                            : <KeyboardArrowDown />
-                    }
-                    Edit Student
-                </Button>
-                <Collapse in={showTab} timeout="auto" unmountOnExit>
-                    <div className="register">
-                        <form className="registerForm" onSubmit={submitHandler}>
-                            <span className="registerTitle">Edit Details</span>
-                            <label>Name</label>
-                            <input className="registerInput" type="text" placeholder="Enter user's name..."
-                                value={name}
-                                onChange={(event) => setName(event.target.value)}
-                                autoComplete="name" required />
+            <Card sx={{ maxWidth: 600, margin: 'auto', mt: 5, p: 2, boxShadow: 3, borderRadius: 3 }}>
+                <CardContent>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={4} display="flex" justifyContent="center">
+                            {userDetails.images && userDetails.images.length > 0 && (
+                                <Avatar src={userDetails.images[0].url} alt="Student" sx={{ width: 100, height: 100 }} />
+                            )}
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Typography variant="h5" gutterBottom>
+                                {userDetails.name}
+                            </Typography>
+                            <Typography variant="body1" color="textSecondary">
+                                {userDetails.major} | {userDetails.trainingLevel}  {userDetails.typeOfTraining}
+                            </Typography>
+                        </Grid>
+                    </Grid>
 
-                            <label>Roll Number</label>
-                            <input className="registerInput" type="number" placeholder="Enter user's Roll Number..."
-                                value={rollNum}
-                                onChange={(event) => setRollNum(event.target.value)}
-                                required />
+                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                        <Grid item xs={6}><Typography><strong>Roll Number:</strong> {userDetails.rollNum}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Class:</strong> {userDetails.sclassName?.sclassName}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>School:</strong> {userDetails.school?.schoolName}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Status:</strong> {userDetails.status}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Nationality:</strong> {userDetails.nationality}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Religion:</strong> {userDetails.religion}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Sex:</strong> {userDetails.sex}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>DOB:</strong> {new Date(userDetails.dateOfBirth).toLocaleDateString()}</Typography></Grid>
+                        <Grid item xs={12}><Typography><strong>Address:</strong> {userDetails.address}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Email:</strong> {userDetails.email}</Typography></Grid>
+                        <Grid item xs={6}><Typography><strong>Phone:</strong> {userDetails.phone}</Typography></Grid>
+                    </Grid>
 
-                            <label>Password</label>
-                            <input className="registerInput" type="password" placeholder="Enter user's password..."
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                autoComplete="new-password" />
+                    <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={deleteHandler}>Delete</Button>
+                    <Button variant="contained" sx={{ mt: 2, ml: 2 }} onClick={() => setShowTab(!showTab)}>
+                        {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />} Edit Student
+                    </Button>
 
-                            <button className="registerButton" type="submit" >Update</button>
+                    <Collapse in={showTab} timeout="auto" unmountOnExit>
+                        <form onSubmit={submitHandler} style={{ marginTop: 20 }}>
+                            <TextField fullWidth label="Name" variant="outlined" value={userDetails.name} onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })} margin="dense" />
+                            <TextField fullWidth label="Roll Number" variant="outlined" type="number" value={userDetails.rollNum} onChange={(e) => setUserDetails({ ...userDetails, rollNum: e.target.value })} margin="dense" />
+                            <TextField fullWidth label="Email" variant="outlined" value={userDetails.email} onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })} margin="dense" />
+                            <TextField fullWidth label="Phone" variant="outlined" type="number" value={userDetails.phone} onChange={(e) => setUserDetails({ ...userDetails, phone: e.target.value })} margin="dense" />
+                            <Button type="submit" variant="contained" sx={{ mt: 2 }}>Update</Button>
                         </form>
-                    </div>
-                </Collapse> */}
-            </div>
-        )
+                    </Collapse>
+                </CardContent>
+            </Card>
+        );
     }
 
     return (
