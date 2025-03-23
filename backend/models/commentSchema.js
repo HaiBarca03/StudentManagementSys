@@ -14,7 +14,7 @@ const commentSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true
+      required: false
     },
     images: [
       {
@@ -54,8 +54,8 @@ commentSchema.virtual('userRef').get(function () {
     Student: 'student',
     Teacher: 'teacher',
     Admin: 'admin'
-  };
-  return typeToCollection[this.userType];
-});
+  }
+  return typeToCollection[this.userType]
+})
 
 module.exports = mongoose.model('comment', commentSchema)

@@ -86,7 +86,7 @@ newsSchema.virtual('userRef').get(function () {
     Student: 'student',
     Teacher: 'teacher',
     Admin: 'admin'
-  };
-  return typeToCollection[this.userType];
-});
+  }
+  return typeToCollection[this.userType]
+})
 module.exports = mongoose.model('news', newsSchema)
