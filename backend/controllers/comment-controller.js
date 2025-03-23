@@ -1,4 +1,5 @@
 const Comment = require('../models/commentSchema')
+const mongoose = require('mongoose');
 
 //api tạo 
 const createComment = async (req, res) => {
@@ -69,7 +70,7 @@ const getCommentsByParentComment = async (req, res) => {
                 select: 'name'
             }) // Lấy thông tin người dùng dựa trên userType
             .sort({ createdAt: -1 }); // Sắp xếp theo thời gian mới nhất
-
+        console.log('comments', comments.length)
         res.status(200).json(comments);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error });
@@ -80,23 +81,32 @@ const getCommentsByParentComment = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const { id } = req.params;
+        const userId = req.user.id;
         const { content, images, status } = req.body;
-
+        // Tìm comment theo ID  
         const comment = await Comment.findById(id);
         if (!comment) {
             return res.status(404).json({ message: 'Comment not found' });
         }
 
+        // Kiểm tra quyền chỉnh sửa
+        if (!new mongoose.Types.ObjectId(userId).equals(comment.userId)) {
+            return res.status(403).json({ message: 'Unauthorized: You cannot update this comment' });
+        }
+
+        // Cập nhật thông tin comment nếu có dữ liệu mới
         if (content) comment.content = content;
         if (images) comment.images = images;
-        if (status) comment.status = false;
+        if (status) comment.status = status;
 
         await comment.save();
         res.status(200).json({ message: 'Comment updated successfully', comment });
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
+        console.error('Error updating comment:', error);
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+
 
 // Xóa bình luận
 const deleteComment = async (req, res) => {
