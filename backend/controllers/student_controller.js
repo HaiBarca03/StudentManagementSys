@@ -68,7 +68,7 @@ const studentLogIn = async (req, res) => {
         role: student.role
       },
       process.env.ACCESS_TOKEN,
-      { expiresIn: '30d' }
+      { expiresIn: '24h' }
     )
 
     student = await student.populate('school', 'schoolName')
