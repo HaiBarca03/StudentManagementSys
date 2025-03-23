@@ -1,15 +1,27 @@
 const express = require('express');
 const { getAllNews, getNewsById, createNews } = require('../controllers/newsController');
+const { authorizeUser } = require('../middlewares/auth'); // ✅ Sửa lỗi: import đúng tên
+const { uploadImages, uploadThumbnail } = require('../middlewares/uploadCloudinary');
 
-const newsRouter = express.Router();
+const router = express.Router();
 
-// Route lấy tất cả bài viết
-newsRouter.get('/', getAllNews);
+// Debug để kiểm tra kiểu dữ liệu
+console.log("uploadImages type:", typeof uploadImages); // Phải là "function"
+console.log("uploadThumbnail type:", typeof uploadThumbnail); // Phải là "function"
+console.log("createNews type:", typeof createNews); // Phải là "function"
+console.log("authorizeUser type:", typeof authorizeUser); // ✅ Kiểm tra lại middleware
 
-// Route lấy bài viết theo ID
-newsRouter.get('/:id', getNewsById);
+// 🚀 Định nghĩa route
+router.get('/', getAllNews);
+router.get('/:id', getNewsById);
 
-// Route tạo bài viết mới
-newsRouter.post('/createNews', createNews);
+// ✅ Chỉ truyền function hợp lệ vào route
+router.post(
+    '/',
+    authorizeUser,   // ✅ Sửa lỗi: Đúng middleware xác thực
+    uploadThumbnail, // Middleware upload file đơn
+    uploadImages,    // Middleware upload nhiều file
+    createNews       // Controller xử lý
+);
 
-module.exports = newsRouter;
+module.exports = router;
