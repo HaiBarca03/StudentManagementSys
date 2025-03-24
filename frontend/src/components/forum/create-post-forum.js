@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   Box,
   TextField,
@@ -6,14 +6,20 @@ import {
   Typography,
   MenuItem,
   FormControlLabel,
-  Switch
-} from '@mui/material'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
+  Switch,
+  Alert,
+  CircularProgress
+} from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import axios from 'axios';
 
-const CreatePostForum = ({ onSubmit }) => {
-  const [thumbnailPreview, setThumbnailPreview] = useState(null)
-  const [imagePreviews, setImagePreviews] = useState([])
+const CreatePostForum = () => {
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -24,37 +30,130 @@ const CreatePostForum = ({ onSubmit }) => {
       images: [],
       content: '',
       published: false,
-      userType: 'student'
+      userType: 'student',
+      userId: ''
     },
     validationSchema: Yup.object({
-      title: Yup.string().max(255, 'Tối đa 255 ký tự').required('Bắt buộc'),
-      summary: Yup.string().max(255, 'Tối đa 255 ký tự'),
+      title: Yup.string()
+        .trim() // Loại bỏ khoảng trắng thừa
+        .max(255, 'Tối đa 255 ký tự')
+        .required('Bắt buộc nhập tiêu đề'),
+      summary: Yup.string()
+        .trim()
+        .max(255, 'Tối đa 255 ký tự')
+        .required('Bắt buộc nhập tóm tắt'),
       slug: Yup.string().max(100, 'Tối đa 100 ký tự'),
-      content: Yup.string().required('Bắt buộc'),
-      userType: Yup.string().oneOf(
-        ['student', 'teacher', 'admin'],
-        'Chọn loại tài khoản'
-      )
+      content: Yup.string()
+        .trim()
+        .required('Bắt buộc nhập nội dung'),
+      userType: Yup.string()
+        .oneOf(['student', 'teacher', 'admin'], 'Chọn loại tài khoản')
+        .required('Bắt buộc chọn loại tài khoản'),
+      userId: Yup.string()
+        .trim()
+        .required('Bắt buộc nhập userId'),
+      thumbnail: Yup.mixed().required('Bắt buộc chọn thumbnail')
     }),
-    onSubmit: (values) => {
-      console.log('Post data:', values)
-      if (onSubmit) onSubmit(values)
+    onSubmit: async (values, { resetForm }) => {
+      setError(null);
+      setSuccess(null);
+      setLoading(true);
+
+      // Kiểm tra token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Bạn cần đăng nhập để tạo bài viết. Vui lòng đăng nhập và thử lại.');
+        setLoading(false);
+        return;
+      }
+
+      // Kiểm tra các trường bắt buộc trước khi gửi
+      const requiredFields = {
+        title: values.title?.trim(),
+        summary: values.summary?.trim(),
+        content: values.content?.trim(),
+        userId: values.userId?.trim(),
+        userType: values.userType?.trim()
+      };
+
+      const missingFields = Object.keys(requiredFields).filter(
+        (key) => !requiredFields[key]
+      );
+
+      if (missingFields.length > 0) {
+        setError(
+          `Vui lòng điền đầy đủ các trường bắt buộc: ${missingFields.join(', ')}.`
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Tạo FormData để gửi dữ liệu
+      const formData = new FormData();
+      formData.append('title', values.title.trim());
+      formData.append('summary', values.summary.trim());
+      formData.append('slug', values.slug?.trim() || '');
+      formData.append('content', values.content.trim());
+      formData.append('published', values.published);
+      formData.append('userType', values.userType.trim());
+      formData.append('userId', values.userId.trim());
+
+      if (values.thumbnail) {
+        formData.append('thumbnail', values.thumbnail);
+      }
+
+      if (values.images && values.images.length > 0) {
+        values.images.forEach((image) => {
+          formData.append('images', image);
+        });
+      }
+
+      // Debug dữ liệu gửi đi
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      try {
+        const response = await axios.post('http://localhost:5000/', formData, {
+          headers: {
+            'token': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        setSuccess(response.data.message || 'Bài viết đã được tạo thành công!');
+        resetForm();
+        setThumbnailPreview(null);
+        setImagePreviews([]);
+      } catch (err) {
+        console.error('Lỗi từ backend:', err.response?.data);
+        setError(
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          'Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại.'
+        );
+      } finally {
+        setLoading(false);
+      }
     }
-  })
+  });
 
   const handleThumbnailChange = (event) => {
-    const file = event.target.files[0]
+    const file = event.target.files[0];
     if (file) {
-      formik.setFieldValue('thumbnail', file)
-      setThumbnailPreview(URL.createObjectURL(file))
+      formik.setFieldValue('thumbnail', file);
+      setThumbnailPreview(URL.createObjectURL(file));
+    } else {
+      formik.setFieldValue('thumbnail', null);
+      setThumbnailPreview(null);
     }
-  }
+  };
 
   const handleImageChange = (event) => {
-    const files = Array.from(event.target.files)
-    formik.setFieldValue('images', files)
-    setImagePreviews(files.map((file) => URL.createObjectURL(file)))
-  }
+    const files = Array.from(event.target.files);
+    formik.setFieldValue('images', files);
+    setImagePreviews(files.map((file) => URL.createObjectURL(file)));
+  };
 
   return (
     <Box
@@ -65,6 +164,17 @@ const CreatePostForum = ({ onSubmit }) => {
       <Typography variant="h5" gutterBottom>
         Tạo bài viết
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {success}
+        </Alert>
+      )}
 
       <TextField
         fullWidth
@@ -102,10 +212,27 @@ const CreatePostForum = ({ onSubmit }) => {
         sx={{ mb: 2 }}
       />
 
+      <TextField
+        fullWidth
+        label="User ID"
+        name="userId"
+        value={formik.values.userId}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.userId && Boolean(formik.errors.userId)}
+        helperText={formik.touched.userId && formik.errors.userId}
+        sx={{ mb: 2 }}
+      />
+
       <Typography variant="body1" sx={{ mt: 2 }}>
         Thumbnail:
       </Typography>
       <input type="file" accept="image/*" onChange={handleThumbnailChange} />
+      {formik.touched.thumbnail && formik.errors.thumbnail && (
+        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+          {formik.errors.thumbnail}
+        </Typography>
+      )}
       {thumbnailPreview && (
         <img
           src={thumbnailPreview}
@@ -160,6 +287,9 @@ const CreatePostForum = ({ onSubmit }) => {
         name="userType"
         value={formik.values.userType}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.userType && Boolean(formik.errors.userType)}
+        helperText={formik.touched.userType && formik.errors.userType}
         sx={{ mb: 2 }}
       >
         <MenuItem value="student">Học sinh</MenuItem>
@@ -180,11 +310,17 @@ const CreatePostForum = ({ onSubmit }) => {
         sx={{ mb: 2 }}
       />
 
-      <Button variant="contained" type="submit" fullWidth>
-        Đăng bài
+      <Button
+        variant="contained"
+        type="submit"
+        fullWidth
+        disabled={loading}
+        startIcon={loading ? <CircularProgress size={20} /> : null}
+      >
+        {loading ? 'Đang đăng...' : 'Đăng bài'}
       </Button>
     </Box>
-  )
-}
+  );
+};
 
-export default CreatePostForum
+export default CreatePostForum;
