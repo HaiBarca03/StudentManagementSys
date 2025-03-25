@@ -68,6 +68,10 @@ const newSchema = new mongoose.Schema(
       type: String,
       enum: ['student', 'teacher', 'admin'],
       required: true
+    },
+    approved: { 
+      type: Boolean, 
+      default: false 
     }
   },
   { timestamps: true }
