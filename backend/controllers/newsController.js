@@ -1,3 +1,4 @@
+    //newsController.js
     const News = require('../models/newsModel');
     const fs = require('fs');
     const cloudinary = require('../config/cloudinaryConfig');
@@ -51,7 +52,11 @@
             if (news.approved) {
                 return res.status(400).json({ success: false, message: "Bài viết này đã được duyệt trước đó!" });
             }
-    
+            
+            if (!req.user.permissions.includes('approve_posts')) {
+                return res.status(403).json({ success: false, message: 'Bạn không có quyền duyệt bài viết.' });
+            }
+            
             news.approved = true;
             await news.save();
     
