@@ -15,7 +15,7 @@ import ShareIcon from '@mui/icons-material/Share'
 
 const posts = [
   {
-    id: 1,
+    id: '67de95f4c1129f45f0d60386',
     author: 'Punit Bhatia',
     title: '3 steps for data transfers according to GDPR',
     date: '31 Aug, 2018',

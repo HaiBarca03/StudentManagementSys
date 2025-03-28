@@ -49,7 +49,7 @@ const StudentHomePage = () => {
                         <StyledPaper>
                             <img src={Subject} alt="Subjects" />
                             <Title>
-                                Total Subjects
+                            Tổng số môn học
                             </Title>
                             <Data start={0} end={numberOfSubjects} duration={2.5} />
                         </StyledPaper>
@@ -58,7 +58,7 @@ const StudentHomePage = () => {
                         <StyledPaper>
                             <img src={Assignment} alt="Assignments" />
                             <Title>
-                                Total Assignments
+                            Tổng số bài tập
                             </Title>
                             <Data start={0} end={15} duration={4} />
                         </StyledPaper>
@@ -67,12 +67,12 @@ const StudentHomePage = () => {
                         <ChartContainer>
                             {
                                 response ?
-                                    <Typography variant="h6">No Attendance Found</Typography>
+                                    <Typography variant="h6">Không tìm thấy điểm danh</Typography>
                                     :
                                     <>
                                         {loading
                                             ? (
-                                                <Typography variant="h6">Loading...</Typography>
+                                                <Typography variant="h6">Đang tải...</Typography>
                                             )
                                             :
                                             <>
@@ -83,7 +83,7 @@ const StudentHomePage = () => {
                                                         </>
                                                     )
                                                         :
-                                                        <Typography variant="h6">No Attendance Found</Typography>
+                                                        <Typography variant="h6">Không tìm thấy điểm danh</Typography>
                                                 }
                                             </>
                                         }

@@ -4,6 +4,15 @@ const StudentSchema = require('../models/studentSchema')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
+const extractToken = (req) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null
+  }
+  return authHeader.split(' ')[1]
+}
+
+
 const authorizeTeacher = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
@@ -35,33 +44,38 @@ const authorizeTeacher = async (req, res, next) => {
 
 const authorizeAdmin = async (req, res, next) => {
   try {
-    const authHeader = req.headers.token
-    console.log('authHeader', authHeader)
-    const token = authHeader && authHeader.split(' ')[1]
+    const authHeader = req.headers.token;
+    console.log('authHeader', authHeader);
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Access token missing. Authorization denied.'
-      })
+        message: 'Thiếu token truy cập. Xác thực bị từ chối.'
+      });
     }
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN)
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
 
-    const user = await AdminSchema.findById(decoded.id)
+    const user = await AdminSchema.findById(decoded.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
     }
 
-    req.user = user
-    next()
+    // Kiểm tra quyền duyệt bài viết
+    if (!user.permissions || !user.permissions.includes('approve_posts')) {
+      return res.status(403).json({ success: false, message: 'Quyền bị từ chối. Admin không thể phê duyệt bài viết.' });
+    }
+
+    req.user = user;
+    next();
   } catch (error) {
-    console.error('Authorization error:', error.message)
+    console.error('Lỗi xác thực:', error.message);
     return res.status(401).json({
       success: false,
-      message: 'Invalid access token. Authorization denied.'
-    })
+      message: 'Token truy cập không hợp lệ. Xác thực bị từ chối.'
+    });
   }
-}
+};
 
 const authorizeStudent = async (req, res, next) => {
   try {

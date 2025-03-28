@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   Box,
@@ -16,32 +16,18 @@ import ShareIcon from '@mui/icons-material/Share'
 import TrenddingPost from '../../components/forum/trendding-post'
 import NewPosts from '../../components/forum/news-post'
 import CommentPost from '../../components/forum/comment-post'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCommentByNews } from '../../redux/forumRelated/commentHandle'
 
 const posts = [
   {
-    id: 1,
+    id: '67de95f4c1129f45f0d60386',
     author: 'Punit Bhatia',
     title: '3 steps for data transfers according to GDPR',
     date: '31 Aug, 2018',
     content:
       'The EU General Data Protection Regulation (GDPR) is a significant legislation in the field of personal data privacy...',
     tags: ['GDPR', 'Knowledge', 'Course', 'Online'],
-    comments: [
-      {
-        id: 101,
-        author: 'John Doe',
-        text: 'Great article!',
-        date: '01 Sep, 2018',
-        replies: [{ author: 'Admin', text: 'Thanks!', date: '02 Sep, 2018' }]
-      },
-      {
-        id: 102,
-        author: 'Jane Smith',
-        text: 'Very informative, thanks!',
-        date: '02 Sep, 2018',
-        replies: []
-      }
-    ],
     likes: 51,
     shares: 16,
     images: [
@@ -53,11 +39,27 @@ const posts = [
 
 const ForumPostDetailPage = () => {
   const { id } = useParams()
+  const dispatch = useDispatch()
   const [showComments, setShowComments] = useState(false)
-  const post = posts.find((p) => p.id === parseInt(id))
+  const [selectedPostId, setSelectedPostId] = useState(null)
+  const post = posts.find((p) => p.id === id)
+  const { commentList } = useSelector((state) => state.comment)
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getCommentByNews(id))
+    }
+  }, [id, dispatch])
 
   if (!post) {
     return <Typography variant="h6">Post not found!</Typography>
+  }
+
+  // console.log('commentList', commentList)
+
+  const handleToggleComments = (id) => {
+    setShowComments((prev) => !prev)
+    setSelectedPostId(id)
   }
 
   return (
@@ -99,12 +101,10 @@ const ForumPostDetailPage = () => {
                   {post.content}
                 </Typography>
                 <Box display="flex" alignItems="center">
-                  <IconButton onClick={() => setShowComments(!showComments)}>
+                  <IconButton onClick={() => handleToggleComments(post.id)}>
                     <ChatBubbleOutlineIcon />
                   </IconButton>
-                  <Typography variant="body2">
-                    {post.comments.length}
-                  </Typography>
+                  <Typography variant="body2">{commentList.length}</Typography>
                   <IconButton>
                     <ThumbUpAltIcon />
                   </IconButton>
@@ -115,7 +115,9 @@ const ForumPostDetailPage = () => {
                   <Typography variant="body2">{post.shares}</Typography>
                 </Box>
               </CardContent>
-              {showComments && <CommentPost comments={post.comments} />}
+              {showComments && (
+                <CommentPost comments={commentList} postId={post.id} />
+              )}
             </Card>
           </Box>
         </Grid>
