@@ -35,9 +35,9 @@ const ShowNotices = () => {
     }
 
     const noticeColumns = [
-        { id: 'title', label: 'Title', minWidth: 170 },
-        { id: 'details', label: 'Details', minWidth: 100 },
-        { id: 'date', label: 'Date', minWidth: 170 },
+        { id: 'title', label: 'Tiêu đề', minWidth: 170 },
+        { id: 'details', label: 'Chi tiết', minWidth: 100 },
+        { id: 'date', label: 'Ngày', minWidth: 170 },
     ];
 
     const noticeRows = noticesList && noticesList.length > 0 && noticesList.map((notice) => {
@@ -63,11 +63,11 @@ const ShowNotices = () => {
 
     const actions = [
         {
-            icon: <NoteAddIcon color="primary" />, name: 'Add New Notice',
+            icon: <NoteAddIcon color="primary" />, name: 'Thêm mới thông báo',
             action: () => navigate("/Admin/addnotice")
         },
         {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Notices',
+            icon: <DeleteIcon color="error" />, name: 'Xóa tất cả thông báo',
             action: () => deleteHandler(currentUser._id, "Notices")
         }
     ];

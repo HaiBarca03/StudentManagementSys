@@ -31,7 +31,7 @@ const ChooseClass = ({ situation }) => {
     }
 
     const sclassColumns = [
-        { id: 'name', label: 'Class Name', minWidth: 170 },
+        { id: 'name', label: 'Tên lớp', minWidth: 170 },
     ]
 
     const sclassRows = sclassesList && sclassesList.length > 0 && sclassesList.map((sclass) => {
@@ -46,7 +46,7 @@ const ChooseClass = ({ situation }) => {
             <>
                 <PurpleButton variant="contained"
                     onClick={() => navigateHandler(row.id)}>
-                    Choose
+                    Chọn
                 </PurpleButton>
             </>
         );
@@ -67,7 +67,7 @@ const ChooseClass = ({ situation }) => {
                         :
                         <>
                             <Typography variant="h6" gutterBottom component="div">
-                                Choose a class
+                                Lựa Chọn Lớp Học
                             </Typography>
                             {Array.isArray(sclassesList) && sclassesList.length > 0 &&
                                 <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
