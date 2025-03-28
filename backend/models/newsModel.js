@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const newsSchema = new mongoose.Schema(
+const newSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -23,8 +23,7 @@ const newsSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      maxlength: 100,
-      unique: true
+      maxlength: 100
     },
     images: [
       {
@@ -49,7 +48,6 @@ const newsSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    // số lượng cmt
     comments: {
       type: Number,
       default: 0
@@ -58,35 +56,25 @@ const newsSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    // đc đăng hay chưa hay đã xóa. Vì có cả admin duyệt bài
     published: {
       type: Boolean,
       default: false
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      refPath: 'userRef'
+      required: true
     },
     userType: {
       type: String,
-      enum: ['Student', 'Teacher', 'Admin'],
+      enum: ['student', 'teacher', 'admin'],
       required: true
     },
-    topicId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'topic',
-      required: true
+    approved: { 
+      type: Boolean, 
+      default: false 
     }
   },
   { timestamps: true }
-)
-newsSchema.virtual('userRef').get(function () {
-  const typeToCollection = {
-    Student: 'student',
-    Teacher: 'teacher',
-    Admin: 'admin'
-  }
-  return typeToCollection[this.userType]
-})
-module.exports = mongoose.model('news', newsSchema)
+);
+
+module.exports = mongoose.model('new', newSchema);

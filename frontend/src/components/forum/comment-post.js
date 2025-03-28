@@ -2,84 +2,172 @@ import React, { useState } from 'react'
 import {
   Box,
   Typography,
-  Avatar,
   Card,
   CardContent,
   Button,
-  TextField
+  TextField,
+  IconButton
 } from '@mui/material'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
+import ImageIcon from '@mui/icons-material/Image'
+import { useDispatch } from 'react-redux'
+import {
+  createComment,
+  getCommentByNews
+} from '../../redux/forumRelated/commentHandle'
+import CommentChild from './commentChild'
 
-const CommentPost = ({ comments }) => {
-  const [replies, setReplies] = useState({})
+const CommentPost = ({ comments, postId }) => {
+  const [newComment, setNewComment] = useState('')
+  const [newImages, setNewImages] = useState([])
+  const [previewImages, setPreviewImages] = useState([])
+  const [newFile, setNewFile] = useState(null)
+  const dispatch = useDispatch()
 
-  const handleReplyChange = (commentId, value) => {
-    setReplies({ ...replies, [commentId]: value })
-  }
+  const handleNewCommentChange = (e) => setNewComment(e.target.value)
 
-  const handleReplySubmit = (commentId) => {
-    if (replies[commentId]) {
-      console.log(`Replying to comment ${commentId}:`, replies[commentId])
-      setReplies({ ...replies, [commentId]: '' })
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length > 0) {
+      setNewImages(files)
+      setPreviewImages(files.map((file) => URL.createObjectURL(file)))
     }
   }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) setNewFile(file)
+  }
+
+  const handleNewCommentSubmit = async () => {
+    if (!newComment.trim() && newImages.length === 0 && !newFile) return
+
+    const formData = new FormData()
+    formData.append('content', newComment)
+    formData.append('newsId', postId)
+
+    newImages.forEach((file) => formData.append('images', file))
+    if (newFile) formData.append('file', newFile)
+
+    try {
+      const result = await dispatch(createComment(formData))
+      if (result && result.type === 'comment/getSuccess') {
+        dispatch(getCommentByNews(postId))
+        resetForm()
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error)
+    }
+  }
+
+  const resetForm = () => {
+    setNewComment('')
+    setNewImages([])
+    setPreviewImages([])
+    setNewFile(null)
+  }
+
+  const buildCommentTree = (comments) => {
+    const commentMap = {}
+    const rootComments = []
+
+    const extensibleComments = comments.map((comment) => ({
+      ...comment,
+      children: []
+    }))
+
+    extensibleComments.forEach((comment) => {
+      commentMap[comment._id] = comment
+    })
+
+    extensibleComments.forEach((comment) => {
+      if (comment.parentId && commentMap[comment.parentId]) {
+        commentMap[comment.parentId].children.push(comment)
+      } else {
+        rootComments.push(comment)
+      }
+    })
+
+    return rootComments
+  }
+
+  const commentTree = buildCommentTree(comments)
 
   return (
     <Box sx={{ marginTop: 3 }}>
       <Typography variant="h6" gutterBottom>
         Comments ({comments.length})
       </Typography>
-      {comments.map((comment) => (
-        <Card key={comment.id} sx={{ marginBottom: 2, padding: 2 }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" marginBottom={1}>
-              <Avatar sx={{ marginRight: 1 }}>{comment.author[0]}</Avatar>
-              <Typography variant="body2">
-                {comment.author} - {comment.date}
-              </Typography>
-            </Box>
-            <Typography variant="body1">{comment.text}</Typography>
 
-            {/* Reply Input */}
-            <Box mt={2}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                size="small"
-                placeholder="Write a reply..."
-                value={replies[comment.id] || ''}
-                onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+      <Card sx={{ marginBottom: 2, padding: 2 }}>
+        <CardContent>
+          <Box display="flex" alignItems="center" gap={1}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Viết bình luận..."
+              value={newComment}
+              onChange={handleNewCommentChange}
+            />
+            <IconButton component="label">
+              <ImageIcon />
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={handleImageChange}
               />
-              <Button
-                onClick={() => handleReplySubmit(comment.id)}
-                variant="contained"
-                sx={{ mt: 1 }}
-              >
-                Reply
-              </Button>
-            </Box>
+            </IconButton>
+            <IconButton component="label">
+              <AttachFileIcon />
+              <input type="file" hidden onChange={handleFileChange} />
+            </IconButton>
+            <Button
+              onClick={handleNewCommentSubmit}
+              variant="contained"
+              size="small"
+              sx={{ fontSize: '0.52rem', padding: '4px 8px' }}
+            >
+              Bình luận
+            </Button>
+          </Box>
 
-            {/* Show Replies */}
-            {comment.replies && comment.replies.length > 0 && (
-              <Box mt={2} pl={4} borderLeft="2px solid #ccc">
-                {comment.replies.map((reply, index) => (
-                  <Card key={index} sx={{ marginBottom: 1, padding: 1 }}>
-                    <CardContent>
-                      <Box display="flex" alignItems="center" marginBottom={1}>
-                        <Avatar sx={{ marginRight: 1 }}>
-                          {reply.author[0]}
-                        </Avatar>
-                        <Typography variant="body2">
-                          {reply.author} - {reply.date}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2">{reply.text}</Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            )}
-          </CardContent>
-        </Card>
+          {previewImages.length > 0 && (
+            <Box mt={2} display="flex" gap={1} flexWrap="wrap">
+              {previewImages.map((preview, index) => (
+                <img
+                  key={index}
+                  src={preview}
+                  alt="Preview"
+                  style={{
+                    width: '120px',
+                    height: '120px',
+                    objectFit: 'cover',
+                    borderRadius: '8px'
+                  }}
+                />
+              ))}
+            </Box>
+          )}
+
+          {newFile && (
+            <Box mt={2}>
+              <Typography variant="body2">📄 {newFile.name}</Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+
+      {commentTree.map((comment) => (
+        <CommentChild
+          key={comment._id}
+          comment={comment}
+          depth={0}
+          postId={postId} // Pass postId to CommentChild
+          dispatch={dispatch} // Pass dispatch to CommentChild
+        />
       ))}
     </Box>
   )

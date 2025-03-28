@@ -4,16 +4,17 @@ const commentSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
+      required: true,
+      refPath: 'userRef'
     },
     userType: {
       type: String,
-      enum: ['student', 'teacher', 'admin'],
+      enum: ['Student', 'Teacher', 'Admin'],
       required: true
     },
     content: {
       type: String,
-      required: true
+      required: false
     },
     images: [
       {
@@ -32,12 +33,12 @@ const commentSchema = new mongoose.Schema(
       default: 0
     },
     newsId: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'news'
     },
     parentId: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'comment',
       default: null
     },
@@ -48,5 +49,13 @@ const commentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+commentSchema.virtual('userRef').get(function () {
+  const typeToCollection = {
+    Student: 'student',
+    Teacher: 'teacher',
+    Admin: 'admin'
+  }
+  return typeToCollection[this.userType]
+})
 
 module.exports = mongoose.model('comment', commentSchema)

@@ -23,6 +23,10 @@ const adminSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true
+    },
+    permissions: {
+      type: [String],
+      default: ['approve_posts', 'manage_users']
     }
   },
   { timestamps: true }

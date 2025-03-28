@@ -8,7 +8,7 @@ const complainRouter = require('./complain.router')
 const teacherRouter = require('./teacher.router')
 const classRouter = require('./class.router')
 const adminRouter = require('./admin.router')
-const newsRouter = require('./news.router')
+const newsRouter = require('./newsRouter')
 const commentRouter = require('./comment.router')
 const topicRouter = require('./topic.router')
 
@@ -20,7 +20,7 @@ router.use('/', teacherRouter)
 router.use('/', classRouter)
 router.use('/', adminRouter)
 router.use('/', newsRouter)
-router.use('/', commentRouter)
+router.use('/comment', commentRouter)
 router.use('/topic', topicRouter)
 
 module.exports = router

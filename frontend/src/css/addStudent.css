@@ -1,0 +1,28 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.left-column, .right-column {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+}
