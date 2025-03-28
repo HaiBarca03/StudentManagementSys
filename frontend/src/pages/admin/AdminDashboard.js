@@ -77,7 +77,7 @@ const AdminDashboard = () => {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Admin Dashboard
+              TRANG QUẢN TRỊ
             </Typography>
             <AccountMenu />
           </Toolbar>

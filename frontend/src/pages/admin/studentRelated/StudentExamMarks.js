@@ -111,11 +111,11 @@ const StudentExamMarks = ({ situation }) => {
                         >
                             <Stack spacing={1} sx={{ mb: 3 }}>
                                 <Typography variant="h4">
-                                    Student Name: {userDetails.name}
+                                    Tên sinh viên : {userDetails.name}
                                 </Typography>
                                 {currentUser.teachSubject &&
                                     <Typography variant="h4">
-                                        Subject Name: {currentUser.teachSubject?.subName}
+                                        Tên môn học : {currentUser.teachSubject?.subName}
                                     </Typography>
                                 }
                             </Stack>
@@ -125,7 +125,7 @@ const StudentExamMarks = ({ situation }) => {
                                         situation === "Student" &&
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-simple-select-label">
-                                                Select Subject
+                                                Chọn môn học
                                             </InputLabel>
                                             <Select
                                                 labelId="demo-simple-select-label"
@@ -149,7 +149,7 @@ const StudentExamMarks = ({ situation }) => {
                                         </FormControl>
                                     }
                                     <FormControl>
-                                        <TextField type="number" label='Enter marks'
+                                        <TextField type="number" label='Nhập điểm'
                                             value={marksObtained} required
                                             onChange={(e) => setMarksObtained(e.target.value)}
                                             InputLabelProps={{
@@ -166,7 +166,7 @@ const StudentExamMarks = ({ situation }) => {
                                     type="submit"
                                     disabled={loader}
                                 >
-                                    {loader ? <CircularProgress size={24} color="inherit" /> : "Submit"}
+                                    {loader ? <CircularProgress size={24} color="inherit" /> : "Gửi"}
                                 </BlueButton>
                             </form>
                         </Box>

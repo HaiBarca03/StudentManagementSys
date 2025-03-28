@@ -46,7 +46,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Classes" />
+          <ListItemText primary="Lớp học" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/subjects">
           <ListItemIcon>
@@ -58,7 +58,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Subjects" />
+          <ListItemText primary="Môn học" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/teachers">
           <ListItemIcon>
@@ -70,7 +70,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Teachers" />
+          <ListItemText primary="Giảng viên" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/students">
           <ListItemIcon>
@@ -82,7 +82,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Students" />
+          <ListItemText primary="Sinh viên" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/notices">
           <ListItemIcon>
@@ -94,7 +94,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Notices" />
+          <ListItemText primary="Thông báo" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Admin/complains">
           <ListItemIcon>
@@ -106,7 +106,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Complains" />
+          <ListItemText primary="Phản ánh" />
         </ListItemButton>
 
         <ForumSideBar />
@@ -114,7 +114,7 @@ const SideBar = () => {
       <Divider sx={{ my: 1 }} />
       <React.Fragment>
         <ListSubheader component="div" inset>
-          User
+          Người dùng
         </ListSubheader>
         <ListItemButton component={Link} to="/Admin/profile">
           <ListItemIcon>
@@ -126,7 +126,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Profile" />
+          <ListItemText primary="Thông tin" />
         </ListItemButton>
         <ListItemButton component={Link} to="/logout">
           <ListItemIcon>
@@ -136,7 +136,7 @@ const SideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary="Đăng xuất" />
         </ListItemButton>
       </React.Fragment>
     </>

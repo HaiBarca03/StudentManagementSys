@@ -65,16 +65,16 @@ const ViewStdAttendance = () => {
         return (
             <>
                 <Typography variant="h4" align="center" gutterBottom>
-                    Attendance
+                Điểm danh
                 </Typography>
                 <Table>
                     <TableHead>
                         <StyledTableRow>
-                            <StyledTableCell>Subject</StyledTableCell>
-                            <StyledTableCell>Present</StyledTableCell>
-                            <StyledTableCell>Total Sessions</StyledTableCell>
-                            <StyledTableCell>Attendance Percentage</StyledTableCell>
-                            <StyledTableCell align="center">Actions</StyledTableCell>
+                            <StyledTableCell>Môn học</StyledTableCell>
+                            <StyledTableCell>Điểm danh</StyledTableCell>
+                            <StyledTableCell>Tổng số phiên</StyledTableCell>
+                            <StyledTableCell>Tỷ lệ tham dự</StyledTableCell>
+                            <StyledTableCell align="center">Hành Động</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
                     {Object.entries(attendanceBySubject).map(([subName, { present, allData, subId, sessions }], index) => {
@@ -99,13 +99,13 @@ const ViewStdAttendance = () => {
                                         <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
                                             <Box sx={{ margin: 1 }}>
                                                 <Typography variant="h6" gutterBottom component="div">
-                                                    Attendance Details
+                                                Chi tiết tham dự
                                                 </Typography>
                                                 <Table size="small" aria-label="purchases">
                                                     <TableHead>
                                                         <StyledTableRow>
-                                                            <StyledTableCell>Date</StyledTableCell>
-                                                            <StyledTableCell align="right">Status</StyledTableCell>
+                                                            <StyledTableCell>Ngày</StyledTableCell>
+                                                            <StyledTableCell align="right">Tình trạng</StyledTableCell>
                                                         </StyledTableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -133,7 +133,7 @@ const ViewStdAttendance = () => {
                     )}
                 </Table>
                 <div>
-                    Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%
+                Tỷ lệ tham dự tổng thể: {overallAttendancePercentage.toFixed(2)}%
                 </div>
             </>
         )
@@ -151,7 +151,7 @@ const ViewStdAttendance = () => {
         <>
             {loading
                 ? (
-                    <div>Loading...</div>
+                    <div>Đang tải...</div>
                 )
                 :
                 <div>
@@ -178,7 +178,7 @@ const ViewStdAttendance = () => {
                         :
                         <>
                             <Typography variant="h6" gutterBottom component="div">
-                                Currently You Have No Attendance Details
+                            Hiện tại bạn không có thông tin tham dự
                             </Typography>
                         </>
                     }
