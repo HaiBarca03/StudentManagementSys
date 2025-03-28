@@ -1,4 +1,6 @@
 var bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const Student = require('../models/studentSchema.js')
 const Subject = require('../models/subjectSchema.js')
 
@@ -38,26 +40,42 @@ const studentLogIn = async (req, res) => {
       rollNum: req.body.rollNum,
       name: req.body.studentName
     })
-    if (student) {
-      const validated = await bcrypt.compare(
-        req.body.password,
-        student.password
-      )
-      if (validated) {
-        student = await student.populate('school', 'schoolName')
-        student = await student.populate('sclassName', 'sclassName')
-        student.password = undefined
-        student.examResult = undefined
-        student.attendance = undefined
-        res.send(student)
-      } else {
-        res.send({ message: 'Invalid password' })
-      }
-    } else {
-      res.send({ message: 'Student not found' })
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' })
     }
+
+    const validated = await bcrypt.compare(req.body.password, student.password)
+
+    if (!validated) {
+      return res.status(401).json({ message: 'Invalid password' })
+    }
+
+    const token = jwt.sign(
+      {
+        id: student._id,
+        email: student.email,
+        name: student.name,
+        role: student.role
+      },
+      process.env.ACCESS_TOKEN,
+      { expiresIn: '1h' }
+    )
+
+    student = await student.populate('school', 'schoolName')
+    student = await student.populate('sclassName', 'sclassName')
+
+    student.password = undefined
+    student.examResult = undefined
+    student.attendance = undefined
+
+    res.status(200).json({
+      ...student.toObject(),
+      token
+    })
   } catch (err) {
-    res.status(500).json(err)
+    console.error(err)
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 

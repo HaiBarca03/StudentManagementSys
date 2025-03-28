@@ -25,6 +25,8 @@ export const loginUser = (fields, role) => async (dispatch) => {
       }
     )
     if (result.data.role) {
+      localStorage.setItem('token', result.data.token)
+      localStorage.setItem('user', JSON.stringify(result.data))
       dispatch(authSuccess(result.data))
     } else {
       dispatch(authFailed(result.data.message))
