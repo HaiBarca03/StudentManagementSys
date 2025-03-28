@@ -77,4 +77,4 @@ const newSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('new', newSchema);
+module.exports = mongoose.model('News', newSchema);

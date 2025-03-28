@@ -26,6 +26,7 @@
             res.status(500).json({ error: 'Lỗi server khi lấy danh sách bài viết' });
         }
     };
+
     // Lấy bài viết theo ID
     const getNewsById = async (req, res) => {
         try {
@@ -69,91 +70,92 @@
 
     // Tạo slug duy nhất
     const generateUniqueSlug = async (title) => {
-        let newSlug = slugify(title, { lower: true, strict: true });
-        let count = 1;
+        let baseSlug = slugify(title, { lower: true, strict: true });
         
-        while (await News.findOne({ slug: newSlug })) {
-            newSlug = `${slugify(title, { lower: true, strict: true })}-${count}`;
-            count++;
+        const existingSlugs = await News.find({ slug: new RegExp(`^${baseSlug}(-\\d+)?$`) }).select('slug');
+
+        if (!existingSlugs.length) {
+            return baseSlug;
         }
 
-        return newSlug;
+        const slugNumbers = existingSlugs.map(item => {
+            const match = item.slug.match(/-(\d+)$/);
+            return match ? parseInt(match[1]) : 0;
+        });
+
+        const nextNumber = Math.max(...slugNumbers) + 1;
+        return `${baseSlug}-${nextNumber}`;
     };
-    // Tạo bài viết mới
-    const createNews = async (req, res) => {
-        try {
-            console.log("🟡 Request body:", req.body);
-            console.log("🟡 Request file:", req.file);
-            console.log("🟡 Request files:", req.files);
 
-            const { title, summary, content, userId, userType, published, thumbnail } = req.body;
+   // Tạo bài viết mới
+   const createNews = async (req, res) => {
+    try {
+        console.log('📦 Request body:', req.body);
+        console.log('📎 Files:', req.files);
 
-            if (!title || !summary || !content || !userId || !userType) {
-                return res.status(400).json({ error: "Thiếu dữ liệu bắt buộc: title, summary, content, userId, userType" });
-            }
+        const { title, summary, content, userId, userType, published } = req.body;
 
-            let thumbnailData = null;
-            let images = [];
-
-            if (req.file) {
-                try {
-                    const uploadResult = await cloudinary.uploader.upload(req.file.path, { folder: "news_thumbnails" });
-                    thumbnailData = { public_id: uploadResult.public_id, url: uploadResult.secure_url };
-                    fs.unlinkSync(req.file.path);
-                } catch (error) {
-                    console.error("❌ Lỗi khi upload thumbnail:", error);
-                    return res.status(500).json({ message: "Lỗi khi upload thumbnail" });
-                }
-            } else if (thumbnail && thumbnail.url) {
-                thumbnailData = thumbnail;
-            } else {
-                return res.status(400).json({ error: "Thiếu thumbnail" });
-            }
-
-            if (req.files && req.files.length > 0) {
-                try {
-                    images = await Promise.all(
-                        req.files.map(async (file) => {
-                            const uploadResult = await cloudinary.uploader.upload(file.path, { folder: "news_images" });
-                            fs.unlinkSync(file.path);
-                            return { public_id: uploadResult.public_id, url: uploadResult.secure_url };
-                        })
-                    );
-                } catch (error) {
-                    console.error("❌ Lỗi khi upload ảnh:", error);
-                    return res.status(500).json({ message: "Lỗi khi upload hình ảnh" });
-                }
-            }
-
-            console.log("✅ Thumbnail:", thumbnailData);
-            console.log("✅ Images:", images);
-
-            const slug = await generateUniqueSlug(title);
-            
-            const newNews = new News({
-                title,
-                summary,
-                content,
-                slug,
-                thumbnail: thumbnailData,
-                images,
-                userId,
-                userType,
-                published,
-                approved: false // Mặc định bài viết chưa được duyệt
-            });
-
-            await newNews.save();
-
-            return res.status(201).json({
-                message: "🎉 Bài viết đã được tạo, chờ duyệt bởi admin.",
-                data: newNews
-            });
-
-        } catch (error) {
-            console.error("❌ Lỗi khi tạo bài viết:", error);
-            return res.status(500).json({ message: "Lỗi khi tạo bài viết", error });
+        if (!title || !summary || !content || !userId || !userType) {
+            return res.status(400).json({ error: "Thiếu dữ liệu bắt buộc" });
         }
-    };
 
-    module.exports = { getAllNews, getNewsById, createNews, approveNews };
+        let thumbnailData = null;
+        let images = [];
+
+        // Kiểm tra và upload thumbnail
+        if (!req.files || !req.files.thumbnail || req.files.thumbnail.length === 0) {
+            return res.status(400).json({ error: "Thiếu thumbnail" });
+        }
+        const thumbnailFile = req.files.thumbnail[0];
+        const thumbnailResult = await cloudinary.uploader.upload(thumbnailFile.path, {
+            folder: "news_thumbnails"
+        });
+        thumbnailData = {
+            public_id: thumbnailResult.public_id,
+            url: thumbnailResult.secure_url
+        };
+        fs.unlinkSync(thumbnailFile.path);
+
+        // Upload images nếu có
+        if (req.files && req.files.images) {
+            images = await Promise.all(
+                req.files.images.map(async (file) => {
+                    const result = await cloudinary.uploader.upload(file.path, {
+                        folder: "news_images"
+                    });
+                    fs.unlinkSync(file.path);
+                    return {
+                        public_id: result.public_id,
+                        url: result.secure_url
+                    };
+                })
+            );
+        }
+
+        const slug = await generateUniqueSlug(title);
+
+        const newNews = new News({
+            title,
+            summary,
+            content,
+            slug,
+            thumbnail: thumbnailData,
+            images,
+            userId,
+            userType,
+            published: published === 'true',
+            approved: false
+        });
+
+        await newNews.save();
+
+        res.status(201).json({
+            message: "🎉 Bài viết đã được tạo, chờ duyệt bởi admin.",
+            data: newNews
+        });
+    } catch (error) {
+        console.error("❌ Lỗi khi tạo bài viết:", error);
+        res.status(500).json({ message: "Lỗi khi tạo bài viết", error: error.message });
+    }
+};
+module.exports = { getAllNews, getNewsById, createNews, approveNews };

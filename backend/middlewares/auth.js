@@ -16,6 +16,9 @@ const extractToken = (req) => {
 const authorizeTeacher = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
+    }
     const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {
@@ -45,6 +48,9 @@ const authorizeTeacher = async (req, res, next) => {
 const authorizeAdmin = async (req, res, next) => {
   try {
     const authHeader = req.headers.token;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
+  }
     console.log('authHeader', authHeader);
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -62,10 +68,9 @@ const authorizeAdmin = async (req, res, next) => {
     }
 
     // Kiểm tra quyền duyệt bài viết
-    if (!user.permissions || !user.permissions.includes('approve_posts')) {
+    if (!Array.isArray(user.permissions) || !user.permissions.includes('approve_posts')) {
       return res.status(403).json({ success: false, message: 'Quyền bị từ chối. Admin không thể phê duyệt bài viết.' });
     }
-
     req.user = user;
     next();
   } catch (error) {
@@ -80,6 +85,9 @@ const authorizeAdmin = async (req, res, next) => {
 const authorizeStudent = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
+    }
     const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {

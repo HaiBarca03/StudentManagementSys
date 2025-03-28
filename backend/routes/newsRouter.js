@@ -1,32 +1,39 @@
 const express = require('express');
+const multer = require('multer');
 const { getAllNews, getNewsById, createNews, approveNews } = require('../controllers/newsController');
-const { authorizeUser } = require('../middlewares/auth'); // ✅ Sửa lỗi: import đúng tên
-const { uploadImages, uploadThumbnail } = require('../middlewares/uploadCloudinary');
-const { authorizeAdmin } = require('../middlewares/auth');
+const { authorizeUser, authorizeAdmin } = require('../middlewares/auth');
+const { uploadThumbnail, uploadImages,uploadNewsFiles  } = require('../middlewares/uploadCloudinary'); // Đảm bảo đường dẫn đúng
 
 const router = express.Router();
 
-// Debug để kiểm tra kiểu dữ liệu
-console.log("uploadImages type:", typeof uploadImages); // Phải là "function"
-console.log("uploadThumbnail type:", typeof uploadThumbnail); // Phải là "function"
-console.log("createNews type:", typeof createNews); // Phải là "function"
-console.log("authorizeUser type:", typeof authorizeUser); // ✅ Kiểm tra lại middleware
-console.log("authorizeAdmin type:", typeof authorizeAdmin); // Phải là "function"
+// Middleware để log request chi tiết
+router.use((req, res, next) => {
+    console.log('📥 Received request:', req.method, req.path);
+    console.log('📦 Body:', req.body);
+    console.log('📎 Files:', req.files);
+    console.log('📋 Field names received:', Object.keys(req.body).concat(req.files ? Object.keys(req.files) : []));
+    next();
+});
 
-// 🚀 Định nghĩa route
+// Routes
 router.get('/', getAllNews);
 router.get('/:id', getNewsById);
-router.post('/', authorizeUser, createNews);
-router.put('/approve/:id', authorizeUser, authorizeAdmin, approveNews);
-router.patch('/approve/:id', authorizeUser, authorizeAdmin, approveNews);
-
-// ✅ Chỉ truyền function hợp lệ vào route
 router.post(
     '/',
-    authorizeUser,   // ✅ Sửa lỗi: Đúng middleware xác thực
-    uploadThumbnail, // Middleware upload file đơn
-    uploadImages,    // Middleware upload nhiều file
-    createNews       // Controller xử lý
+    authorizeUser,
+    (req, res, next) => {
+        uploadNewsFiles(req, res, (err) => {
+            if (err instanceof multer.MulterError) {
+                return res.status(400).json({ error: `Lỗi upload file: ${err.message}` });
+            } else if (err) {
+                return res.status(400).json({ error: err.message });
+            }
+            console.log('✅ Files uploaded successfully:', req.files);
+            next();
+        });
+    },
+    createNews
 );
+router.put('/approve/:id', authorizeUser, authorizeAdmin, approveNews);
 
 module.exports = router;
