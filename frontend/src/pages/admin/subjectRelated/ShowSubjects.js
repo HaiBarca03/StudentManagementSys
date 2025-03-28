@@ -33,7 +33,7 @@ const ShowSubjects = () => {
     const deleteHandler = (deleteID, address) => {
         console.log(deleteID);
         console.log(address);
-        setMessage("Sorry the delete function has been disabled for now.")
+        setMessage("Rất tiếc, hiện tại bạn không thể sử dụng chức năng xóa.")
         setShowPopup(true)
 
         // dispatch(deleteUser(deleteID, address))
@@ -43,9 +43,9 @@ const ShowSubjects = () => {
     }
 
     const subjectColumns = [
-        { id: 'subName', label: 'Sub Name', minWidth: 170 },
-        { id: 'sessions', label: 'Sessions', minWidth: 170 },
-        { id: 'sclassName', label: 'Class', minWidth: 170 },
+        { id: 'subName', label: 'Tên môn học', minWidth: 170 },
+        { id: 'sessions', label: 'Số tiết học', minWidth: 170 },
+        { id: 'sclassName', label: 'Tên lớp', minWidth: 170 },
     ]
 
     const subjectRows = subjectsList.map((subject) => {
@@ -66,7 +66,7 @@ const ShowSubjects = () => {
                 </IconButton>
                 <BlueButton variant="contained"
                     onClick={() => navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)}>
-                    View
+                    Xem
                 </BlueButton>
             </>
         );
@@ -74,11 +74,11 @@ const ShowSubjects = () => {
 
     const actions = [
         {
-            icon: <PostAddIcon color="primary" />, name: 'Add New Subject',
+            icon: <PostAddIcon color="primary" />, name: 'Thêm môn học mới',
             action: () => navigate("/Admin/subjects/chooseclass")
         },
         {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Subjects',
+            icon: <DeleteIcon color="error" />, name: 'Xóa tất cả môn học',
             action: () => deleteHandler(currentUser._id, "Subjects")
         }
     ];

@@ -81,15 +81,15 @@ const AddStudent = ({ situation }) => {
     return (
         <div className="register-container">
             <form className="register-form" onSubmit={submitHandler}>
-                <h2 className="register-title">Add Student</h2>
+                <h2 className="register-title">Thêm Sinh Viên</h2>
                 <div className="form-columns">
                     <div className="left-column">
-                        <label>Name</label>
+                        <label>Họ và tên</label>
                         <input name="name" type="text" value={formData.name} onChange={changeHandler} required />
 
                         {situation === "Student" && (
                             <>
-                                <label>Class</label>
+                                <label>Lớp</label>
                                 <select name="className" value={formData.className} onChange={changeHandler} required>
                                     <option value="">Select Class</option>
                                     {sclassesList.map((classItem) => (
@@ -101,13 +101,13 @@ const AddStudent = ({ situation }) => {
                             </>
                         )}
 
-                        <label>Roll Number</label>
+                        <label>Mã sinh viên</label>
                         <input name="rollNum" type="number" value={formData.rollNum} onChange={changeHandler} required />
 
-                        <label>Password</label>
+                        <label>Mật khẩu</label>
                         <input name="password" type="password" value={formData.password} onChange={changeHandler} required />
 
-                        <label>Major</label>
+                        <label>Chuyên ngành</label>
                         <select name="major" value={formData.major} onChange={changeHandler}>
                             {["Công nghệ thông tin", "Quản trị kinh doanh", "Kế toán", "Du lịch", "Ngôn ngữ Anh", "Kỹ thuật ô tô", "Kỹ thuật điện", "Cơ điện tử", "Thiết kế đồ hoạ"].map(option => (
                                 <option key={option} value={option}>{option}</option>
@@ -115,31 +115,31 @@ const AddStudent = ({ situation }) => {
                         </select>
                     </div>
                     <div className="right-column">
-                        <label>School Entry Day</label>
+                        <label>Ngày nhập học</label>
                         <input name="schoolEntryDay" type="date" value={formData.schoolEntryDay} onChange={changeHandler} required />
 
-                        <label>Status</label>
+                        <label>Trạng thái</label>
                         <select name="statusField" value={formData.statusField} onChange={changeHandler}>
                             {["Đang học", "Đã học xong", "Đã nghỉ học", "Đã chuyển trường"].map(option => (
                                 <option key={option} value={option}>{option}</option>
                             ))}
                         </select>
 
-                        <label>Nation</label>
+                        <label>Dân tộc</label>
                         <select name="nation" value={formData.nation} onChange={changeHandler}>
                             {["Kinh", "Mường", "Tày", "Nùng"].map(option => (
                                 <option key={option} value={option}>{option}</option>
                             ))}
                         </select>
 
-                        <label>Religion</label>
+                        <label>Tôn giáo</label>
                         <select name="religion" value={formData.religion} onChange={changeHandler}>
                             {["Phật", "Cao đài", "Hồi giáo", "Kito", "Tin lành"].map(option => (
                                 <option key={option} value={option}>{option}</option>
                             ))}
                         </select>
 
-                        <label>Nationality</label>
+                        <label>Quốc gia</label>
                         <select name="nationality" value={formData.nationality} onChange={changeHandler}>
                             {["Việt Nam", "Lào", "Campuchia", "Thái Lan", "Indonesia"].map(option => (
                                 <option key={option} value={option}>{option}</option>
@@ -148,7 +148,7 @@ const AddStudent = ({ situation }) => {
                     </div>
                 </div>
                 <button className="register-button" type="submit" disabled={loader}>
-                    {loader ? <CircularProgress size={24} color="inherit" /> : 'Add'}
+                    {loader ? <CircularProgress size={24} color="inherit" /> : 'Thêm'}
                 </button>
             </form>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />

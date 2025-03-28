@@ -48,7 +48,7 @@ const ShowClasses = () => {
   }
 
   const sclassColumns = [
-    { id: 'name', label: 'Class Name', minWidth: 170 },
+    { id: 'name', label: 'Tên lớp', minWidth: 170 },
   ]
 
   const sclassRows = sclassesList && sclassesList.length > 0 && sclassesList.map((sclass) => {
@@ -60,8 +60,8 @@ const ShowClasses = () => {
 
   const SclassButtonHaver = ({ row }) => {
     const actions = [
-      { icon: <PostAddIcon />, name: 'Add Subjects', action: () => navigate("/Admin/addsubject/" + row.id) },
-      { icon: <PersonAddAlt1Icon />, name: 'Add Student', action: () => navigate("/Admin/class/addstudents/" + row.id) },
+      { icon: <PostAddIcon />, name: 'Thêm môn học', action: () => navigate("/Admin/addsubject/" + row.id) },
+      { icon: <PersonAddAlt1Icon />, name: 'Thêm sinh viên', action: () => navigate("/Admin/class/addstudents/" + row.id) },
     ];
     return (
       <ButtonContainer>
@@ -70,7 +70,7 @@ const ShowClasses = () => {
         </IconButton>
         <BlueButton variant="contained"
           onClick={() => navigate("/Admin/classes/class/" + row.id)}>
-          View
+          Xem
         </BlueButton>
         <ActionMenu actions={actions} />
       </ButtonContainer>
@@ -100,7 +100,7 @@ const ShowClasses = () => {
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
             >
-              <h5>Add</h5>
+              <h5>Thêm</h5>
               <SpeedDialIcon />
             </IconButton>
           </Tooltip>
@@ -133,11 +133,11 @@ const ShowClasses = () => {
 
   const actions = [
     {
-      icon: <AddCardIcon color="primary" />, name: 'Add New Class',
+      icon: <AddCardIcon color="primary" />, name: 'Thêm môn học mới',
       action: () => navigate("/Admin/addclass")
     },
     {
-      icon: <DeleteIcon color="error" />, name: 'Delete All Classes',
+      icon: <DeleteIcon color="error" />, name: 'Xóa tất cả môn học',
       action: () => deleteHandler(adminID, "Sclasses")
     },
   ];

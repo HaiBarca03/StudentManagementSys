@@ -49,7 +49,7 @@ const ClassDetails = () => {
     const deleteHandler = (deleteID, address) => {
         console.log(deleteID);
         console.log(address);
-        setMessage("Sorry the delete function has been disabled for now.")
+        setMessage("Rất tiếc, chức năng xóa tạm thời bị tắt.")
         setShowPopup(true)
         // dispatch(deleteUser(deleteID, address))
         //     .then(() => {
@@ -60,8 +60,8 @@ const ClassDetails = () => {
     }
 
     const subjectColumns = [
-        { id: 'name', label: 'Subject Name', minWidth: 170 },
-        { id: 'code', label: 'Subject Code', minWidth: 100 },
+        { id: 'name', label: 'Tên môn học', minWidth: 170 },
+        { id: 'code', label: 'Mã môn học', minWidth: 100 },
     ]
 
     const subjectRows = subjectsList && subjectsList.length > 0 && subjectsList.map((subject) => {
@@ -84,7 +84,7 @@ const ClassDetails = () => {
                         navigate(`/Admin/class/subject/${classID}/${row.id}`)
                     }}
                 >
-                    View
+                    Xem
                 </BlueButton >
             </>
         );
@@ -92,11 +92,11 @@ const ClassDetails = () => {
 
     const subjectActions = [
         {
-            icon: <PostAddIcon color="primary" />, name: 'Add New Subject',
+            icon: <PostAddIcon color="primary" />, name: 'Thêm môn học mới',
             action: () => navigate("/Admin/addsubject/" + classID)
         },
         {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Subjects',
+            icon: <DeleteIcon color="error" />, name: 'Xóa tất cả môn học',
             action: () => deleteHandler(classID, "SubjectsClass")
         }
     ];
@@ -110,13 +110,13 @@ const ClassDetails = () => {
                             variant="contained"
                             onClick={() => navigate("/Admin/addsubject/" + classID)}
                         >
-                            Add Subjects
+                            Thêm môn học
                         </GreenButton>
                     </Box>
                     :
                     <>
                         <Typography variant="h5" gutterBottom>
-                            Subjects List:
+                            Danh sách môn học :
                         </Typography>
 
                         <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={subjectRows} />
@@ -128,8 +128,8 @@ const ClassDetails = () => {
     }
 
     const studentColumns = [
-        { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
+        { id: 'name', label: 'Tên sinh viên', minWidth: 170 },
+        { id: 'rollNum', label: 'Mã sinh viên', minWidth: 100 },
     ]
 
     const studentRows = sclassStudents.map((student) => {
@@ -150,7 +150,7 @@ const ClassDetails = () => {
                     variant="contained"
                     onClick={() => navigate("/Admin/students/student/" + row.id)}
                 >
-                    View
+                    Xem
                 </BlueButton>
                 <PurpleButton
                     variant="contained"
@@ -158,7 +158,7 @@ const ClassDetails = () => {
                         navigate("/Admin/students/student/attendance/" + row.id)
                     }
                 >
-                    Attendance
+                    Điểm danh
                 </PurpleButton>
             </>
         );
@@ -166,11 +166,11 @@ const ClassDetails = () => {
 
     const studentActions = [
         {
-            icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Student',
+            icon: <PersonAddAlt1Icon color="primary" />, name: 'Thêm sinh viên mới',
             action: () => navigate("/Admin/class/addstudents/" + classID)
         },
         {
-            icon: <PersonRemoveIcon color="error" />, name: 'Delete All Students',
+            icon: <PersonRemoveIcon color="error" />, name: 'Xóa tất cả sinh viên',
             action: () => deleteHandler(classID, "StudentsClass")
         },
     ];
@@ -185,14 +185,14 @@ const ClassDetails = () => {
                                 variant="contained"
                                 onClick={() => navigate("/Admin/class/addstudents/" + classID)}
                             >
-                                Add Students
+                                Thêm sinh viên
                             </GreenButton>
                         </Box>
                     </>
                 ) : (
                     <>
                         <Typography variant="h5" gutterBottom>
-                            Students List:
+                            Danh sách sinh viên :
                         </Typography>
 
                         <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
@@ -206,7 +206,7 @@ const ClassDetails = () => {
     const ClassTeachersSection = () => {
         return (
             <>
-                Teachers
+                Giảng viên
             </>
         )
     }
@@ -218,23 +218,23 @@ const ClassDetails = () => {
         return (
             <>
                 <Typography variant="h4" align="center" gutterBottom>
-                    Class Details
+                    Thông Tin Lớp Học
                 </Typography>
                 <Typography variant="h5" gutterBottom>
-                    This is Class {sclassDetails && sclassDetails.sclassName}
+                    Đây là lớp học {sclassDetails && sclassDetails.sclassName}
                 </Typography>
                 <Typography variant="h6" gutterBottom>
-                    Number of Subjects: {numberOfSubjects}
+                    Số lượng môn học : {numberOfSubjects}
                 </Typography>
                 <Typography variant="h6" gutterBottom>
-                    Number of Students: {numberOfStudents}
+                    Số lượng sinh viên : {numberOfStudents}
                 </Typography>
                 {getresponse &&
                     <GreenButton
                         variant="contained"
                         onClick={() => navigate("/Admin/class/addstudents/" + classID)}
                     >
-                        Add Students
+                        Thêm sinh viên
                     </GreenButton>
                 }
                 {response &&
@@ -242,7 +242,7 @@ const ClassDetails = () => {
                         variant="contained"
                         onClick={() => navigate("/Admin/addsubject/" + classID)}
                     >
-                        Add Subjects
+                        Thêm môn học
                     </GreenButton>
                 }
             </>

@@ -55,9 +55,9 @@ const ShowStudents = () => {
     }
 
     const studentColumns = [
-        { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
-        { id: 'sclassName', label: 'Class', minWidth: 170 },
+        { id: 'name', label: 'Tên sinh viên', minWidth: 170 },
+        { id: 'rollNum', label: 'Mã sinh viên', minWidth: 100 },
+        { id: 'sclassName', label: 'Lớp', minWidth: 170 },
     ]
 
     const studentRows = studentsList && studentsList.length > 0 && studentsList.map((student) => {
@@ -70,7 +70,7 @@ const ShowStudents = () => {
     })
 
     const StudentButtonHaver = ({ row }) => {
-        const options = ['Take Attendance', 'Provide Marks'];
+        const options = ['Điểm danh', 'Chấm điểm'];
 
         const [open, setOpen] = React.useState(false);
         const anchorRef = React.useRef(null);
@@ -115,7 +115,7 @@ const ShowStudents = () => {
                 </IconButton>
                 <BlueButton variant="contained"
                     onClick={() => navigate("/Admin/students/student/" + row.id)}>
-                    View
+                    XEM
                 </BlueButton>
                 <React.Fragment>
                     <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
@@ -175,11 +175,11 @@ const ShowStudents = () => {
 
     const actions = [
         {
-            icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Student',
+            icon: <PersonAddAlt1Icon color="primary" />, name: 'Thêm sinh viên mới',
             action: () => navigate("/Admin/addstudents")
         },
         {
-            icon: <PersonRemoveIcon color="error" />, name: 'Delete All Students',
+            icon: <PersonRemoveIcon color="error" />, name: 'Xóa tất cả sinh viên',
             action: () => deleteHandler(currentUser._id, "Students")
         },
     ];
@@ -193,7 +193,7 @@ const ShowStudents = () => {
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                             <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
-                                Add Students
+                                Thêm Sinh Viên
                             </GreenButton>
                         </Box>
                         :

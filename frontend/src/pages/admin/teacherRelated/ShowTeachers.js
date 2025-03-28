@@ -56,9 +56,9 @@ const ShowTeachers = () => {
     };
 
     const columns = [
-        { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'teachSubject', label: 'Subject', minWidth: 100 },
-        { id: 'teachSclass', label: 'Class', minWidth: 170 },
+        { id: 'name', label: 'Tên giảng viên', minWidth: 170 },
+        { id: 'teachSubject', label: 'Môn học', minWidth: 100 },
+        { id: 'teachSclass', label: 'Lớp', minWidth: 170 },
     ];
 
     const rows = teachersList.map((teacher) => {
@@ -73,11 +73,11 @@ const ShowTeachers = () => {
 
     const actions = [
         {
-            icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Teacher',
+            icon: <PersonAddAlt1Icon color="primary" />, name: 'Thêm giảng viên mới',
             action: () => navigate("/Admin/teachers/chooseclass")
         },
         {
-            icon: <PersonRemoveIcon color="error" />, name: 'Delete All Teachers',
+            icon: <PersonRemoveIcon color="error" />, name: 'Xóa tất cả các giảng viên',
             action: () => deleteHandler(currentUser._id, "Teachers")
         },
     ];
@@ -98,7 +98,7 @@ const ShowTeachers = () => {
                                 </StyledTableCell>
                             ))}
                             <StyledTableCell align="center">
-                                Actions
+                                Hành động
                             </StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
@@ -138,7 +138,7 @@ const ShowTeachers = () => {
                                             </IconButton>
                                             <BlueButton variant="contained"
                                                 onClick={() => navigate("/Admin/teachers/teacher/" + row.id)}>
-                                                View
+                                                XEM
                                             </BlueButton>
                                         </StyledTableCell>
                                     </StyledTableRow>

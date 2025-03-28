@@ -89,7 +89,7 @@ const SubjectForm = () => {
     return (
         <form onSubmit={submitHandler}>
             <Box mb={2}>
-                <Typography variant="h6" >Add Subjects</Typography>
+                <Typography variant="h6" >THÊM MÔN HỌC</Typography>
             </Box>
             <Grid container spacing={2}>
                 {subjects.map((subject, index) => (
@@ -97,7 +97,7 @@ const SubjectForm = () => {
                         <Grid item xs={6}>
                             <TextField
                                 fullWidth
-                                label="Subject Name"
+                                label="Tên môn học"
                                 variant="outlined"
                                 value={subject.subName}
                                 onChange={handleSubjectNameChange(index)}
@@ -108,7 +108,7 @@ const SubjectForm = () => {
                         <Grid item xs={4}>
                             <TextField
                                 fullWidth
-                                label="Subject Code"
+                                label="Mã môn học"
                                 variant="outlined"
                                 value={subject.subCode}
                                 onChange={handleSubjectCodeChange(index)}
@@ -119,7 +119,7 @@ const SubjectForm = () => {
                         <Grid item xs={4}>
                             <TextField
                                 fullWidth
-                                label="Sessions"
+                                label="Số tiết học"
                                 variant="outlined"
                                 type="number"
                                 inputProps={{ min: 0 }}
@@ -137,7 +137,7 @@ const SubjectForm = () => {
                                         color="primary"
                                         onClick={handleAddSubject}
                                     >
-                                        Add Subject
+                                        THÊM
                                     </Button>
                                 ) : (
                                     <Button
@@ -145,7 +145,7 @@ const SubjectForm = () => {
                                         color="error"
                                         onClick={handleRemoveSubject(index)}
                                     >
-                                        Remove
+                                        XÓA
                                     </Button>
                                 )}
                             </Box>
@@ -158,7 +158,7 @@ const SubjectForm = () => {
                             {loader ? (
                                 <CircularProgress size={24} color="inherit" />
                             ) : (
-                                'Save'
+                                'Lưu'
                             )}
                         </Button>
                     </Box>

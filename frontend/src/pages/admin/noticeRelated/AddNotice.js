@@ -45,21 +45,21 @@ const AddNotice = () => {
     <>
       <div className="register">
         <form className="registerForm" onSubmit={submitHandler}>
-          <span className="registerTitle">Add Notice</span>
-          <label>Title</label>
-          <input className="registerInput" type="text" placeholder="Enter notice title..."
+          <span className="registerTitle">Thêm Thông Báo</span>
+          <label>Tiêu đề</label>
+          <input className="registerInput" type="text" placeholder="Nhập tiêu đề thông báo..."
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             required />
 
-          <label>Details</label>
-          <input className="registerInput" type="text" placeholder="Enter notice details..."
+          <label>Chi tiết</label>
+          <input className="registerInput" type="text" placeholder="Nhập chi tiết thông báo..."
             value={details}
             onChange={(event) => setDetails(event.target.value)}
             required />
 
-          <label>Date</label>
-          <input className="registerInput" type="date" placeholder="Enter notice date..."
+          <label>Ngày</label>
+          <input className="registerInput" type="date" placeholder="Nhập ngày thông báo..."
             value={date}
             onChange={(event) => setDate(event.target.value)}
             required />
@@ -68,7 +68,7 @@ const AddNotice = () => {
             {loader ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              'Add'
+              'Thêm'
             )}
           </button>
         </form>
