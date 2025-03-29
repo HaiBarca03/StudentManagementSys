@@ -44,7 +44,6 @@ const ForumPostDetailPage = () => {
   const [selectedPostId, setSelectedPostId] = useState(null)
   const post = posts.find((p) => p.id === id)
   const { commentList } = useSelector((state) => state.comment)
-
   useEffect(() => {
     if (id) {
       dispatch(getCommentByNews(id))
@@ -54,9 +53,6 @@ const ForumPostDetailPage = () => {
   if (!post) {
     return <Typography variant="h6">Post not found!</Typography>
   }
-
-  // console.log('commentList', commentList)
-
   const handleToggleComments = (id) => {
     setShowComments((prev) => !prev)
     setSelectedPostId(id)
