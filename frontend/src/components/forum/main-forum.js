@@ -14,8 +14,8 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ShareIcon from "@mui/icons-material/Share";
 
-const API_URL = "http://localhost:5000/api/news";
-const USER_API_URL = "http://localhost:5000/api/users"; // API lấy thông tin người dùng
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
+const USER_API_URL = `${process.env.REACT_APP_BASE_URL}/api/users`
 
 const MainForum = () => {
   const navigate = useNavigate();
