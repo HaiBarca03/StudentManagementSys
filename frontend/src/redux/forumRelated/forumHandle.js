@@ -16,7 +16,7 @@ const getAuthConfig = (isMultipart = false) => {
   }
   return {
     headers: {
-      Authorization: `Bearer ${token}`,
+      token: `Bearer ${token}`,
       ...(isMultipart ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' })
     }
   };

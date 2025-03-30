@@ -24,8 +24,8 @@ import 'react-quill/dist/quill.snow.css'; // CSS cho ReactQuill
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const API_URL = 'http://localhost:5000/api/news';
-const TOPIC_API_URL = 'http://localhost:5000/api/topics';
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`;
+const TOPIC_API_URL = `${process.env.REACT_APP_BASE_URL}/topic`;
 
 const CreateNews = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
