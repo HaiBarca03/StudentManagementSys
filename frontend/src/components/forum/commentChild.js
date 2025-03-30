@@ -19,8 +19,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import {
   deleteImageComment,
   getCommentByNews,
+  like,
   updateComment
 } from '../../redux/forumRelated/commentHandle'
+import { useSelector } from 'react-redux'
 
 const CommentChild = ({
   comment,
@@ -32,6 +34,10 @@ const CommentChild = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [likes, setLikes] = useState(comment.likes || 0)
+  const userId = useSelector((state) => state.user._id)
+  const [hasLiked, setHasLiked] = useState(
+    comment.likedBy.some((_id) => _id.toString() === userId)
+  )
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [replyContent, setReplyContent] = useState('')
   const [newImages, setNewImages] = useState([])
@@ -48,9 +54,16 @@ const CommentChild = ({
   const toggleExpand = () => {
     setIsExpanded((prev) => !prev)
   }
-
-  const handleLike = () => {
-    setLikes((prev) => prev + 1)
+  console.log('hasLiked', hasLiked)
+  const handleLike = async () => {
+    const commentId = comment._id
+    try {
+      await dispatch(like(commentId))
+      setHasLiked(comment.likedBy.some((id) => id.toString() === userId))
+      dispatch(getCommentByNews(postId))
+    } catch (error) {
+      console.error('Error liking comment:', error)
+    }
   }
 
   const handleReplyContentChange = (e) => {
@@ -324,8 +337,9 @@ const CommentChild = ({
               onClick={handleLike}
               startIcon={<ThumbUpIcon fontSize="small" />}
               sx={{ minWidth: 'auto', padding: '0 4px' }}
+              color={hasLiked ? 'primary' : 'inherit'}
             >
-              Thích
+              Thích ({likes})
             </Button>
             <Button
               size="small"

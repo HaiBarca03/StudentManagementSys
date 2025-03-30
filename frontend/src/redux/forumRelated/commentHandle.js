@@ -142,3 +142,30 @@ export const updateComment = (id, data) => async (dispatch) => {
     dispatch(getError(error))
   }
 }
+
+export const like = (commentId) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    const token = localStorage.getItem('token')
+    const config = {
+      headers: {
+        token: `Bearer ${token}`
+      }
+    }
+
+    const result = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/comment/like/${commentId}`,
+      null,
+      config
+    )
+
+    console.log(result.data)
+    if (result.data.message) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch({ type: 'comment/createSuccess', payload: result.data })
+    }
+  } catch (error) {
+    dispatch(getError(error))
+  }
+}

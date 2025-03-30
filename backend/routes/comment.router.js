@@ -7,7 +7,8 @@ const {
   getCommentsByParentComment,
   updateComment,
   deleteComment,
-  deleteCommentImage
+  deleteCommentImage,
+  like
 } = require('../controllers/comment-controller')
 const { uploadImages } = require('../middlewares/uploadCloudinary')
 
@@ -24,5 +25,6 @@ commentRouter.delete(
   uploadImages,
   deleteCommentImage
 )
+commentRouter.post('/like/:commentId', authorizeUser, like)
 
 module.exports = commentRouter
