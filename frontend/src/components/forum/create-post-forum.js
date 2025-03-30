@@ -25,18 +25,46 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const API_URL = 'http://localhost:5000/api/news';
+const TOPIC_API_URL = 'http://localhost:5000/api/topics';
 
 const CreateNews = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [topics, setTopics] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success',
   });
+  // Fetch topics từ backend
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Token:', token); // Kiểm tra token
+        if (!token) throw new Error('No token found');
 
+        const response = await axios.get(TOPIC_API_URL, {
+          headers: {
+            token: `Bearer ${token}`,
+          },
+        });
+        console.log('Topics response:', response.data); // Kiểm tra dữ liệu trả về
+        setTopics(response.data);
+        console.log('Topics state:', response.data); // Kiểm tra state sau khi set
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách chủ đề:', error.response || error.message);
+        setSnackbar({
+          open: true,
+          message: 'Không thể tải danh sách chủ đề: ' + (error.response?.data?.error || error.message),
+          severity: 'error',
+        });
+      }
+    };
+    fetchTopics();
+  }, []);
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -46,6 +74,7 @@ const CreateNews = () => {
       content: '',
       published: false,
       userType: 'admin',
+      topicId: '',
     },
     validationSchema: Yup.object({
       title: Yup.string()
@@ -58,6 +87,7 @@ const CreateNews = () => {
       userType: Yup.string()
         .oneOf(['student', 'teacher', 'admin'], 'Chọn loại tài khoản hợp lệ')
         .required('Loại tài khoản là bắt buộc'),
+      topicId: Yup.string().required('Chủ đề là bắt buộc'), // Thêm validation cho topicId
       thumbnail: Yup.mixed()
         .required('Thumbnail là bắt buộc')
         .test('fileSize', 'Kích thước file tối đa là 2MB', (value) => 
@@ -96,6 +126,7 @@ const CreateNews = () => {
         formData.append('userType', values.userType);
         formData.append('thumbnail', values.thumbnail);
         formData.append('userId', decodedToken.id);
+        formData.append('topicId', values.topicId);
 
         values.images.forEach((image) => formData.append('images', image));
 
@@ -208,6 +239,30 @@ const CreateNews = () => {
           sx={{ mb: 3 }}
           variant="outlined"
         />
+    
+    <TextField
+          fullWidth
+          select
+          label="Chủ đề"
+          name="topicId"
+          value={formik.values.topicId}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.topicId && Boolean(formik.errors.topicId)}
+          helperText={formik.touched.topicId && formik.errors.topicId}
+          sx={{ mb: 3 }}
+          variant="outlined"
+        >
+          {topics.length > 0 ? (
+            topics.map((topic) => (
+              <MenuItem key={topic._id} value={topic._id}>
+                {topic.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>Không có chủ đề nào</MenuItem>
+          )}
+        </TextField>
 
         <TextField
           fullWidth
