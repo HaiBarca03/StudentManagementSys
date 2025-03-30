@@ -99,9 +99,11 @@ const ForumPostDetailPage = () => {
     );
   }
 
+
   const handleToggleComments = () => {
     setShowComments((prev) => !prev);
   };
+
 
   return (
     <Grid container spacing={2} sx={{ padding: 2, margin: '0 auto', maxWidth: '1200px' }}>

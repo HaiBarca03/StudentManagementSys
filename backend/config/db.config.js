@@ -4,8 +4,10 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const dbConnect = async () => {
+  const dbUrl =
+    'mongodb+srv://duchai:duchai@mongodb.uv8cn.mongodb.net/StudentManagement?retryWrites=true&w=majority&appName=MongoDB'
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(dbUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     })

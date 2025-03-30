@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Typography,
@@ -10,19 +10,28 @@ import {
 } from '@mui/material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import ImageIcon from '@mui/icons-material/Image'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   createComment,
+  deleteComment,
   getCommentByNews
 } from '../../redux/forumRelated/commentHandle'
 import CommentChild from './commentChild'
 
-const CommentPost = ({ comments, postId }) => {
+const CommentPost = ({ postId }) => {
   const [newComment, setNewComment] = useState('')
   const [newImages, setNewImages] = useState([])
   const [previewImages, setPreviewImages] = useState([])
   const [newFile, setNewFile] = useState(null)
   const dispatch = useDispatch()
+
+  const comments = useSelector((state) => state.comment.commentList || [])
+
+  useEffect(() => {
+    if (postId) {
+      dispatch(getCommentByNews(postId))
+    }
+  }, [postId, dispatch])
 
   const handleNewCommentChange = (e) => setNewComment(e.target.value)
 
@@ -50,13 +59,29 @@ const CommentPost = ({ comments, postId }) => {
     if (newFile) formData.append('file', newFile)
 
     try {
-      const result = await dispatch(createComment(formData))
-      if (result && result.type === 'comment/getSuccess') {
-        dispatch(getCommentByNews(postId))
-        resetForm()
-      }
+      await dispatch(createComment(formData))
+      dispatch(getCommentByNews(postId))
+      resetForm()
     } catch (error) {
       console.error('Error submitting comment:', error)
+    }
+  }
+
+  const handleDeleteComment = async (id) => {
+    try {
+      await dispatch(deleteComment(id))
+      dispatch(getCommentByNews(postId))
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+    }
+  }
+
+  const handleCreateReply = async (formData) => {
+    try {
+      await dispatch(createComment(formData))
+      dispatch(getCommentByNews(postId))
+    } catch (error) {
+      console.error('Error creating reply:', error)
     }
   }
 
@@ -68,6 +93,11 @@ const CommentPost = ({ comments, postId }) => {
   }
 
   const buildCommentTree = (comments) => {
+    if (!Array.isArray(comments)) {
+      console.warn('Comments is not an array:', comments)
+      return []
+    }
+
     const commentMap = {}
     const rootComments = []
 
@@ -160,15 +190,21 @@ const CommentPost = ({ comments, postId }) => {
         </CardContent>
       </Card>
 
-      {commentTree.map((comment) => (
-        <CommentChild
-          key={comment._id}
-          comment={comment}
-          depth={0}
-          postId={postId} // Pass postId to CommentChild
-          dispatch={dispatch} // Pass dispatch to CommentChild
-        />
-      ))}
+      {commentTree.length > 0 ? (
+        commentTree.map((comment) => (
+          <CommentChild
+            key={comment._id}
+            comment={comment}
+            depth={0}
+            postId={postId}
+            dispatch={dispatch}
+            onDeleteComment={handleDeleteComment}
+            onCreateComment={handleCreateReply}
+          />
+        ))
+      ) : (
+        <Typography>Chưa có bình luận nào.</Typography>
+      )}
     </Box>
   )
 }
