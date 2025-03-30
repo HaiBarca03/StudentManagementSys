@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -10,21 +10,23 @@ import {
 import { useDispatch } from 'react-redux'
 import { createTopic, getAllTopic } from '../../redux/forumRelated/forumHandle'
 
-const CreateTopicForum = ({ open, onClose, onTopicCreated }) => {
+const CreateTopicForum = memo(({ open, onClose, onTopicCreated }) => {
   const dispatch = useDispatch()
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+  const [formData, setFormData] = useState({ name: '', description: '' })
   const [loading, setLoading] = useState(false)
+
+  const handleChange = (field) => (e) => {
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }))
+  }
 
   const handleSubmit = async () => {
     setLoading(true)
-    const newTopic = { name, description }
-
     try {
-      const result = await dispatch(createTopic(newTopic)).unwrap()
-      dispatch(getAllTopic())
-      onTopicCreated(result)
+      const result = await dispatch(createTopic(formData)).unwrap()
+      setFormData({ name: '', description: '' })
       onClose()
+      onTopicCreated?.(result)
+      await dispatch(getAllTopic())
     } catch (error) {
       console.error('Lỗi khi tạo chủ đề:', error)
     } finally {
@@ -33,15 +35,17 @@ const CreateTopicForum = ({ open, onClose, onTopicCreated }) => {
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Tạo Chủ Đề Mới</DialogTitle>
       <DialogContent>
         <TextField
           label="Tên Chủ Đề"
           fullWidth
           margin="dense"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={formData.name}
+          onChange={handleChange('name')}
+          disabled={loading}
+          required
         />
         <TextField
           label="Mô Tả"
@@ -49,20 +53,21 @@ const CreateTopicForum = ({ open, onClose, onTopicCreated }) => {
           multiline
           rows={3}
           margin="dense"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={handleChange('description')}
+          disabled={loading}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={onClose} disabled={loading}>
           Hủy
         </Button>
-        <Button onClick={handleSubmit} color="primary" disabled={loading}>
+        <Button onClick={handleSubmit} disabled={loading || !formData.name}>
           {loading ? 'Đang tạo...' : 'Tạo'}
         </Button>
       </DialogActions>
     </Dialog>
   )
-}
+})
 
 export default CreateTopicForum

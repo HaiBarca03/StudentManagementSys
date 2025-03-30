@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllTopic, deleteTopic } from '../../redux/forumRelated/forumHandle'
 import {
@@ -25,35 +25,81 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import CreateTopicForum from './create-topic-forum'
 import UpdateTopic from './update-topic'
 
+const TopicRow = memo(({ topic, index, onEdit, onDelete }) => (
+  <TableRow>
+    <TableCell>{index + 1}</TableCell>
+    <TableCell>{topic.name}</TableCell>
+    <TableCell>{topic.description || 'Không có mô tả'}</TableCell>
+    <TableCell>{new Date(topic.createdAt).toLocaleDateString()}</TableCell>
+    <TableCell>
+      <IconButton color="primary" onClick={() => onEdit(topic)}>
+        <EditIcon />
+      </IconButton>
+      <IconButton color="error" onClick={() => onDelete(topic._id)}>
+        <DeleteIcon />
+      </IconButton>
+    </TableCell>
+  </TableRow>
+))
+
 const TopicDashboard = () => {
   const dispatch = useDispatch()
-  const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
-  const [selectedTopic, setSelectedTopic] = useState(null)
-  const { forumList = [], loading, error } = useSelector((state) => state.forum)
-  const [openCreateDialog, setOpenCreateDialog] = useState(false)
-  const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const { forumList = [], loading } = useSelector((state) => state.forum)
+  const [dialogState, setDialogState] = useState({
+    createOpen: false,
+    updateOpen: false,
+    deleteConfirm: null,
+    selectedTopic: null
+  })
 
   useEffect(() => {
     dispatch(getAllTopic())
   }, [dispatch])
 
-  const handleDelete = (topicId) => {
-    dispatch(deleteTopic(topicId))
+  const handleEdit = useCallback((topic) => {
+    setDialogState((prev) => ({
+      ...prev,
+      updateOpen: true,
+      selectedTopic: topic
+    }))
+  }, [])
+
+  const handleDelete = useCallback(
+    async (topicId) => {
+      await dispatch(deleteTopic(topicId))
+      await dispatch(getAllTopic())
+      setDialogState((prev) => ({ ...prev, deleteConfirm: null }))
+    },
+    [dispatch]
+  )
+
+  const handleTopicCreated = useCallback(() => {
     dispatch(getAllTopic())
-    setDeleteConfirm(null)
+  }, [dispatch])
+
+  const toggleDialog = useCallback((type, value) => {
+    setDialogState((prev) => ({ ...prev, [type]: value }))
+  }, [])
+
+  if (loading) {
+    return (
+      <Container>
+        <CircularProgress sx={{ display: 'block', mx: 'auto', my: 5 }} />
+      </Container>
+    )
   }
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" align="center" sx={{ my: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Typography variant="h4" align="center" gutterBottom>
         🛠 Quản Lý Chủ Đề
       </Typography>
 
       <Button
         variant="contained"
         startIcon={<AddIcon />}
+        onClick={() => toggleDialog('createOpen', true)}
         sx={{ mb: 2 }}
-        onClick={() => setOpenCreateDialog(true)}
       >
         Thêm Chủ Đề
       </Button>
@@ -70,39 +116,20 @@ const TopicDashboard = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.isArray(forumList) && forumList.length > 0 ? (
+            {forumList.length > 0 ? (
               forumList.map((topic, index) => (
-                <TableRow key={topic._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{topic.name}</TableCell>
-                  <TableCell>{topic.description || 'Không có mô tả'}</TableCell>
-                  <TableCell>
-                    {new Date(topic.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => {
-                        setSelectedTopic(topic)
-                        setUpdateDialogOpen(true)
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-
-                    <IconButton
-                      color="error"
-                      onClick={() => setDeleteConfirm(topic._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                <TopicRow
+                  key={topic._id}
+                  topic={topic}
+                  index={index}
+                  onEdit={handleEdit}
+                  onDelete={(id) => toggleDialog('deleteConfirm', id)}
+                />
               ))
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  <Typography>❌ Không có chủ đề nào.</Typography>
+                  ❌ Không có chủ đề nào
                 </TableCell>
               </TableRow>
             )}
@@ -111,32 +138,34 @@ const TopicDashboard = () => {
       </TableContainer>
 
       <CreateTopicForum
-        open={openCreateDialog}
-        onClose={() => setOpenCreateDialog(false)}
-        onTopicCreated={(newTopic) => console.log('Chủ đề mới:', newTopic)}
+        open={dialogState.createOpen}
+        onClose={() => toggleDialog('createOpen', false)}
+        onTopicCreated={handleTopicCreated}
       />
 
       <Dialog
-        open={Boolean(deleteConfirm)}
-        onClose={() => setDeleteConfirm(null)}
+        open={!!dialogState.deleteConfirm}
+        onClose={() => toggleDialog('deleteConfirm', null)}
       >
         <DialogTitle>Xác nhận xóa</DialogTitle>
-        <DialogContent>
-          Bạn có chắc chắn muốn xóa chủ đề này không?
-        </DialogContent>
+        <DialogContent>Bạn có chắc chắn muốn xóa chủ đề này?</DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirm(null)} color="secondary">
+          <Button onClick={() => toggleDialog('deleteConfirm', null)}>
             Hủy
           </Button>
-          <Button onClick={() => handleDelete(deleteConfirm)} color="error">
+          <Button
+            color="error"
+            onClick={() => handleDelete(dialogState.deleteConfirm)}
+          >
             Xóa
           </Button>
         </DialogActions>
       </Dialog>
+
       <UpdateTopic
-        open={updateDialogOpen}
-        onClose={() => setUpdateDialogOpen(false)}
-        topic={selectedTopic}
+        open={dialogState.updateOpen}
+        onClose={() => toggleDialog('updateOpen', false)}
+        topic={dialogState.selectedTopic}
       />
     </Container>
   )
