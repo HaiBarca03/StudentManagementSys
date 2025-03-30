@@ -6,6 +6,7 @@ const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 const Routes = require('./routes/route.js')
 const newsRoutes = require('./routes/newsRouter.js')
+const { getAllTopics } = require('./controllers/newsController');
 
 const PORT = process.env.PORT || 5000
 const app = express()
@@ -17,7 +18,7 @@ app.use(bodyParser.json({ limit: '10mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.json({ limit: '10mb' }))
 app.use(cors())
-
+app.get('/api/topics', getAllTopics);
 // ✅ Kiểm tra body có được nhận không
 app.use((req, res, next) => {
   console.log(`📥 Received request: ${req.method} ${req.url}`)

@@ -1,44 +1,96 @@
     //newsController.js
-    const News = require('../models/newsModel');
+    const News = require('../models/newSchema');
+    const Topic = require('../models/topicSchema');
     const fs = require('fs');
     const cloudinary = require('../config/cloudinaryConfig');
     const slugify = require('slugify');
-
-    // Lấy bài viết theo trang
+    
     const getAllNews = async (req, res) => {
         try {
             let { page, limit, approved } = req.query;
             page = parseInt(page) || 1;
             limit = parseInt(limit) || 5;
-            const approvedFilter = approved === 'false' ? false : true; // Lọc theo trạng thái duyệt
-
+            const approvedFilter = approved === 'false' ? false : true;
+    
             const totalNews = await News.countDocuments({ approved: approvedFilter });
             const totalPages = Math.ceil(totalNews / limit);
-
+    
             const news = await News.find({ approved: approvedFilter })
-                .sort({ createdAt: -1 })
-                .skip((page - 1) * limit)
-                .limit(limit);
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+          
+            .populate('userId', 'name')
+            
+            .populate({
+                path: 'topicId',
+                select: 'name description'
+            })
+            .select("title summary thumbnail userId topicId createdAt likes comments shares")
+            .lean();
 
+            // Xử lý dữ liệu trả về
+            news.forEach((item) => {
+                if (!item.userId) {
+                // Trường hợp userId không populate được hoặc null
+                item.userId = { _id: item.userId || null, name: 'Unknown User' };
+                item.userRef = item.userType || null;
+                } else {
+                // Trường hợp userId populate thành công
+                item.userId = {
+                    _id: item.userId._id,
+                    name: item.userId.name || 'Unknown User',
+                };
+                item.userRef = item.userType || null;
+                }
+            });
             res.status(200).json({ page, totalPages, news });
         } catch (error) {
             console.error("Lỗi khi lấy danh sách bài viết:", error);
             res.status(500).json({ error: 'Lỗi server khi lấy danh sách bài viết' });
         }
     };
-
-    // Lấy bài viết theo ID
-    const getNewsById = async (req, res) => {
-        try {
-            const newsItem = await News.findById(req.params.id);
-            if (!newsItem) return res.status(404).json({ error: 'Không tìm thấy bài viết' });
-
-            res.status(200).json(newsItem);
-        } catch (error) {
-            console.error("Lỗi khi lấy bài viết:", error);
-            res.status(500).json({ error: 'Lỗi server khi lấy bài viết' });
-        }
-    };
+    
+    
+ // Lấy chi tiết bài viết theo ID
+const getNewsById = async (req, res) => {
+    try {
+      const newsItem = await News.findById(req.params.id)
+        .populate({
+          path: 'userId',
+          select: 'name username avatar email'
+        })
+        .populate({
+          path: 'topicId',
+          select: 'name description'
+        })
+        .lean();
+  
+      if (!newsItem) return res.status(404).json({ error: 'Không tìm thấy bài viết' });
+  
+      // Xử lý userId
+      if (!newsItem.userId) {
+        newsItem.userId = { _id: null, name: 'Unknown User' };
+      } else {
+        newsItem.userId = {
+          _id: newsItem.userId._id,
+          name: newsItem.userId.name || 'Unknown User',
+          username: newsItem.userId.username || '',
+          avatar: newsItem.userId.avatar || '',
+          email: newsItem.userId.email || ''
+        };
+      }
+      newsItem.userRef = newsItem.userType || null;
+  
+      // Log để kiểm tra dữ liệu
+      console.log('News item:', JSON.stringify(newsItem, null, 2));
+  
+      res.status(200).json(newsItem);
+    } catch (error) {
+      console.error('Lỗi khi lấy chi tiết bài viết:', error);
+      res.status(500).json({ error: 'Lỗi server khi lấy chi tiết bài viết' });
+    }
+  };
 
     // Duyệt bài viết (Admin)
     const approveNews = async (req, res) => {
@@ -93,10 +145,24 @@
         console.log('📦 Request body:', req.body);
         console.log('📎 Files:', req.files);
 
-        const { title, summary, content, userId, userType, published } = req.body;
+        const { title, summary, content, userId, userType, topicId, published } = req.body;
 
-        if (!title || !summary || !content || !userId || !userType) {
+        if (!title || !summary || !content || !userId || !userType || !topicId) {
             return res.status(400).json({ error: "Thiếu dữ liệu bắt buộc" });
+        }
+
+        let validTopicId = topicId;
+        if (!topicId || topicId.trim() === '') {
+            // Nếu không có topicId, tự động tạo chủ đề mới
+            const newTopic = new Topic({ name: title }); // Hoặc đặt tên theo logic riêng
+            const savedTopic = await newTopic.save();
+            validTopicId = savedTopic._id;
+        } else {
+            // Kiểm tra xem topicId có tồn tại không
+            const existingTopic = await Topic.findById(topicId);
+            if (!existingTopic) {
+                return res.status(400).json({ error: "Chủ đề không hợp lệ" });
+            }
         }
 
         let thumbnailData = null;
@@ -143,6 +209,7 @@
             images,
             userId,
             userType,
+            topicId: validTopicId,
             published: published === 'true',
             approved: false
         });
@@ -158,4 +225,17 @@
         res.status(500).json({ message: "Lỗi khi tạo bài viết", error: error.message });
     }
 };
-module.exports = { getAllNews, getNewsById, createNews, approveNews };
+const getAllTopics = async (req, res) => {
+    try {
+      const topics = await Topic.find().select('name description');
+      console.log('Topics from DB:', topics); // Kiểm tra dữ liệu từ DB
+      if (!topics.length) {
+        console.log('No topics found in database');
+      }
+      res.status(200).json(topics);
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách chủ đề:', error);
+      res.status(500).json({ error: 'Lỗi server khi lấy danh sách chủ đề' });
+    }
+  };
+module.exports = { getAllNews, getNewsById, createNews, approveNews,getAllTopics };
