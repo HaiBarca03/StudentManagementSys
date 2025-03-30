@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const dbConnect = require('./config/db.config')
@@ -29,7 +29,6 @@ dbConnect()
 
 // ✅ Routes
 app.use('/', Routes)
-app.use('/api/news', newsRoutes)
 
 app.listen(PORT, () => {
   console.log(`🚀 Server started at port ${PORT}`)
