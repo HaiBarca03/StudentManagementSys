@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   Card,
@@ -8,133 +7,90 @@ import {
   Typography,
   Avatar,
   Chip,
-  IconButton,
-} from "@mui/material";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import ShareIcon from "@mui/icons-material/Share";
+  IconButton
+} from '@mui/material'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
+import ShareIcon from '@mui/icons-material/Share'
 
-const API_URL = "http://localhost:5000/api/news";
-const USER_API_URL = "http://localhost:5000/api/users"; // API lấy thông tin người dùng
+const posts = [
+  {
+    id: '67de95f4c1129f45f0d60386',
+    author: 'Punit Bhatia',
+    title: '3 steps for data transfers according to GDPR',
+    date: '31 Aug, 2018',
+    excerpt:
+      'The EU General Data Protection Regulation (GDPR) is a significant legislation in the field of personal data privacy...',
+    tags: ['GDPR', 'Knowledge', 'Course', 'Online'],
+    comments: 30,
+    likes: 51,
+    shares: 16
+  },
+  {
+    id: 2,
+    author: 'Punit Bhatia',
+    title: 'Understanding the Lead Supervisory Authority concept in GDPR',
+    date: '31 Aug, 2018',
+    excerpt:
+      'This article focuses on a new instrument which could be defined as half audit and half project management...',
+    comments: 80,
+    likes: 51,
+    shares: 16
+  }
+]
 
 const MainForum = () => {
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const [users, setUsers] = useState({}); // Lưu trữ thông tin người dùng theo userId
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(API_URL);
-        console.log("Dữ liệu từ API:", response.data.news); // Kiểm tra dữ liệu trả về
-        if (Array.isArray(response.data.news)) {
-          setPosts(response.data.news);
-        } else {
-          console.error("Dữ liệu trả về không hợp lệ:", response.data);
-          setPosts([]);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải bài viết:", error);
-        setError("Không thể tải bài viết. Vui lòng thử lại.");
-        setPosts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchPosts();
-  }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const uniqueUserIds = [...new Set(posts.map((post) => post.userId))];
-
-        const userResponses = await Promise.all(
-          uniqueUserIds.map((id) =>
-            axios.get(`${USER_API_URL}/${id}`).catch((err) => ({
-              data: { username: "Người dùng ẩn danh" },
-            }))
-          )
-        );
-
-        const userData = uniqueUserIds.reduce((acc, id, index) => {
-          acc[id] = userResponses[index].data.username;
-          return acc;
-        }, {});
-
-        setUsers(userData);
-      } catch (error) {
-        console.error("Lỗi khi lấy thông tin người dùng:", error);
-      }
-    };
-
-    if (posts.length > 0) {
-      fetchUsers();
-    }
-  }, [posts]);
+  const navigate = useNavigate()
 
   const handleClick = (id) => {
-    navigate(`/forum/post/${id}`);
-  };
-  
-  if (loading) {
-    return <Typography>Đang tải dữ liệu...</Typography>;
+    navigate(`/forum/post/${id}`)
   }
 
-  if (error) {
-    return <Typography color="error">{error}</Typography>;
-  }
-
-return (
-  <>
-    {posts.length > 0 ? (
-      posts.map((post) => {
-        console.log("Post data:", post); // Kiểm tra dữ liệu bài viết
-        return (
-          <Card
-            key={post._id} // Đảm bảo key dùng _id thay vì id
-            sx={{ marginBottom: 2, padding: 2, cursor: "pointer" }}
-            onClick={() => handleClick(post._id)} // Sửa id thành _id nếu cần
-          >
-            <CardContent>
-              <Box display="flex" alignItems="center" marginBottom={1}>
-                <Avatar src={post.thumbnail?.url || ""} sx={{ marginRight: 1 }}>P</Avatar>
-                <Typography variant="body2">
-                  {users[post.userId?._id] || "Đang tải..."} -{" "}
-                  {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "N/A"}
-                </Typography>
-              </Box>
-              <Typography variant="h6" gutterBottom>{post.title || "Không có tiêu đề"}</Typography>
-              <Typography variant="body2" color="textSecondary" paragraph>
-                {post.summary || "Không có mô tả"}
+  return (
+    <>
+      {posts.map((post) => (
+        <Card
+          key={post.id}
+          sx={{ marginBottom: 2, padding: 2, cursor: 'pointer' }}
+          onClick={() => handleClick(post.id)}
+        >
+          <CardContent>
+            <Box display="flex" alignItems="center" marginBottom={1}>
+              <Avatar sx={{ marginRight: 1 }}>P</Avatar>
+              <Typography variant="body2">
+                {post.author} - {post.date}
               </Typography>
-              <Box display="flex" gap={1} marginBottom={1}>
-                {Array.isArray(post.tags)
-                  ? post.tags.map((tag, index) => (
-                      <Chip key={index} label={tag} color="success" size="small" />
-                    ))
-                  : null}
-              </Box>
-              <Box display="flex" alignItems="center">
-                <IconButton><ChatBubbleOutlineIcon /></IconButton>
-                <Typography variant="body2">{post.comments || 0}</Typography>
-                <IconButton><ThumbUpAltIcon /></IconButton>
-                <Typography variant="body2">{post.likes || 0}</Typography>
-                <IconButton><ShareIcon /></IconButton>
-                <Typography variant="body2">{post.shares || 0}</Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        );
-      })
-    ) : (
-      <Typography>Không có bài viết nào.</Typography>
-    )}
-  </>
-);
-};
+            </Box>
+            <Typography variant="h6" gutterBottom>
+              {post.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" paragraph>
+              {post.excerpt}
+            </Typography>
+            <Box display="flex" gap={1} marginBottom={1}>
+              {post.tags?.map((tag, index) => (
+                <Chip key={index} label={tag} color="success" size="small" />
+              ))}
+            </Box>
+            <Box display="flex" alignItems="center">
+              <IconButton>
+                <ChatBubbleOutlineIcon />
+              </IconButton>
+              <Typography variant="body2">{post.comments}</Typography>
+              <IconButton>
+                <ThumbUpAltIcon />
+              </IconButton>
+              <Typography variant="body2">{post.likes}</Typography>
+              <IconButton>
+                <ShareIcon />
+              </IconButton>
+              <Typography variant="body2">{post.shares}</Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      ))}
+    </>
+  )
+}
 
-export default MainForum;
+export default MainForum

@@ -70,12 +70,8 @@ const newsSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: ['student', 'teacher', 'admin'],
+      enum: ['Student', 'Teacher', 'Admin'],
       required: true
-    },
-    approved: { 
-      type: Boolean, 
-      default: false 
     },
     topicId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -85,7 +81,6 @@ const newsSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
 newsSchema.virtual('userRef').get(function () {
   const typeToCollection = {
     Student: 'student',
