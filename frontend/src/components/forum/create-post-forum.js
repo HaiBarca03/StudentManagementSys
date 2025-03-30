@@ -428,7 +428,7 @@ const CreateNews = () => {
           disabled={isUploading || formik.isSubmitting}
           sx={{ py: 1.5, fontSize: '1rem', bgcolor: '#1976d2', '&:hover': { bgcolor: '#115293' } }}
         >
-          {isUploading ? 'Đang tải lên...' : 'Đăng bài viết'}
+          {isUploading ? 'Đang tải lên...' : 'Đăng bài viết...'}
         </Button>
       </Box>
 
