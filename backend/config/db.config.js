@@ -1,19 +1,17 @@
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
 
-dotenv.config()
-
-const dbConnect = async () => {
+const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000
     })
     console.log('✅ Database connected successfully')
-  } catch (error) {
-    console.error('❌ Database connection failed:', error.message)
+  } catch (err) {
+    console.error('❌ Database connection failed:', err)
     process.exit(1)
   }
 }
 
-module.exports = dbConnect
+module.exports = connectDB
