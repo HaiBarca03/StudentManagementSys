@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, Typography, Avatar, Chip, CircularProgress } from "@mui/material";
 
-const API_URL = "http://localhost:5000/api/news";
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
 
 const NewsDetail = () => {
   const { id } = useParams(); // Lấy id từ URL
