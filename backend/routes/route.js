@@ -19,7 +19,7 @@ router.use('/', complainRouter)
 router.use('/', teacherRouter)
 router.use('/', classRouter)
 router.use('/', adminRouter)
-router.use('/', newsRouter)
+router.use('/api/news', newsRouter)
 router.use('/comment', commentRouter)
 router.use('/topic', topicRouter)
 
