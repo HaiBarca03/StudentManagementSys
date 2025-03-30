@@ -32,6 +32,13 @@ const commentSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'userRef'
+      }
+    ],
     newsId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

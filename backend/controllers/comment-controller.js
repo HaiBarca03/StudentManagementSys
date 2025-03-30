@@ -225,6 +225,59 @@ const deleteComment = async (req, res) => {
   }
 }
 
+const like = async (req, res) => {
+  try {
+    const { commentId } = req.params
+    const userId = req.user.id
+
+    if (!userId) {
+      return res.status(400).json({ message: 'userId is required' })
+    }
+
+    const comment = await Comment.findById(commentId)
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' })
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId)
+    const hasLiked = comment.likedBy.some((id) => id.equals(userObjectId))
+
+    let updatedComment
+    if (hasLiked) {
+      updatedComment = await Comment.findByIdAndUpdate(
+        commentId,
+        {
+          $pull: { likedBy: userObjectId },
+          $inc: { likes: -1 }
+        },
+        { new: true }
+      )
+    } else {
+      updatedComment = await Comment.findByIdAndUpdate(
+        commentId,
+        {
+          $addToSet: { likedBy: userObjectId },
+          $inc: { likes: 1 }
+        },
+        { new: true }
+      )
+    }
+
+    if (updatedComment.likes !== updatedComment.likedBy.length) {
+      updatedComment.likes = updatedComment.likedBy.length
+      await updatedComment.save()
+    }
+
+    return res.json({
+      message: hasLiked ? 'Unliked successfully' : 'Liked successfully',
+      likes: updatedComment.likes,
+      likedBy: updatedComment.likedBy
+    })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   createComment,
   getCommentsByNews,
@@ -232,5 +285,6 @@ module.exports = {
   getCommentsByParentComment,
   updateComment,
   deleteCommentImage,
-  deleteComment
+  deleteComment,
+  like
 }

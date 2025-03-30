@@ -12,12 +12,13 @@ const extractToken = (req) => {
   return authHeader.split(' ')[1]
 }
 
-
 const authorizeTeacher = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
+      return res
+        .status(401)
+        .json({ success: false, message: 'Thiếu token truy cập.' })
     }
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -47,46 +48,58 @@ const authorizeTeacher = async (req, res, next) => {
 
 const authorizeAdmin = async (req, res, next) => {
   try {
-    const authHeader = req.headers.token;
+    const authHeader = req.headers.token
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
-  }
-    console.log('authHeader', authHeader);
-    const token = authHeader && authHeader.split(' ')[1];
+      return res
+        .status(401)
+        .json({ success: false, message: 'Thiếu token truy cập.' })
+    }
+    console.log('authHeader', authHeader)
+    const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {
       return res.status(401).json({
         success: false,
         message: 'Thiếu token truy cập. Xác thực bị từ chối.'
-      });
+      })
     }
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN)
 
-    const user = await AdminSchema.findById(decoded.id);
+    const user = await AdminSchema.findById(decoded.id)
     if (!user) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Không tìm thấy người dùng' })
     }
 
     // Kiểm tra quyền duyệt bài viết
-    if (!Array.isArray(user.permissions) || !user.permissions.includes('approve_posts')) {
-      return res.status(403).json({ success: false, message: 'Quyền bị từ chối. Admin không thể phê duyệt bài viết.' });
+    if (
+      !Array.isArray(user.permissions) ||
+      !user.permissions.includes('approve_posts')
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'Quyền bị từ chối. Admin không thể phê duyệt bài viết.'
+      })
     }
-    req.user = user;
-    next();
+    req.user = user
+    next()
   } catch (error) {
-    console.error('Lỗi xác thực:', error.message);
+    console.error('Lỗi xác thực:', error.message)
     return res.status(401).json({
       success: false,
       message: 'Token truy cập không hợp lệ. Xác thực bị từ chối.'
-    });
+    })
   }
-};
+}
 
 const authorizeStudent = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: 'Thiếu token truy cập.' });
+      return res
+        .status(401)
+        .json({ success: false, message: 'Thiếu token truy cập.' })
     }
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -118,7 +131,10 @@ const authorizeUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.token
     if (!authHeader) {
-      return res.status(401).json({ success: false, message: 'Access token missing. Authorization denied.' })
+      return res.status(401).json({
+        success: false,
+        message: 'Access token missing. Authorization denied.'
+      })
     }
 
     const token = authHeader.split(' ')[1]
@@ -135,7 +151,9 @@ const authorizeUser = async (req, res, next) => {
         user = await AdminSchema.findById(decoded.id)
         break
       default:
-        return res.status(403).json({ success: false, message: 'Invalid user type' })
+        return res
+          .status(403)
+          .json({ success: false, message: 'Invalid user type' })
     }
 
     if (!user) {
@@ -146,7 +164,10 @@ const authorizeUser = async (req, res, next) => {
     next()
   } catch (error) {
     console.error('Authorization error:', error.message)
-    return res.status(401).json({ success: false, message: 'Invalid access token. Authorization denied.' })
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid access token. Authorization denied.'
+    })
   }
 }
 
