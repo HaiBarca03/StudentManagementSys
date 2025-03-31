@@ -133,7 +133,6 @@ const createNews = async (req, res) => {
   try {
     const { title, summary, content, userId, userType, topicId, published } =
       req.body
-
     if (!title || !summary || !content || !userId || !userType || !topicId) {
       return res.status(400).json({ error: 'Thiếu dữ liệu bắt buộc' })
     }
