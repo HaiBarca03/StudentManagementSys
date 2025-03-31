@@ -47,7 +47,6 @@ export const registerUser = (fields, role) => async (dispatch) => {
         headers: { 'Content-Type': 'application/json' }
       }
     )
-    console.log('result', result)
     if (result.data.schoolName) {
       dispatch(authSuccess(result.data))
     } else if (result.data.school) {
