@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCommentByNews } from "../../redux/forumRelated/commentHandle";
 
 const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`;
-const USER_API_URL = `${process.env.REACT_APP_BASE_URL}/api/users`;
+const USER_API_URL = `${process.env.REACT_APP_BASE_URL}/user`;
 
 const ForumPostDetailPage = () => {
   const { id } = useParams();
