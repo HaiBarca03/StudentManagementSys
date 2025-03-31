@@ -11,7 +11,7 @@ const SeeComplains = () => {
     (state) => state.complain
   )
   const { currentUser } = useSelector((state) => state.user)
-
+  console.log('complainsList', complainsList)
   useEffect(() => {
     dispatch(getAllComplains(currentUser._id, 'Complain'))
   }, [currentUser._id, dispatch])
@@ -21,9 +21,9 @@ const SeeComplains = () => {
   }
 
   const complainColumns = [
-    { id: 'user', label: 'User', minWidth: 170 },
-    { id: 'complaint', label: 'Complaint', minWidth: 100 },
-    { id: 'date', label: 'Date', minWidth: 170 }
+    { id: 'user', label: 'Tài khoản', minWidth: 170 },
+    { id: 'complaint', label: 'Ý kiến', minWidth: 100 },
+    { id: 'date', label: 'Ngày', minWidth: 170 }
   ]
 
   const complainRows =
