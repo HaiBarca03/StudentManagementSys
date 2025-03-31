@@ -66,14 +66,24 @@ const HeadForum = () => {
         </Button>
 
         {currentUser?.role === 'Admin' && (
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ mr: 2 }}
-            onClick={() => navigate('/forum/topic/dashboard')}
-          >
-            Chủ đề
-          </Button>
+            <>
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ mr: 2 }}
+              onClick={() => navigate('/forum/topic/dashboard')}
+            >
+              Chủ đề
+            </Button>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ mr: 2 }}
+              onClick={() => navigate('/forum/pending/posts')}
+            >
+              Duyệt bài
+            </Button>
+          </>
         )}
 
         <Avatar src="https://i.pravatar.cc/40" />
