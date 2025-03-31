@@ -1,26 +1,27 @@
 var bcrypt = require('bcryptjs')
+const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
-const cloudinary = require('../config/cloudinaryConfig');
+const cloudinary = require('../config/cloudinaryConfig')
 require('dotenv').config()
 const Student = require('../models/studentSchema.js')
 const Subject = require('../models/subjectSchema.js')
 
 const studentRegister = async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(req.body.password, salt);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPass = await bcrypt.hash(req.body.password, salt)
 
     const existingStudent = await Student.findOne({
       rollNum: req.body.rollNum,
       school: req.body.adminID,
       sclassName: req.body.sclassName
-    });
+    })
 
     if (existingStudent) {
-      return res.status(400).json({ message: 'Roll Number already exists' });
+      return res.status(400).json({ message: 'Roll Number already exists' })
     }
 
-    const { password, adminID, ...otherData } = req.body;
+    const { password, adminID, ...otherData } = req.body
     const studentData = {
       ...otherData,
       password: hashedPass,
@@ -28,20 +29,20 @@ const studentRegister = async (req, res) => {
       role: 'Student',
       examResult: req.body.examResult || [],
       attendance: req.body.attendance || []
-    };
+    }
 
-    const student = new Student(studentData);
-    const result = await student.save();
+    const student = new Student(studentData)
+    const result = await student.save()
 
     res.status(201).json({
       message: 'Student registered successfully',
       student: { ...result.toObject(), password: undefined }
-    });
+    })
   } catch (err) {
-    console.error('Error registering student:', err);
-    res.status(500).json({ message: 'Internal server error', error: err });
+    console.error('Error registering student:', err)
+    res.status(500).json({ message: 'Internal server error', error: err })
   }
-};
+}
 
 const studentLogIn = async (req, res) => {
   try {
@@ -114,7 +115,7 @@ const getStudentDetail = async (req, res) => {
       .populate('sclassName', 'sclassName')
       .populate('examResult.subName', 'subName')
       .populate('attendance.subName', 'subName sessions')
-      .select('-password');
+      .select('-password')
     if (student) {
       student.password = undefined
       res.send(student)
@@ -164,43 +165,46 @@ const deleteStudentsByClass = async (req, res) => {
 const updateStudent = async (req, res) => {
   try {
     if (req.body.password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
+      const salt = await bcrypt.genSalt(10)
+      req.body.password = await bcrypt.hash(req.body.password, salt)
     }
 
-    let imageData = [];
+    let imageData = []
 
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const uploadedImage = await cloudinary.uploader.upload(file.path, {
           folder: 'student-managements/students'
-        });
-        imageData.push({ public_id: uploadedImage.public_id, url: uploadedImage.secure_url });
+        })
+        imageData.push({
+          public_id: uploadedImage.public_id,
+          url: uploadedImage.secure_url
+        })
       }
     }
 
-    let updateData = { ...req.body };
+    let updateData = { ...req.body }
     if (imageData.length > 0) {
-      updateData.images = imageData;
+      updateData.images = imageData
     }
 
     let result = await Student.findByIdAndUpdate(
       req.params.id,
       { $set: updateData },
       { new: true }
-    );
+    )
 
     if (!result) {
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({ message: 'Student not found' })
     }
 
-    result.password = undefined;
-    res.status(200).json(result);
+    result.password = undefined
+    res.status(200).json(result)
   } catch (error) {
-    console.error("Error updating student:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    console.error('Error updating student:', error)
+    res.status(500).json({ message: 'Internal server error', error })
   }
-};
+}
 
 const updateExamResult = async (req, res) => {
   const { subName, marksObtained } = req.body
@@ -209,23 +213,31 @@ const updateExamResult = async (req, res) => {
     const student = await Student.findById(req.params.id)
 
     if (!student) {
-      return res.send({ message: 'Student not found' })
+      return res.status(404).send({ message: 'Student not found' })
     }
 
-    const existingResult = student.examResult.find(
-      (result) => result.subName.toString() === subName
+    const subId = new mongoose.Types.ObjectId(subName)
+
+    const existingResult = student.examResult.find((result) =>
+      result.subName.equals(subId)
     )
 
     if (existingResult) {
       existingResult.marksObtained = marksObtained
     } else {
-      student.examResult.push({ subName, marksObtained })
+      student.examResult.push({ subName: subId, marksObtained })
     }
 
-    const result = await student.save()
-    return res.send(result)
+    await Student.findByIdAndUpdate(
+      req.params.id,
+      { examResult: student.examResult },
+      { new: true, runValidators: false }
+    )
+
+    return res.send({ message: 'Exam result updated successfully' })
   } catch (error) {
-    res.status(500).json(error)
+    console.error(error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 
@@ -234,38 +246,49 @@ const studentAttendance = async (req, res) => {
 
   try {
     const student = await Student.findById(req.params.id)
-
     if (!student) {
-      return res.send({ message: 'Student not found' })
+      return res.status(404).send({ message: 'Student not found' })
     }
 
     const subject = await Subject.findById(subName)
+    if (!subject) {
+      return res.status(404).send({ message: 'Subject not found' })
+    }
+
+    const subId = new mongoose.Types.ObjectId(subName)
 
     const existingAttendance = student.attendance.find(
       (a) =>
-        a.date.toDateString() === new Date(date).toDateString() &&
-        a.subName.toString() === subName
+        new Date(a.date).toDateString() === new Date(date).toDateString() &&
+        a.subName.equals(subId)
     )
 
     if (existingAttendance) {
       existingAttendance.status = status
     } else {
-      // Check if the student has already attended the maximum number of sessions
-      const attendedSessions = student.attendance.filter(
-        (a) => a.subName.toString() === subName
+      const attendedSessions = student.attendance.filter((a) =>
+        a.subName.equals(subId)
       ).length
 
       if (attendedSessions >= subject.sessions) {
-        return res.send({ message: 'Maximum attendance limit reached' })
+        return res
+          .status(400)
+          .send({ message: 'Maximum attendance limit reached' })
       }
 
-      student.attendance.push({ date, status, subName })
+      student.attendance.push({ date, status, subName: subId })
     }
 
-    const result = await student.save()
-    return res.send(result)
+    await Student.findByIdAndUpdate(
+      req.params.id,
+      { attendance: student.attendance },
+      { new: true, runValidators: false }
+    )
+
+    return res.send({ message: 'Attendance updated successfully' })
   } catch (error) {
-    res.status(500).json(error)
+    console.error(error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 

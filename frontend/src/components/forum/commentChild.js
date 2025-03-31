@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import io from 'socket.io-client'
 import {
   Box,
   Typography,
@@ -23,6 +24,8 @@ import {
   updateComment
 } from '../../redux/forumRelated/commentHandle'
 import { useSelector } from 'react-redux'
+
+const SOCKET_URL = process.env.REACT_APP_BASE_URL // URL của server WebSocket
 
 const CommentChild = ({
   comment,
@@ -51,16 +54,31 @@ const CommentChild = ({
   const [remainingImages, setRemainingImages] = useState(comment.images)
   const hasChildren = comment.children && comment.children.length > 0
 
+  // Tích hợp WebSocket để lắng nghe bình luận mới
+  useEffect(() => {
+    const socket = io(SOCKET_URL)
+
+    socket.on(`new-comment-${postId}`, (data) => {
+      console.log('Có bình luận mới:', data)
+      dispatch(getCommentByNews(postId)) // Tải lại danh sách bình luận
+    })
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [postId, dispatch])
+
   const toggleExpand = () => {
     setIsExpanded((prev) => !prev)
   }
-  console.log('hasLiked', hasLiked)
+
   const handleLike = async () => {
     const commentId = comment._id
     try {
       await dispatch(like(commentId))
-      setHasLiked(comment.likedBy.some((id) => id.toString() === userId))
-      dispatch(getCommentByNews(postId))
+      setLikes(hasLiked ? likes - 1 : likes + 1) // Cập nhật UI ngay lập tức
+      setHasLiked(!hasLiked)
+      dispatch(getCommentByNews(postId)) // Đồng bộ dữ liệu từ server
     } catch (error) {
       console.error('Error liking comment:', error)
     }
@@ -69,6 +87,7 @@ const CommentChild = ({
   const handleReplyContentChange = (e) => {
     setReplyContent(e.target.value)
   }
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files)
     if (files.length > 0) {
@@ -100,13 +119,15 @@ const CommentChild = ({
     const file = e.target.files[0]
     if (file) setNewFile(file)
   }
+
   const handleReplySubmit = async () => {
-    if (!replyContent.trim()) return
+    if (!replyContent.trim() && newImages.length === 0) return
 
     const formData = new FormData()
     formData.append('content', replyContent)
     formData.append('newsId', postId)
     formData.append('parentId', comment._id)
+    newImages.forEach((file) => formData.append('images', file))
 
     try {
       await onCreateComment(formData)
@@ -128,7 +149,7 @@ const CommentChild = ({
     setAnchorEl(null)
   }
 
-  const handleEditComment = (id) => {
+  const handleEditComment = () => {
     setIsEditing(true)
     handleMenuClose()
   }
@@ -136,9 +157,10 @@ const CommentChild = ({
   const handleSaveEdit = async () => {
     const formData = new FormData()
     const id = comment._id
-    formData.append('_id', comment._id)
+    formData.append('_id', id)
     formData.append('content', editContent)
-    editImages.forEach((file) => formData.append('images', file))
+    editImages.forAtch((file) => formData.append('images', file))
+
     try {
       await dispatch(updateComment(id, formData))
       dispatch(getCommentByNews(postId))
@@ -162,6 +184,7 @@ const CommentChild = ({
   const handleDeleteComment = async (id) => {
     try {
       await onDeleteComment(id)
+      dispatch(getCommentByNews(postId)) // Cập nhật lại danh sách sau khi xóa
     } catch (error) {
       console.error('Error deleting comment:', error)
     }
@@ -193,7 +216,7 @@ const CommentChild = ({
         }}
       >
         <Avatar sx={{ width: 32, height: 32, fontSize: '1rem' }}>
-          {comment.userId.name[0]}
+          {comment.userId?.name?.[0] || 'U'}
         </Avatar>
 
         <Box
@@ -207,18 +230,13 @@ const CommentChild = ({
         >
           <IconButton
             onClick={handleMenuClick}
-            sx={{
-              position: 'absolute',
-              top: 4,
-              right: 4,
-              p: 0.5
-            }}
+            sx={{ position: 'absolute', top: 4, right: 4, p: 0.5 }}
           >
             <MoreVertIcon fontSize="small" />
           </IconButton>
 
           <Typography variant="body2" fontWeight="bold">
-            {comment.userId.name}
+            {comment.userId?.name || 'Người dùng ẩn danh'}
           </Typography>
           {isEditing ? (
             <Box>
@@ -229,7 +247,6 @@ const CommentChild = ({
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
               />
-              {/* Hiển thị ảnh cũ với nút xóa */}
               {remainingImages.length > 0 && (
                 <Box mt={1} display="flex" gap={1} flexWrap="wrap">
                   {remainingImages.map((img) => (
@@ -260,7 +277,6 @@ const CommentChild = ({
                   ))}
                 </Box>
               )}
-              {/* Thêm ảnh mới */}
               <Box mt={1} display="flex" alignItems="center" gap={1}>
                 <IconButton component="label">
                   <ImageIcon />
@@ -283,7 +299,6 @@ const CommentChild = ({
                   Hủy
                 </Button>
               </Box>
-              {/* Xem trước ảnh mới */}
               {editPreviewImages.length > 0 && (
                 <Box mt={1} display="flex" gap={1} flexWrap="wrap">
                   {editPreviewImages.map((preview, index) => (
@@ -306,7 +321,7 @@ const CommentChild = ({
             <Typography variant="body2">{comment.content}</Typography>
           )}
 
-          {comment.images.length > 0 && (
+          {comment.images?.length > 0 && (
             <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
               {comment.images.map((img) => (
                 <Box
@@ -418,6 +433,30 @@ const CommentChild = ({
           >
             Hủy
           </Button>
+        </Box>
+      )}
+
+      {previewImages.length > 0 && (
+        <Box
+          mt={1}
+          ml={`${depth * 24 + 40}px`}
+          display="flex"
+          gap={1}
+          flexWrap="wrap"
+        >
+          {previewImages.map((preview, index) => (
+            <img
+              key={index}
+              src={preview}
+              alt="Preview"
+              style={{
+                width: '100px',
+                height: '100px',
+                objectFit: 'cover',
+                borderRadius: '8px'
+              }}
+            />
+          ))}
         </Box>
       )}
 

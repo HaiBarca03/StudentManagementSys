@@ -1,36 +1,29 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const dbConnect = require('./config/db.config')
-const dotenv = require('dotenv')
+const http = require('http')
 const bodyParser = require('body-parser')
+const dbConnect = require('./config/db.config')
 const Routes = require('./routes/route.js')
 const newsRoutes = require('./routes/newsRouter.js')
-const { getAllTopics } = require('./controllers/newsController');
+const { getAllTopics } = require('./controllers/newsController')
+const { initializeSocket } = require('./config/socket.config')
 
 const PORT = process.env.PORT || 5000
 const app = express()
-
-dotenv.config()
-
-// ✅ Middleware xử lý JSON và URL-encoded body
+const server = http.createServer(app)
+initializeSocket(server)
 app.use(bodyParser.json({ limit: '10mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.json({ limit: '10mb' }))
 app.use(cors())
-app.get('/api/topics', getAllTopics);
-// ✅ Kiểm tra body có được nhận không
-app.use((req, res, next) => {
-  console.log(`📥 Received request: ${req.method} ${req.url}`)
-  console.log('📦 Body:', req.body) // Debug dữ liệu gửi lên
-  next()
-})
+
+app.get('/api/topics', getAllTopics)
 
 dbConnect()
 
-// ✅ Routes
 app.use('/', Routes)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server started at port ${PORT}`)
 })

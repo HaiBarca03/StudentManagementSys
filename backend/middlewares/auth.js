@@ -54,7 +54,6 @@ const authorizeAdmin = async (req, res, next) => {
         .status(401)
         .json({ success: false, message: 'Thiếu token truy cập.' })
     }
-    console.log('authHeader', authHeader)
     const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {

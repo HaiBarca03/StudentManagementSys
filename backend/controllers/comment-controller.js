@@ -1,8 +1,8 @@
 const Comment = require('../models/commentSchema')
 const mongoose = require('mongoose')
 const cloudinary = require('../config/cloudinaryConfig')
-
-//api tạo
+const newSchema = require('../models/newSchema')
+const { getIO } = require('../config/socket.config')
 const createComment = async (req, res) => {
   try {
     const userId = req.user.id
@@ -10,7 +10,6 @@ const createComment = async (req, res) => {
     const { content, newsId, parentId } = req.body
     let newImages = []
 
-    // Xử lý upload ảnh nếu có
     if (req.files && req.files.length > 0) {
       newImages = await Promise.all(
         req.files.map(async (file) => {
@@ -25,14 +24,12 @@ const createComment = async (req, res) => {
       )
     }
 
-    // Kiểm tra: phải có content hoặc ảnh thì mới tạo comment
     if (!content && newImages.length === 0) {
       return res
         .status(400)
         .json({ message: 'Comment must have content or images' })
     }
 
-    // Tạo comment
     const comment = await Comment.create({
       userId,
       userType,
@@ -40,6 +37,13 @@ const createComment = async (req, res) => {
       images: newImages,
       newsId,
       parentId
+    })
+
+    await newSchema.updateOne({ _id: newsId }, { $inc: { comments: 1 } })
+    const io = getIO()
+    io.emit(`new-comment-${newsId}`, {
+      message: 'Có bình luận mới',
+      commentId: comment._id
     })
 
     res.status(201).json(comment)
@@ -51,7 +55,6 @@ const createComment = async (req, res) => {
   }
 }
 
-// Lấy danh sách bình luận theo bài viết (getCommentsByNews)
 const getCommentsByNews = async (req, res) => {
   try {
     const { newsId } = req.params
@@ -101,7 +104,6 @@ const getCommentsByParentComment = async (req, res) => {
   }
 }
 
-// Cập nhật bình luận
 const updateComment = async (req, res) => {
   try {
     const { id } = req.params
@@ -194,7 +196,6 @@ const deleteCommentImage = async (req, res) => {
   }
 }
 
-// Xóa bình luận
 const deleteComment = async (req, res) => {
   try {
     const { id } = req.params

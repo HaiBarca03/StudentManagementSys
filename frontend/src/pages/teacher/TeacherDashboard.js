@@ -26,6 +26,7 @@ import StudentExamMarks from '../admin/studentRelated/StudentExamMarks'
 import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
+import StudentComplain from '../student/StudentComplain'
 
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -86,7 +87,7 @@ const TeacherDashboard = () => {
             <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
             <Route path="/Teacher/profile" element={<TeacherProfile />} />
 
-            <Route path="/Teacher/complain" element={<TeacherComplain />} />
+            <Route path="/Teacher/complain" element={<StudentComplain />} />
 
             <Route path="/Teacher/class" element={<TeacherClassDetails />} />
             <Route

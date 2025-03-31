@@ -65,7 +65,7 @@ const adminLogIn = async (req, res) => {
         schoolName: admin.schoolName
       },
       process.env.ACCESS_TOKEN,
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     )
 
     res.status(200).json({
@@ -85,7 +85,6 @@ const adminLogIn = async (req, res) => {
 
 const getAdminDetail = async (req, res) => {
   const userId = req.user.id
-  console.log('userId', userId)
   try {
     let admin = await Admin.findById(req.params.id)
     if (admin) {
