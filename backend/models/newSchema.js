@@ -49,6 +49,12 @@ const newsSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'userRef'
+      }
+    ],
     // số lượng cmt
     comments: {
       type: Number,
@@ -70,12 +76,12 @@ const newsSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: ['student', 'teacher', 'admin'],
+      enum: ['Student', 'Teacher', 'Admin'],
       required: true
     },
-    approved: { 
-      type: Boolean, 
-      default: false 
+    approved: {
+      type: Boolean,
+      default: false
     },
     topicId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -131,3 +131,27 @@ export const createNews = (data) => async (dispatch) => {
     )
   }
 }
+
+export const likeNews = (newsId) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    const result = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/api/news/${newsId}/like`,
+      null,
+      getAuthConfig(true)
+    )
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}

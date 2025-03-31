@@ -14,15 +14,16 @@ import {
 } from '@mui/material'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined' // Icon khi chưa like
 import ShareIcon from '@mui/icons-material/Share'
 import TrenddingPost from '../../components/forum/trendding-post'
 import NewPosts from '../../components/forum/news-post'
 import CommentPost from '../../components/forum/comment-post'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCommentByNews } from '../../redux/forumRelated/commentHandle'
+import { likeNews } from '../../redux/forumRelated/forumHandle'
 
 const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
-const USER_API_URL = `${process.env.REACT_APP_BASE_URL}/api/users`
 
 const ForumPostDetailPage = () => {
   const { id } = useParams()
@@ -32,31 +33,33 @@ const ForumPostDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showComments, setShowComments] = useState(false)
+  const [likes, setLikes] = useState(0)
+  const [hasLiked, setHasLiked] = useState(false)
   const { commentList } = useSelector((state) => state.comment)
+  const { currentUser } = useSelector((state) => state.user)
 
   useEffect(() => {
     const fetchPostDetails = async () => {
       try {
         setLoading(true)
         setError(null)
+
         const response = await axios.get(`${API_URL}/${id}`)
         console.log('Post data:', response.data)
         setPost(response.data)
+        setLikes(response.data.likes || 0)
+        setHasLiked(response.data.likedBy?.includes(currentUser?._id) || false)
 
-        if (response.data.userId && response.data.userId._id) {
-          try {
-            const userResponse = await axios.get(
-              `${USER_API_URL}/${response.data.userId._id}`
-            )
-            console.log('User Data:', userResponse.data)
-            setUser(userResponse.data)
-          } catch (userError) {
-            console.error('Error fetching user:', userError)
-            setUser({
-              username: 'Người dùng ẩn danh',
-              avatar: ''
-            })
-          }
+        if (response.data?.userId) {
+          setUser({
+            username: response.data.userId.name || 'Người dùng ẩn danh',
+            avatar: response.data.userId.avatar || ''
+          })
+        } else {
+          setUser({
+            username: 'Người dùng ẩn danh',
+            avatar: ''
+          })
         }
       } catch (error) {
         console.error('Error fetching post:', error)
@@ -71,7 +74,25 @@ const ForumPostDetailPage = () => {
       fetchPostDetails()
       dispatch(getCommentByNews(id))
     }
-  }, [id, dispatch])
+  }, [id, dispatch, user?._id])
+
+  const handleToggleComments = () => {
+    setShowComments((prev) => !prev)
+  }
+
+  const handleLike = async () => {
+    try {
+      setHasLiked(!hasLiked)
+      setLikes(hasLiked ? likes - 1 : likes + 1)
+
+      await dispatch(likeNews(id)).unwrap()
+      await axios.get(`${API_URL}/${id}`)
+    } catch (error) {
+      console.error('Error liking post:', error)
+      setHasLiked(hasLiked)
+      setLikes(likes)
+    }
+  }
 
   if (loading) {
     return (
@@ -108,10 +129,6 @@ const ForumPostDetailPage = () => {
     )
   }
 
-  const handleToggleComments = () => {
-    setShowComments((prev) => !prev)
-  }
-
   return (
     <Grid
       container
@@ -128,7 +145,7 @@ const ForumPostDetailPage = () => {
               <Typography variant="body2" sx={{ fontFamily: 'Roboto' }}>
                 {user?.username || 'Người dùng ẩn danh'} -{' '}
                 {post.createdAt
-                  ? new Date(post.createdAt).toLocaleDateString()
+                  ? new Date(post.createdAt).toLocaleDateString('vi-VN')
                   : 'N/A'}
               </Typography>
             </Box>
@@ -153,7 +170,7 @@ const ForumPostDetailPage = () => {
                 >
                   <img
                     src={image.url || image}
-                    alt={`Image ${index + 1}`}
+                    alt={`Hình ảnh ${index + 1}`}
                     style={{
                       maxWidth: '100%',
                       maxHeight: '400px',
@@ -181,22 +198,26 @@ const ForumPostDetailPage = () => {
               <Typography variant="body2" sx={{ fontFamily: 'Roboto', mr: 2 }}>
                 {commentList.length}
               </Typography>
-              <IconButton>
-                <ThumbUpAltIcon />
+              <IconButton onClick={handleLike}>
+                {hasLiked ? (
+                  <ThumbUpAltIcon color="primary" />
+                ) : (
+                  <ThumbUpAltOutlinedIcon />
+                )}
               </IconButton>
               <Typography variant="body2" sx={{ fontFamily: 'Roboto', mr: 2 }}>
-                {post.likes}
+                {likes}
               </Typography>
               <IconButton>
                 <ShareIcon />
               </IconButton>
               <Typography variant="body2" sx={{ fontFamily: 'Roboto' }}>
-                {post.shares}
+                {post.shares || 0}
               </Typography>
             </Box>
           </CardContent>
           {showComments && (
-            <CommentPost comments={commentList} postId={post.id} />
+            <CommentPost comments={commentList} postId={post._id} />
           )}
         </Card>
       </Grid>
