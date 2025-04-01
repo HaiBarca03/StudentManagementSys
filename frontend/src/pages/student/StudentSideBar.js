@@ -31,7 +31,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="Trang chủ" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Student/subjects">
           <ListItemIcon>
@@ -43,7 +43,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Subjects" />
+          <ListItemText primary="Môn học" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Student/attendance">
           <ListItemIcon>
@@ -55,7 +55,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Attendance" />
+          <ListItemText primary="Điểm danh" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Student/complain">
           <ListItemIcon>
@@ -67,7 +67,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Complain" />
+          <ListItemText primary="Phản ánh" />
         </ListItemButton>
         <ForumSideBar />
       </React.Fragment>
@@ -86,7 +86,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Profile" />
+          <ListItemText primary="Trang cá nhân" />
         </ListItemButton>
         <ListItemButton component={Link} to="/logout">
           <ListItemIcon>
@@ -96,7 +96,7 @@ const StudentSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary="Đăng xuất" />
         </ListItemButton>
       </React.Fragment>
     </>

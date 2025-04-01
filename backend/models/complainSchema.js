@@ -7,6 +7,11 @@ const complainSchema = new mongoose.Schema(
       required: true,
       refPath: 'userRef'
     },
+    userType: {
+      type: String,
+      enum: ['Student', 'Teacher', 'Admin'],
+      required: true
+    },
     date: {
       type: Date,
       required: true
@@ -24,32 +29,12 @@ const complainSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-complainSchema.pre('save', async function (next) {
-  if (!this.user) return next()
-
-  const Student = mongoose.model('student')
-  const Teacher = mongoose.model('teacher')
-  const Admin = mongoose.model('admin')
-
-  const isStudent = await Student.exists({ _id: this.user })
-  if (isStudent) {
-    this.userRef = 'student'
-    return next()
+complainSchema.virtual('userRef').get(function () {
+  const typeToCollection = {
+    Student: 'student',
+    Teacher: 'teacher',
+    Admin: 'admin'
   }
-
-  const isTeacher = await Teacher.exists({ _id: this.user })
-  if (isTeacher) {
-    this.userRef = 'teacher'
-    return next()
-  }
-
-  const isAdmin = await Admin.exists({ _id: this.user })
-  if (isAdmin) {
-    this.userRef = 'admin'
-    return next()
-  }
-
-  return next(new Error('User không tồn tại trong bất kỳ collection nào'))
+  return typeToCollection[this.userType]
 })
-
 module.exports = mongoose.model('complain', complainSchema)

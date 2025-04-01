@@ -2,7 +2,8 @@ const Complain = require('../models/complainSchema.js')
 
 const complainCreate = async (req, res) => {
   try {
-    const complain = new Complain(req.body)
+    const userType = req.user.role
+    const complain = new Complain({ ...req.body, userType: userType })
     const result = await complain.save()
     res.send(result)
   } catch (err) {
@@ -12,10 +13,10 @@ const complainCreate = async (req, res) => {
 
 const complainList = async (req, res) => {
   try {
-    let complains = await Complain.find({ school: req.params.id }).populate(
-      'user',
-      'name'
-    )
+    let complains = await Complain.find({ school: req.params.id }).populate({
+      path: 'user',
+      select: 'name'
+    })
     if (complains.length > 0) {
       res.send(complains)
     } else {

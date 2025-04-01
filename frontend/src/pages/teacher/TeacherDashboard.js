@@ -59,7 +59,7 @@ const TeacherDashboard = () => {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Teacher Dashboard
+              TRANG QUẢN LÝ GIẢNG VIÊN
             </Typography>
             <AccountMenu />
           </Toolbar>

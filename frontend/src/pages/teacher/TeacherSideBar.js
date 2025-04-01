@@ -34,7 +34,7 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="Trang chủ" />
         </ListItemButton>
         <ListItemButton component={Link} to="/Teacher/class">
           <ListItemIcon>
@@ -58,7 +58,7 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Complain" />
+          <ListItemText primary="Phản ảnh" />
         </ListItemButton>
 
         <ForumSideBar />
@@ -66,7 +66,7 @@ const TeacherSideBar = () => {
       <Divider sx={{ my: 1 }} />
       <React.Fragment>
         <ListSubheader component="div" inset>
-          User
+          Người dùng
         </ListSubheader>
         <ListItemButton component={Link} to="/Teacher/profile">
           <ListItemIcon>
@@ -78,7 +78,7 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Profile" />
+          <ListItemText primary="Trang cá nhân" />
         </ListItemButton>
         <ListItemButton component={Link} to="/logout">
           <ListItemIcon>
@@ -88,7 +88,7 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary="Đăng xuất" />
         </ListItemButton>
       </React.Fragment>
     </>
