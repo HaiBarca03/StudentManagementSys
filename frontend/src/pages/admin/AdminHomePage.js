@@ -1,4 +1,4 @@
-import { Container, Grid, Paper } from '@mui/material'
+import { Container, Grid, Paper, Typography } from '@mui/material';
 import SeeNotice from '../../components/SeeNotice';
 import Students from "../../assets/img1.png";
 import Classes from "../../assets/img2.png";
@@ -33,73 +33,130 @@ const AdminHomePage = () => {
     const numberOfTeachers = teachersList && teachersList.length;
 
     return (
-        <>
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Students} alt="Students" />
-                            <Title>
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+                {/* Stats Cards */}
+                <Grid item xs={12} md={6} lg={3}>
+                    <StatsCard elevation={3}>
+                        <CardImage src={Students} alt="Students" />
+                        <CardContent>
+                            <Typography variant="h6" component="div">
                                 Tổng Số Sinh Viên
-                            </Title>
-                            <Data start={0} end={numberOfStudents} duration={2.5} />
-                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Classes} alt="Classes" />
-                            <Title>
-                                Tổng Số Lớp Học
-                            </Title>
-                            <Data start={0} end={numberOfClasses} duration={5} />
-                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Teachers} alt="Teachers" />
-                            <Title>
-                                Tổng Số Giảng Viên
-                            </Title>
-                            <Data start={0} end={numberOfTeachers} duration={2.5} />
-                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Fees} alt="Fees" />
-                            <Title>
-                                Fees Collection
-                            </Title>
-                            <Data start={0} end={23000} duration={2.5} prefix="$" />                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={12}>
-                        <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                            <SeeNotice />
-                        </Paper>
-                    </Grid>
+                            </Typography>
+                            <StatsNumber 
+                                start={0} 
+                                end={numberOfStudents} 
+                                duration={2.5} 
+                                separator=","
+                            />
+                        </CardContent>
+                    </StatsCard>
                 </Grid>
-            </Container>
-        </>
+                <Grid item xs={12} md={6} lg={3}>
+                    <StatsCard elevation={3}>
+                        <CardImage src={Classes} alt="Classes" />
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Tổng Số Lớp Học
+                            </Typography>
+                            <StatsNumber 
+                                start={0} 
+                                end={numberOfClasses} 
+                                duration={5} 
+                                separator=","
+                            />
+                        </CardContent>
+                    </StatsCard>
+                </Grid>
+                <Grid item xs={12} md={6} lg={3}>
+                    <StatsCard elevation={3}>
+                        <CardImage src={Teachers} alt="Teachers" />
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Tổng Số Giảng Viên
+                            </Typography>
+                            <StatsNumber 
+                                start={0} 
+                                end={numberOfTeachers} 
+                                duration={2.5} 
+                                separator=","
+                            />
+                        </CardContent>
+                    </StatsCard>
+                </Grid>
+                <Grid item xs={12} md={6} lg={3}>
+                    <StatsCard elevation={3}>
+                        <CardImage src={Fees} alt="Fees" />
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Doanh Thu
+                            </Typography>
+                            <StatsNumber 
+                                start={0} 
+                                end={23000} 
+                                duration={2.5} 
+                                prefix="₫" 
+                                separator=","
+                                suffix=" VND"
+                            />
+                        </CardContent>
+                    </StatsCard>
+                </Grid>
+
+                {/* Notice Section */}
+                <Grid item xs={12}>
+                    <Paper sx={{ 
+                        p: 3, 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        borderRadius: 3,
+                        boxShadow: 3
+                    }}>
+                        <SeeNotice />
+                    </Paper>
+                </Grid>
+            </Grid>
+        </Container>
     );
 };
 
-
-const StyledPaper = styled(Paper)`
-  padding: 16px;
+// Styled Components
+const StatsCard = styled(Paper)`
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 200px;
-  justify-content: space-between;
+  height: 100%;
   align-items: center;
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px !important;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+  }
 `;
 
-const Title = styled.p`
-  font-size: 1.25rem;
+const CardImage = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 16px;
 `;
 
-const Data = styled(CountUp)`
-  font-size: calc(1.3rem + .6vw);
-  color: green;
+const CardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: space-between;
 `;
 
-export default AdminHomePage
+const StatsNumber = styled(CountUp)`
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1976d2;
+  margin-top: 8px;
+`;
+
+export default AdminHomePage;
