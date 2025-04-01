@@ -2,72 +2,102 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { authLogout } from '../redux/userRelated/userSlice';
-import styled from 'styled-components';
+import {
+  Box,
+  Typography,
+  Button,
+  Avatar,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from '@mui/material';
+import { Logout, Cancel } from '@mui/icons-material';
 
-const Logout = () => {
+const LogoutPage = () => {
     const currentUser = useSelector(state => state.user.currentUser);
-
+    const [open, setOpen] = React.useState(true);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleLogout = () => {
         dispatch(authLogout());
         navigate('/');
+        setOpen(false);
     };
 
     const handleCancel = () => {
         navigate(-1);
+        setOpen(false);
     };
 
     return (
-        <LogoutContainer>
-            <h1>{currentUser.name}</h1>
-            <LogoutMessage>Are you sure you want to log out?</LogoutMessage>
-            <LogoutButtonLogout onClick={handleLogout}>Log Out</LogoutButtonLogout>
-            <LogoutButtonCancel onClick={handleCancel}>Cancel</LogoutButtonCancel>
-        </LogoutContainer>
+        <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                p: 2
+            }}
+        >
+            <Paper
+                elevation={3}
+                sx={{
+                    maxWidth: 400,
+                    width: '100%',
+                    p: 4,
+                    textAlign: 'center',
+                    borderRadius: 2
+                }}
+            >
+                <Avatar
+                    src={currentUser?.avatar}
+                    sx={{
+                        width: 80,
+                        height: 80,
+                        mb: 2,
+                        mx: 'auto',
+                        bgcolor: 'primary.main'
+                    }}
+                >
+                    {currentUser?.name?.charAt(0)}
+                </Avatar>
+                
+                <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    {currentUser?.name}
+                </Typography>
+                
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                    Bạn có chắc chắn muốn đăng xuất?
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<Logout />}
+                        onClick={handleLogout}
+                        sx={{ flex: 1 }}
+                    >
+                        Đăng xuất
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<Cancel />}
+                        onClick={handleCancel}
+                        sx={{ flex: 1 }}
+                    >
+                        Hủy bỏ
+                    </Button>
+                </Box>
+            </Paper>
+        </Box>
     );
 };
 
-export default Logout;
-
-const LogoutContainer = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-  background-color: #85769f66;
-  color: black;
-`;
-
-const LogoutMessage = styled.p`
-  margin-bottom: 20px;
-  font-size: 16px;
-  text-align: center;
-`;
-
-const LogoutButton = styled.button`
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #fff;
-  cursor: pointer;
-
-  &:hover {
-    color: #fff;
-    background-color: #333;
-  }
-`;
-
-const LogoutButtonLogout = styled(LogoutButton)`
-  background-color: #ea0606;
-`;
-
-const LogoutButtonCancel = styled(LogoutButton)`
-  background-color: rgb(99, 60, 99);
-`;
+export default LogoutPage;
