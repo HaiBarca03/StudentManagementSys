@@ -8,13 +8,23 @@ import {
   Card,
   CardContent,
   Grid,
-  Divider
+  Divider,
+  Avatar,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useTheme
 } from '@mui/material'
 import {
   KeyboardArrowDown,
   KeyboardArrowUp,
   Edit,
-  Delete
+  Delete,
+  Save,
+  Cancel
 } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteUser, updateUser } from '../../redux/userRelated/userHandle'
@@ -23,10 +33,12 @@ import { authLogout } from '../../redux/userRelated/userSlice'
 
 const AdminProfile = () => {
   const [showEditForm, setShowEditForm] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { currentUser, response, error } = useSelector((state) => state.user)
   const address = 'Admin'
+  const theme = useTheme()
 
   // Form states
   const [name, setName] = useState(currentUser.name)
@@ -45,7 +57,7 @@ const AdminProfile = () => {
     setShowEditForm(false)
   }
 
-  const deleteHandler = () => {
+  const handleDelete = () => {
     try {
       dispatch(deleteUser(currentUser._id, 'Students'))
       dispatch(deleteUser(currentUser._id, address))
@@ -57,120 +69,218 @@ const AdminProfile = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', my: 4 }}>
-      <Card elevation={3}>
-        <CardContent>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h5" gutterBottom>
-              Trang cá nhân
+    <Box sx={{ 
+      maxWidth: 800, 
+      mx: 'auto', 
+      my: 4,
+      padding: 2
+    }}>
+      <Paper elevation={0} sx={{
+        borderRadius: 4,
+        overflow: 'hidden',
+        boxShadow: theme.shadows[4],
+        background: theme.palette.background.paper
+      }}>
+        <Box sx={{
+          height: 120,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`
+        }} />
+        
+        <Box sx={{ px: 4, pb: 4, position: 'relative' }}>
+          <Avatar sx={{
+            width: 120,
+            height: 120,
+            border: `4px solid ${theme.palette.background.paper}`,
+            position: 'absolute',
+            top: -135,
+            left: 40,
+            fontSize: 48,
+            backgroundColor: theme.palette.primary.dark
+          }}>
+            {currentUser.name.charAt(0).toUpperCase()}
+          </Avatar>
+          
+          <Box sx={{ mt: 8 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
+              {currentUser.name}
             </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="text.secondary">
-                  Họ tên
-                </Typography>
-                <Typography variant="body1">{currentUser.name}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="text.secondary">
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              Quản trị viên
+            </Typography>
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle2" color="text.secondary">
                   Email
                 </Typography>
-                <Typography variant="body1">{currentUser.email}</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {currentUser.email}
+                </Typography>
               </Grid>
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="text.secondary">
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle2" color="text.secondary">
                   Trường
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
                   {currentUser.schoolName}
                 </Typography>
               </Grid>
             </Grid>
-          </Box>
-
-          {/* Action Buttons */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <Button
-              variant="contained"
-              startIcon={showEditForm ? <KeyboardArrowUp /> : <Edit />}
-              onClick={() => setShowEditForm(!showEditForm)}
-              sx={{ flex: 1 }}
-            >
-              {showEditForm ? 'Huỷ' : 'Chỉnh sửa'}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<Delete />}
-              onClick={deleteHandler}
-              sx={{ flex: 1 }}
-            >
-              Xoá tài khoản
-            </Button>
-          </Box>
-
-          {/* Edit Form */}
-          <Collapse in={showEditForm}>
-            <Box component="form" onSubmit={submitHandler} sx={{ mt: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="School Name"
-                    value={schoolName}
-                    onChange={(e) => setSchoolName(e.target.value)}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Password (optional)"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 2 }}
-                  >
-                    Lưu thay đổi
-                  </Button>
-                </Grid>
-              </Grid>
+            
+            {/* Action Buttons */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              flexDirection: { xs: 'column', sm: 'row' },
+              mt: 4
+            }}>
+              <Button
+                variant="contained"
+                startIcon={showEditForm ? <Cancel /> : <Edit />}
+                onClick={() => setShowEditForm(!showEditForm)}
+                sx={{
+                  flex: 1,
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: 16
+                }}
+              >
+                {showEditForm ? 'Huỷ chỉnh sửa' : 'Chỉnh sửa hồ sơ'}
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<Delete />}
+                onClick={() => setOpenDeleteDialog(true)}
+                sx={{
+                  flex: 1,
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: 16
+                }}
+              >
+                Xoá tài khoản
+              </Button>
             </Box>
-          </Collapse>
-        </CardContent>
-      </Card>
+
+            {/* Edit Form */}
+            <Collapse in={showEditForm}>
+              <Box 
+                component="form" 
+                onSubmit={submitHandler} 
+                sx={{ 
+                  mt: 4,
+                  p: 3,
+                  borderRadius: 2,
+                  background: theme.palette.background.default
+                }}
+              >
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Họ tên"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Tên trường"
+                      value={schoolName}
+                      onChange={(e) => setSchoolName(e.target.value)}
+                      required
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Mật khẩu mới (tuỳ chọn)"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      variant="outlined"
+                      size="small"
+                      helperText="Để trống nếu không muốn đổi mật khẩu"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      startIcon={<Save />}
+                      sx={{
+                        py: 1.5,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontSize: 16
+                      }}
+                    >
+                      Lưu thay đổi
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Collapse>
+          </Box>
+        </Box>
+      </Paper>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            Bạn có chắc chắn muốn xoá tài khoản này? Hành động này không thể hoàn tác.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setOpenDeleteDialog(false)}
+            color="primary"
+            variant="outlined"
+          >
+            Huỷ
+          </Button>
+          <Button 
+            onClick={handleDelete}
+            color="error"
+            variant="contained"
+            startIcon={<Delete />}
+          >
+            Xác nhận xoá
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
