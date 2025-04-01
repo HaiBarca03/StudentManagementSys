@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   TextField,
@@ -12,59 +12,60 @@ import {
   LinearProgress,
   Paper,
   Divider,
-  IconButton,
-} 
-from '@mui/material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-import ReactQuill from 'react-quill'; // Thêm editor WYSIWYG
-import 'react-quill/dist/quill.snow.css'; // CSS cho ReactQuill
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteIcon from '@mui/icons-material/Delete';
+  IconButton
+} from '@mui/material'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
+import ReactQuill from 'react-quill' // Thêm editor WYSIWYG
+import 'react-quill/dist/quill.snow.css' // CSS cho ReactQuill
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import DeleteIcon from '@mui/icons-material/Delete'
 
-const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`;
-const TOPIC_API_URL = `${process.env.REACT_APP_BASE_URL}/topic`;
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
+const TOPIC_API_URL = `${process.env.REACT_APP_BASE_URL}/topic`
 
 const CreateNews = () => {
-  const [thumbnailPreview, setThumbnailPreview] = useState(null);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const [topics, setTopics] = useState([]);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null)
+  const [imagePreviews, setImagePreviews] = useState([])
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const [topics, setTopics] = useState([])
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
-    severity: 'success',
-  });
+    severity: 'success'
+  })
   // Fetch topics từ backend
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const token = localStorage.getItem('token');
-        console.log('Token:', token); // Kiểm tra token
-        if (!token) throw new Error('No token found');
+        const token = localStorage.getItem('token')
+        if (!token) throw new Error('No token found')
 
         const response = await axios.get(TOPIC_API_URL, {
           headers: {
-            token: `Bearer ${token}`,
-          },
-        });
-        console.log('Topics response:', response.data); // Kiểm tra dữ liệu trả về
-        setTopics(response.data);
-        console.log('Topics state:', response.data); // Kiểm tra state sau khi set
+            token: `Bearer ${token}`
+          }
+        })
+        setTopics(response.data)
       } catch (error) {
-        console.error('Lỗi khi lấy danh sách chủ đề:', error.response || error.message);
+        console.error(
+          'Lỗi khi lấy danh sách chủ đề:',
+          error.response || error.message
+        )
         setSnackbar({
           open: true,
-          message: 'Không thể tải danh sách chủ đề: ' + (error.response?.data?.error || error.message),
-          severity: 'error',
-        });
+          message:
+            'Không thể tải danh sách chủ đề: ' +
+            (error.response?.data?.error || error.message),
+          severity: 'error'
+        })
       }
-    };
-    fetchTopics();
-  }, []);
+    }
+    fetchTopics()
+  }, [])
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -74,7 +75,7 @@ const CreateNews = () => {
       content: '',
       published: false,
       userType: 'admin',
-      topicId: '',
+      topicId: ''
     },
     validationSchema: Yup.object({
       title: Yup.string()
@@ -90,138 +91,158 @@ const CreateNews = () => {
       topicId: Yup.string().required('Chủ đề là bắt buộc'), // Thêm validation cho topicId
       thumbnail: Yup.mixed()
         .required('Thumbnail là bắt buộc')
-        .test('fileSize', 'Kích thước file tối đa là 2MB', (value) => 
-          value && value.size <= 2 * 1024 * 1024
+        .test(
+          'fileSize',
+          'Kích thước file tối đa là 2MB',
+          (value) => value && value.size <= 2 * 1024 * 1024
         )
-        .test('fileType', 'Chỉ chấp nhận file ảnh', (value) => 
-          value && value.type.startsWith('image/')
+        .test(
+          'fileType',
+          'Chỉ chấp nhận file ảnh',
+          (value) => value && value.type.startsWith('image/')
         ),
       images: Yup.array()
         .max(10, 'Tối đa 10 hình ảnh')
         .of(
           Yup.mixed()
-            .test('fileSize', 'Kích thước file tối đa là 2MB', (value) => 
-              value && value.size <= 2 * 1024 * 1024
+            .test(
+              'fileSize',
+              'Kích thước file tối đa là 2MB',
+              (value) => value && value.size <= 2 * 1024 * 1024
             )
-            .test('fileType', 'Chỉ chấp nhận file ảnh', (value) => 
-              value && value.type.startsWith('image/')
+            .test(
+              'fileType',
+              'Chỉ chấp nhận file ảnh',
+              (value) => value && value.type.startsWith('image/')
             )
-        ),
+        )
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        setIsUploading(true);
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Vui lòng đăng nhập.');
+        setIsUploading(true)
+        const token = localStorage.getItem('token')
+        if (!token) throw new Error('Vui lòng đăng nhập.')
 
-        const decodedToken = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-        if (decodedToken.exp < currentTime) throw new Error('Token hết hạn.');
+        const decodedToken = jwtDecode(token)
+        const currentTime = Date.now() / 1000
+        if (decodedToken.exp < currentTime) throw new Error('Token hết hạn.')
 
-        const formData = new FormData();
-        formData.append('title', values.title);
-        formData.append('summary', values.summary);
-        formData.append('content', values.content);
-        formData.append('published', values.published);
-        formData.append('userType', values.userType);
-        formData.append('thumbnail', values.thumbnail);
-        formData.append('userId', decodedToken.id);
-        formData.append('topicId', values.topicId);
+        const formData = new FormData()
+        formData.append('title', values.title)
+        formData.append('summary', values.summary)
+        formData.append('content', values.content)
+        formData.append('published', values.published)
+        formData.append('userType', values.userType)
+        formData.append('thumbnail', values.thumbnail)
+        formData.append('userId', decodedToken.id)
+        formData.append('topicId', values.topicId)
 
-        values.images.forEach((image) => formData.append('images', image));
+        values.images.forEach((image) => formData.append('images', image))
 
         const response = await axios.post(API_URL, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            token: `Bearer ${token}`,
+            token: `Bearer ${token}`
           },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percentCompleted);
-          },
-        });
+            )
+            setUploadProgress(percentCompleted)
+          }
+        })
 
         setSnackbar({
           open: true,
           message: response.data.message || 'Đăng bài thành công!',
-          severity: 'success',
-        });
+          severity: 'success'
+        })
 
-        resetForm();
-        setThumbnailPreview(null);
-        setImagePreviews([]);
+        resetForm()
+        setThumbnailPreview(null)
+        setImagePreviews([])
       } catch (error) {
         const errorMessage =
-          error.response?.data?.error || error.message || 'Lỗi khi đăng bài';
+          error.response?.data?.error || error.message || 'Lỗi khi đăng bài'
         setSnackbar({
           open: true,
           message: errorMessage,
-          severity: 'error',
-        });
+          severity: 'error'
+        })
       } finally {
-        setIsUploading(false);
-        setUploadProgress(0);
+        setIsUploading(false)
+        setUploadProgress(0)
       }
-    },
-  });
+    }
+  })
 
   const handleThumbnailChange = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file) {
-      formik.setFieldValue('thumbnail', file);
-      setThumbnailPreview(URL.createObjectURL(file));
+      formik.setFieldValue('thumbnail', file)
+      setThumbnailPreview(URL.createObjectURL(file))
       setSnackbar({
         open: true,
         message: `Đã chọn thumbnail: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
-        severity: 'info',
-      });
+        severity: 'info'
+      })
     }
-  };
+  }
 
   const handleImageChange = (event) => {
-    const files = Array.from(event.target.files);
-    const validFiles = files.filter((file) => file.type.startsWith('image/') && file.size <= 2 * 1024 * 1024);
+    const files = Array.from(event.target.files)
+    const validFiles = files.filter(
+      (file) => file.type.startsWith('image/') && file.size <= 2 * 1024 * 1024
+    )
     if (validFiles.length + imagePreviews.length > 10) {
       setSnackbar({
         open: true,
         message: 'Tối đa 10 hình ảnh!',
-        severity: 'warning',
-      });
-      return;
+        severity: 'warning'
+      })
+      return
     }
-    formik.setFieldValue('images', [...formik.values.images, ...validFiles]);
-    setImagePreviews((prev) => [...prev, ...validFiles.map((file) => URL.createObjectURL(file))]);
+    formik.setFieldValue('images', [...formik.values.images, ...validFiles])
+    setImagePreviews((prev) => [
+      ...prev,
+      ...validFiles.map((file) => URL.createObjectURL(file))
+    ])
     setSnackbar({
       open: true,
       message: `Đã chọn ${validFiles.length} hình ảnh`,
-      severity: 'info',
-    });
-  };
+      severity: 'info'
+    })
+  }
 
   const removeImage = (index) => {
-    const newImages = formik.values.images.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    formik.setFieldValue('images', newImages);
-    setImagePreviews(newPreviews);
+    const newImages = formik.values.images.filter((_, i) => i !== index)
+    const newPreviews = imagePreviews.filter((_, i) => i !== index)
+    formik.setFieldValue('images', newImages)
+    setImagePreviews(newPreviews)
     setSnackbar({
       open: true,
       message: 'Đã xóa hình ảnh',
-      severity: 'info',
-    });
-  };
+      severity: 'info'
+    })
+  }
 
   useEffect(() => {
     return () => {
-      if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview);
-      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
-    };
-  }, [thumbnailPreview, imagePreviews]);
+      if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview)
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview))
+    }
+  }, [thumbnailPreview, imagePreviews])
 
   return (
-    <Paper elevation={3} sx={{ maxWidth: 800, margin: 'auto', p: 4, mt: 4, borderRadius: 2 }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+    <Paper
+      elevation={3}
+      sx={{ maxWidth: 800, margin: 'auto', p: 4, mt: 4, borderRadius: 2 }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ fontWeight: 'bold', color: '#1976d2' }}
+      >
         Tạo Bài Viết Mới
       </Typography>
       <Divider sx={{ mb: 3 }} />
@@ -239,8 +260,8 @@ const CreateNews = () => {
           sx={{ mb: 3 }}
           variant="outlined"
         />
-    
-    <TextField
+
+        <TextField
           fullWidth
           select
           label="Chủ đề"
@@ -287,14 +308,24 @@ const CreateNews = () => {
           sx={{ mb: 2 }}
         >
           Tải lên Thumbnail
-          <input type="file" accept="image/*" hidden onChange={handleThumbnailChange} />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleThumbnailChange}
+          />
         </Button>
         {thumbnailPreview && (
           <Box sx={{ mb: 2 }}>
             <img
               src={thumbnailPreview}
               alt="Thumbnail preview"
-              style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 8 }}
+              style={{
+                width: '100%',
+                maxHeight: 300,
+                objectFit: 'cover',
+                borderRadius: 8
+              }}
             />
           </Box>
         )}
@@ -314,7 +345,13 @@ const CreateNews = () => {
           sx={{ mb: 2 }}
         >
           Tải lên hình ảnh
-          <input type="file" accept="image/*" multiple hidden onChange={handleImageChange} />
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={handleImageChange}
+          />
         </Button>
         <Box display="flex" gap={2} sx={{ mb: 2, flexWrap: 'wrap' }}>
           {imagePreviews.map((src, index) => (
@@ -322,11 +359,21 @@ const CreateNews = () => {
               <img
                 src={src}
                 alt={`Preview ${index}`}
-                style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }}
+                style={{
+                  width: 120,
+                  height: 120,
+                  objectFit: 'cover',
+                  borderRadius: 8
+                }}
               />
               <IconButton
                 size="small"
-                sx={{ position: 'absolute', top: 5, right: 5, bgcolor: 'rgba(255,255,255,0.7)' }}
+                sx={{
+                  position: 'absolute',
+                  top: 5,
+                  right: 5,
+                  bgcolor: 'rgba(255,255,255,0.7)'
+                }}
                 onClick={() => removeImage(index)}
               >
                 <DeleteIcon color="error" />
@@ -355,8 +402,8 @@ const CreateNews = () => {
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
                 ['link', 'image'],
-                ['clean'],
-              ],
+                ['clean']
+              ]
             }}
             style={{ minHeight: '300px' }}
           />
@@ -406,7 +453,9 @@ const CreateNews = () => {
           control={
             <Switch
               checked={formik.values.published}
-              onChange={(e) => formik.setFieldValue('published', e.target.checked)}
+              onChange={(e) =>
+                formik.setFieldValue('published', e.target.checked)
+              }
             />
           }
           label="Công khai bài viết"
@@ -426,7 +475,12 @@ const CreateNews = () => {
           type="submit"
           fullWidth
           disabled={isUploading || formik.isSubmitting}
-          sx={{ py: 1.5, fontSize: '1rem', bgcolor: '#1976d2', '&:hover': { bgcolor: '#115293' } }}
+          sx={{
+            py: 1.5,
+            fontSize: '1rem',
+            bgcolor: '#1976d2',
+            '&:hover': { bgcolor: '#115293' }
+          }}
         >
           {isUploading ? 'Đang tải lên...' : 'Đăng bài viết'}
         </Button>
@@ -447,7 +501,7 @@ const CreateNews = () => {
         </Alert>
       </Snackbar>
     </Paper>
-  );
-};
+  )
+}
 
-export default CreateNews;
+export default CreateNews

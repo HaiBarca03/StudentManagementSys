@@ -93,7 +93,6 @@ const AddStudent = ({ situation }) => {
 
   const submitHandler = (event) => {
     event.preventDefault()
-    console.log('Form Data:', formData)
     if (!formData.sclassName) {
       setMessage('Vui lòng chọn lớp học')
       setShowPopup(true)

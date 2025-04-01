@@ -11,7 +11,6 @@ const SeeComplains = () => {
     (state) => state.complain
   )
   const { currentUser } = useSelector((state) => state.user)
-  console.log('complainsList', complainsList)
   useEffect(() => {
     dispatch(getAllComplains(currentUser._id, 'Complain'))
   }, [currentUser._id, dispatch])

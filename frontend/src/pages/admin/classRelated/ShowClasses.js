@@ -1,96 +1,117 @@
-import { useEffect, useState } from 'react';
-import { IconButton, Box, Menu, MenuItem, ListItemIcon, Tooltip } from '@mui/material';
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { deleteUser } from '../../../redux/userRelated/userHandle';
-import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
-import { BlueButton, GreenButton } from '../../../components/buttonStyles';
-import TableTemplate from '../../../components/TableTemplate';
+import { useEffect, useState } from 'react'
+import {
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Tooltip
+} from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { deleteUser } from '../../../redux/userRelated/userHandle'
+import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle'
+import { BlueButton, GreenButton } from '../../../components/buttonStyles'
+import TableTemplate from '../../../components/TableTemplate'
 
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import AddCardIcon from '@mui/icons-material/AddCard';
-import styled from 'styled-components';
-import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
-import Popup from '../../../components/Popup';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon'
+import PostAddIcon from '@mui/icons-material/PostAdd'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import AddCardIcon from '@mui/icons-material/AddCard'
+import styled from 'styled-components'
+import SpeedDialTemplate from '../../../components/SpeedDialTemplate'
+import Popup from '../../../components/Popup'
 
 const ShowClasses = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const { sclassesList, loading, error, getresponse } = useSelector((state) => state.sclass);
-  const { currentUser } = useSelector(state => state.user)
+  const { sclassesList, loading, error, getresponse } = useSelector(
+    (state) => state.sclass
+  )
+  const { currentUser } = useSelector((state) => state.user)
 
   const adminID = currentUser._id
 
   useEffect(() => {
-    dispatch(getAllSclasses(adminID, "Sclass"));
-  }, [adminID, dispatch]);
+    dispatch(getAllSclasses(adminID, 'Sclass'))
+  }, [adminID, dispatch])
 
   if (error) {
     console.log(error)
   }
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false)
+  const [message, setMessage] = useState('')
 
   const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.")
     setShowPopup(true)
-    // dispatch(deleteUser(deleteID, address))
-    //   .then(() => {
-    //     dispatch(getAllSclasses(adminID, "Sclass"));
-    //   })
+    dispatch(deleteUser(deleteID, address)).then(() => {
+      dispatch(getAllSclasses(adminID, 'Sclass'))
+    })
   }
 
-  const sclassColumns = [
-    { id: 'name', label: 'Tên lớp', minWidth: 170 },
-  ]
+  const sclassColumns = [{ id: 'name', label: 'Tên lớp', minWidth: 170 }]
 
-  const sclassRows = sclassesList && sclassesList.length > 0 && sclassesList.map((sclass) => {
-    return {
-      name: sclass.sclassName,
-      id: sclass._id,
-    };
-  })
+  const sclassRows =
+    sclassesList &&
+    sclassesList.length > 0 &&
+    sclassesList.map((sclass) => {
+      return {
+        name: sclass.sclassName,
+        id: sclass._id
+      }
+    })
 
   const SclassButtonHaver = ({ row }) => {
     const actions = [
-      { icon: <PostAddIcon />, name: 'Thêm môn học', action: () => navigate("/Admin/addsubject/" + row.id) },
-      { icon: <PersonAddAlt1Icon />, name: 'Thêm sinh viên', action: () => navigate("/Admin/class/addstudents/" + row.id) },
-    ];
+      {
+        icon: <PostAddIcon />,
+        name: 'Thêm môn học',
+        action: () => navigate('/Admin/addsubject/' + row.id)
+      },
+      {
+        icon: <PersonAddAlt1Icon />,
+        name: 'Thêm sinh viên',
+        action: () => navigate('/Admin/class/addstudents/' + row.id)
+      }
+    ]
     return (
       <ButtonContainer>
-        <IconButton onClick={() => deleteHandler(row.id, "Sclass")} color="secondary">
+        <IconButton
+          onClick={() => deleteHandler(row.id, 'Sclass')}
+          color="secondary"
+        >
           <DeleteIcon color="error" />
         </IconButton>
-        <BlueButton variant="contained"
-          onClick={() => navigate("/Admin/classes/class/" + row.id)}>
+        <BlueButton
+          variant="contained"
+          onClick={() => navigate('/Admin/classes/class/' + row.id)}
+        >
           Xem
         </BlueButton>
         <ActionMenu actions={actions} />
       </ButtonContainer>
-    );
-  };
+    )
+  }
 
   const ActionMenu = ({ actions }) => {
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null)
 
-    const open = Boolean(anchorEl);
+    const open = Boolean(anchorEl)
 
     const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
+      setAnchorEl(event.currentTarget)
+    }
     const handleClose = () => {
-      setAnchorEl(null);
-    };
+      setAnchorEl(null)
+    }
     return (
       <>
-        <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
+        >
           <Tooltip title="Add Students & Subjects">
             <IconButton
               onClick={handleClick}
@@ -113,63 +134,80 @@ const ShowClasses = () => {
           onClick={handleClose}
           PaperProps={{
             elevation: 0,
-            sx: styles.styledPaper,
+            sx: styles.styledPaper
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           {actions.map((action) => (
             <MenuItem onClick={action.action}>
-              <ListItemIcon fontSize="small">
-                {action.icon}
-              </ListItemIcon>
+              <ListItemIcon fontSize="small">{action.icon}</ListItemIcon>
               {action.name}
             </MenuItem>
           ))}
         </Menu>
       </>
-    );
+    )
   }
 
   const actions = [
     {
-      icon: <AddCardIcon color="primary" />, name: 'Thêm môn học mới',
-      action: () => navigate("/Admin/addclass")
+      icon: <AddCardIcon color="primary" />,
+      name: 'Thêm môn học mới',
+      action: () => navigate('/Admin/addclass')
     },
     {
-      icon: <DeleteIcon color="error" />, name: 'Xóa tất cả môn học',
-      action: () => deleteHandler(adminID, "Sclasses")
-    },
-  ];
+      icon: <DeleteIcon color="error" />,
+      name: 'Xóa tất cả môn học',
+      action: () => deleteHandler(adminID, 'Sclasses')
+    }
+  ]
 
   return (
     <>
-      {loading ?
+      {loading ? (
         <div>Loading...</div>
-        :
+      ) : (
         <>
-          {getresponse ?
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <GreenButton variant="contained" onClick={() => navigate("/Admin/addclass")}>
+          {getresponse ? (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: '16px'
+              }}
+            >
+              <GreenButton
+                variant="contained"
+                onClick={() => navigate('/Admin/addclass')}
+              >
                 Add Class
               </GreenButton>
             </Box>
-            :
+          ) : (
             <>
-              {Array.isArray(sclassesList) && sclassesList.length > 0 &&
-                <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
-              }
+              {Array.isArray(sclassesList) && sclassesList.length > 0 && (
+                <TableTemplate
+                  buttonHaver={SclassButtonHaver}
+                  columns={sclassColumns}
+                  rows={sclassRows}
+                />
+              )}
               <SpeedDialTemplate actions={actions} />
-            </>}
+            </>
+          )}
         </>
-      }
-      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-
+      )}
+      <Popup
+        message={message}
+        setShowPopup={setShowPopup}
+        showPopup={showPopup}
+      />
     </>
-  );
-};
+  )
+}
 
-export default ShowClasses;
+export default ShowClasses
 
 const styles = {
   styledPaper: {
@@ -180,7 +218,7 @@ const styles = {
       width: 32,
       height: 32,
       ml: -0.5,
-      mr: 1,
+      mr: 1
     },
     '&:before': {
       content: '""',
@@ -192,8 +230,8 @@ const styles = {
       height: 10,
       bgcolor: 'background.paper',
       transform: 'translateY(-50%) rotate(45deg)',
-      zIndex: 0,
-    },
+      zIndex: 0
+    }
   }
 }
 
@@ -202,4 +240,4 @@ const ButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1rem;
-`;
+`

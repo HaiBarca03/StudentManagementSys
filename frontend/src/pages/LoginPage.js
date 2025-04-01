@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Button,
   Grid,
@@ -17,124 +17,130 @@ import {
   Backdrop,
   Fade,
   Container
-} from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Visibility, VisibilityOff, ArrowForward } from '@mui/icons-material';
-import bgpic from '../assets/designlogin.jpg';
-import { loginUser } from '../redux/userRelated/userHandle';
-import Popup from '../components/Popup';
+} from '@mui/material'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { Visibility, VisibilityOff, ArrowForward } from '@mui/icons-material'
+import bgpic from '../assets/designlogin.jpg'
+import { loginUser } from '../redux/userRelated/userHandle'
+import Popup from '../components/Popup'
 
 // Modern theme with custom palette
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#6366f1',
+      main: '#6366f1'
     },
     secondary: {
-      main: '#10b981',
+      main: '#10b981'
     },
     background: {
-      default: '#f8fafc',
-    },
+      default: '#f8fafc'
+    }
   },
   typography: {
     fontFamily: '"Inter", sans-serif',
     h4: {
-      fontWeight: 700,
-    },
+      fontWeight: 700
+    }
   },
   shape: {
-    borderRadius: 12,
-  },
-});
+    borderRadius: 12
+  }
+})
 
 const LoginPage = ({ role }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const { status, currentUser, response, error, currentRole } = useSelector(
     (state) => state.user
-  );
+  )
 
-  const [toggle, setToggle] = useState(false);
-  const [guestLoader, setGuestLoader] = useState(false);
-  const [loader, setLoader] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState('');
+  const [toggle, setToggle] = useState(false)
+  const [guestLoader, setGuestLoader] = useState(false)
+  const [loader, setLoader] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
+  const [message, setMessage] = useState('')
   const [formErrors, setFormErrors] = useState({
     email: false,
     password: false,
     rollNumber: false,
-    studentName: false,
-  });
+    studentName: false
+  })
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    
-    const errors = {};
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+
+    const errors = {}
     if (role === 'Student') {
-      if (!formData.get('rollNumber')) errors.rollNumber = true;
-      if (!formData.get('studentName')) errors.studentName = true;
+      if (!formData.get('rollNumber')) errors.rollNumber = true
+      if (!formData.get('studentName')) errors.studentName = true
     } else {
-      if (!formData.get('email')) errors.email = true;
+      if (!formData.get('email')) errors.email = true
     }
-    if (!formData.get('password')) errors.password = true;
+    if (!formData.get('password')) errors.password = true
 
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
+    setFormErrors(errors)
+    if (Object.keys(errors).length > 0) return
 
-    const fields = role === 'Student' 
-      ? { 
-          rollNum: formData.get('rollNumber'),
-          studentName: formData.get('studentName'),
-          password: formData.get('password')
-        }
-      : {
-          email: formData.get('email'),
-          password: formData.get('password')
-        };
+    const fields =
+      role === 'Student'
+        ? {
+            rollNum: formData.get('rollNumber'),
+            studentName: formData.get('studentName'),
+            password: formData.get('password')
+          }
+        : {
+            email: formData.get('email'),
+            password: formData.get('password')
+          }
 
-    setLoader(true);
-    dispatch(loginUser(fields, role));
-  };
+    setLoader(true)
+    dispatch(loginUser(fields, role))
+  }
 
   const handleInputChange = (event) => {
-    const { name } = event.target;
-    setFormErrors(prev => ({ ...prev, [name]: false }));
-  };
+    const { name } = event.target
+    setFormErrors((prev) => ({ ...prev, [name]: false }))
+  }
 
   const guestModeHandler = () => {
     const credentials = {
       Admin: { email: 'yogendra@12', password: 'zxc' },
       Student: { rollNum: '1', studentName: 'Dipesh Awasthi', password: 'zxc' },
       Teacher: { email: 'tony@12', password: 'zxc' }
-    };
-    
-    setGuestLoader(true);
-    dispatch(loginUser(credentials[role], role));
-  };
+    }
+
+    setGuestLoader(true)
+    dispatch(loginUser(credentials[role], role))
+  }
 
   useEffect(() => {
     if (status === 'success' && currentUser) {
-      navigate(`/${currentRole}/dashboard`);
+      navigate(`/${currentRole}/dashboard`)
     } else if (status === 'failed') {
-      setMessage(response);
-      setShowPopup(true);
-      setLoader(false);
+      setMessage(response)
+      setShowPopup(true)
+      setLoader(false)
     } else if (status === 'error') {
-      setMessage('Network Error');
-      setShowPopup(true);
-      setLoader(false);
-      setGuestLoader(false);
+      setMessage('Network Error')
+      setShowPopup(true)
+      setLoader(false)
+      setGuestLoader(false)
     }
-  }, [status, currentRole, navigate, error, response, currentUser]);
+  }, [status, currentRole, navigate, error, response, currentUser])
 
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ minHeight: '100vh' }}>
         <CssBaseline />
-        <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center' }}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{ display: 'flex', alignItems: 'center' }}
+        >
           <Container maxWidth="sm">
             <Fade in timeout={500}>
               <Box
@@ -142,15 +148,16 @@ const LoginPage = ({ role }) => {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  p: 4,
+                  p: 4
                 }}
               >
                 <Box sx={{ width: '100%', mb: 4 }}>
-                  <Typography 
-                    variant="h4" 
-                    sx={{ 
+                  <Typography
+                    variant="h4"
+                    sx={{
                       fontWeight: 700,
-                      background: 'linear-gradient(90deg, #6366f1 0%, #10b981 100%)',
+                      background:
+                        'linear-gradient(90deg, #6366f1 0%, #10b981 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       mb: 1
@@ -163,9 +170,9 @@ const LoginPage = ({ role }) => {
                   </Typography>
                 </Box>
 
-                <Box 
-                  component="form" 
-                  onSubmit={handleSubmit} 
+                <Box
+                  component="form"
+                  onSubmit={handleSubmit}
                   sx={{ width: '100%' }}
                 >
                   {role === 'Student' ? (
@@ -226,39 +233,41 @@ const LoginPage = ({ role }) => {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton 
+                          <IconButton
                             onClick={() => setToggle(!toggle)}
                             edge="end"
                           >
                             {toggle ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
-                      ),
+                      )
                     }}
                     sx={{ mb: 2 }}
                   />
 
-                  <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 2
-                  }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mb: 2
+                    }}
+                  >
                     <FormControlLabel
                       control={
-                        <Checkbox 
-                          color="primary" 
-                          sx={{ 
-                            '&.Mui-checked': { color: 'primary.main' } 
-                          }} 
+                        <Checkbox
+                          color="primary"
+                          sx={{
+                            '&.Mui-checked': { color: 'primary.main' }
+                          }}
                         />
                       }
                       label="Remember me"
                     />
-                    <Typography 
+                    <Typography
                       component={Link}
                       to="#"
-                      sx={{ 
+                      sx={{
                         textDecoration: 'none',
                         color: 'primary.main',
                         fontSize: 14,
@@ -282,7 +291,7 @@ const LoginPage = ({ role }) => {
                       borderRadius: 2,
                       boxShadow: 'none',
                       '&:hover': {
-                        boxShadow: '0 4px 14px rgba(99, 102, 241, 0.3)',
+                        boxShadow: '0 4px 14px rgba(99, 102, 241, 0.3)'
                       }
                     }}
                     disabled={loader}
@@ -318,10 +327,10 @@ const LoginPage = ({ role }) => {
                   {role === 'Admin' && (
                     <Typography sx={{ mt: 3, textAlign: 'center' }}>
                       Don't have an account?{' '}
-                      <Typography 
+                      <Typography
                         component={Link}
                         to="/Adminregister"
-                        sx={{ 
+                        sx={{
                           color: 'primary.main',
                           fontWeight: 500,
                           textDecoration: 'none',
@@ -352,8 +361,8 @@ const LoginPage = ({ role }) => {
       </Grid>
 
       <Backdrop
-        sx={{ 
-          color: '#fff', 
+        sx={{
+          color: '#fff',
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backdropFilter: 'blur(4px)'
         }}
@@ -371,7 +380,7 @@ const LoginPage = ({ role }) => {
         showPopup={showPopup}
       />
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

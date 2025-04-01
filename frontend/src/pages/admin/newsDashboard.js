@@ -1,5 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { useState, useEffect } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts'
 import {
   Box,
   Typography,
@@ -22,184 +31,188 @@ import {
   CircularProgress,
   Snackbar,
   Alert
-} from '@mui/material';
-import { Search, CheckCircle, Cancel, Visibility } from '@mui/icons-material';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import HeadForum from '../../components/forum/head-forum';
+} from '@mui/material'
+import { Search, CheckCircle, Cancel, Visibility } from '@mui/icons-material'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import HeadForum from '../../components/forum/head-forum'
 
 const NewsDashboard = () => {
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalNews, setTotalNews] = useState(0);
-  const [limit] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showApproved, setShowApproved] = useState(false);
-  const [selectedNews, setSelectedNews] = useState(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [statsData, setStatsData] = useState([]);
-  const [statsLoading, setStatsLoading] = useState(true);
+  const [news, setNews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalNews, setTotalNews] = useState(0)
+  const [limit] = useState(10)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showApproved, setShowApproved] = useState(false)
+  const [selectedNews, setSelectedNews] = useState(null)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [statsData, setStatsData] = useState([])
+  const [statsLoading, setStatsLoading] = useState(true)
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
-  });
-  const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate();
-
+  })
+  const { currentUser } = useSelector((state) => state.user)
+  const navigate = useNavigate()
 
   const fetchNews = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       console.log('Fetching news with params:', {
         page,
         limit,
         approved: !showApproved,
         search: searchTerm
-      });
-      
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news`, {
-        params: {
-          page,
-          limit,
-          approved: !showApproved,
-          search: searchTerm
-        },
-        headers: {
-          token: `Bearer ${localStorage.getItem('token')}`
+      })
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/news`,
+        {
+          params: {
+            page,
+            limit,
+            approved: !showApproved,
+            search: searchTerm
+          },
+          headers: {
+            token: `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
-  
-      console.log('News API response:', response.data);
-      setNews(response.data.news);
-      setTotalPages(response.data.totalPages);
-      setTotalNews(response.data.totalNews);
+      )
+
+      setNews(response.data.news)
+      setTotalPages(response.data.totalPages)
+      setTotalNews(response.data.totalNews)
     } catch (err) {
       console.error('Error fetching news:', {
         message: err.message,
         response: err.response,
         stack: err.stack
-      });
-      setError(err.response?.data?.error || 'Failed to fetch news');
+      })
+      setError(err.response?.data?.error || 'Failed to fetch news')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
   const fetchStats = async () => {
     try {
-      setStatsLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news/stats/monthly`, {
-        headers: {
-          token: `Bearer ${localStorage.getItem('token')}`
+      setStatsLoading(true)
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/news/stats/monthly`,
+        {
+          headers: {
+            token: `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
-      
+      )
+
       // Xử lý dữ liệu nhận được
-      const processedData = response.data.map(item => ({
+      const processedData = response.data.map((item) => ({
         ...item,
         name: item.month, // Recharts cần trường 'name' cho XAxis
         approved: item.approved || 0, // Đảm bảo có giá trị số
         pending: item.pending || 0
-      }));
-      
-      setStatsData(processedData);
+      }))
+
+      setStatsData(processedData)
     } catch (err) {
-      console.error('Error fetching stats:', err);
+      console.error('Error fetching stats:', err)
       setSnackbar({
         open: true,
         message: 'Không thể tải dữ liệu thống kê',
         severity: 'error'
-      });
+      })
     } finally {
-      setStatsLoading(false);
+      setStatsLoading(false)
     }
-  };
+  }
   useEffect(() => {
-    fetchNews();
-  }, [page, showApproved, searchTerm]);
+    fetchNews()
+  }, [page, showApproved, searchTerm])
 
   const handleApprove = async (id) => {
     try {
-      const token = localStorage.getItem('token') || currentUser?.token;
-      
+      const token = localStorage.getItem('token') || currentUser?.token
+
       if (!token) {
-        throw new Error('Không tìm thấy token xác thực');
+        throw new Error('Không tìm thấy token xác thực')
       }
-  
+
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}/api/news/approve/${id}`,
         {},
         {
           headers: {
-            'token': `Bearer ${token}`,
+            token: `Bearer ${token}`,
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            Accept: 'application/json'
           }
         }
-      );
-  
+      )
+
       if (response.data.success) {
         setSnackbar({
           open: true,
           message: 'Bài viết đã được duyệt thành công',
           severity: 'success'
-        });
-        fetchNews();
+        })
+        fetchNews()
       }
     } catch (err) {
       console.error('Chi tiết lỗi:', {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status
-      });
-  
-      let errorMessage = 'Không thể duyệt bài viết';
+      })
+
+      let errorMessage = 'Không thể duyệt bài viết'
       if (err.response?.status === 400) {
-        errorMessage = err.response.data.message || 'Yêu cầu không hợp lệ';
+        errorMessage = err.response.data.message || 'Yêu cầu không hợp lệ'
       } else if (err.response?.status === 401) {
-        errorMessage = 'Bạn cần đăng nhập lại';
+        errorMessage = 'Bạn cần đăng nhập lại'
       } else if (err.response?.status === 403) {
-        errorMessage = 'Bạn không có quyền thực hiện hành động này';
+        errorMessage = 'Bạn không có quyền thực hiện hành động này'
       }
-  
+
       setSnackbar({
         open: true,
         message: errorMessage,
         severity: 'error',
         details: err.response?.data?.error
-      });
+      })
     }
-  };
+  }
 
   const handlePreview = (newsItem) => {
-    setSelectedNews(newsItem);
-    setPreviewOpen(true);
-  };
+    setSelectedNews(newsItem)
+    setPreviewOpen(true)
+  }
 
   const handleClosePreview = () => {
-    setPreviewOpen(false);
-    setSelectedNews(null);
-  };
+    setPreviewOpen(false)
+    setSelectedNews(null)
+  }
 
   const handlePageChange = (event, value) => {
-    setPage(value);
-  };
+    setPage(value)
+  }
 
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
-      setSearchTerm(e.target.value);
-      setPage(1);
+      setSearchTerm(e.target.value)
+      setPage(1)
     }
-  };
+  }
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('vi-VN', options);
-  };
+    const options = { year: 'numeric', month: 'long', day: 'numeric' }
+    return new Date(dateString).toLocaleDateString('vi-VN', options)
+  }
 
   if (!currentUser || currentUser.role !== 'Admin') {
     return (
@@ -208,7 +221,7 @@ const NewsDashboard = () => {
           Bạn không có quyền truy cập trang này
         </Typography>
       </Box>
-    );
+    )
   }
 
   return (
@@ -386,20 +399,28 @@ const NewsDashboard = () => {
         )}
 
         {/* Preview Dialog */}
-        <Dialog open={previewOpen} onClose={handleClosePreview} maxWidth="md" fullWidth>
+        <Dialog
+          open={previewOpen}
+          onClose={handleClosePreview}
+          maxWidth="md"
+          fullWidth
+        >
           {selectedNews && (
             <>
               <DialogTitle>{selectedNews.title}</DialogTitle>
               <DialogContent dividers>
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" gutterBottom>
-                    <strong>Tác giả:</strong> {selectedNews.userId?.name || 'Ẩn danh'}
+                    <strong>Tác giả:</strong>{' '}
+                    {selectedNews.userId?.name || 'Ẩn danh'}
                   </Typography>
                   <Typography variant="subtitle1" gutterBottom>
-                    <strong>Chủ đề:</strong> {selectedNews.topicId?.name || 'Không có'}
+                    <strong>Chủ đề:</strong>{' '}
+                    {selectedNews.topicId?.name || 'Không có'}
                   </Typography>
                   <Typography variant="subtitle1" gutterBottom>
-                    <strong>Ngày đăng:</strong> {formatDate(selectedNews.createdAt)}
+                    <strong>Ngày đăng:</strong>{' '}
+                    {formatDate(selectedNews.createdAt)}
                   </Typography>
                 </Box>
                 {selectedNews.thumbnail && (
@@ -427,8 +448,8 @@ const NewsDashboard = () => {
                     variant="contained"
                     color="success"
                     onClick={() => {
-                      handleApprove(selectedNews._id);
-                      handleClosePreview();
+                      handleApprove(selectedNews._id)
+                      handleClosePreview()
                     }}
                     startIcon={<CheckCircle />}
                   >
@@ -456,7 +477,7 @@ const NewsDashboard = () => {
         </Snackbar>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default NewsDashboard;
+export default NewsDashboard

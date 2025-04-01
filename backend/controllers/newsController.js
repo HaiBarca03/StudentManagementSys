@@ -8,13 +8,13 @@ const mongoose = require('mongoose')
 
 const getAllNews = async (req, res) => {
   try {
-    let { page, limit, approved, search } = req.query;
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 5;
-    const approvedFilter = approved === 'false' ? false : true;
+    let { page, limit, approved, search } = req.query
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 5
+    const approvedFilter = approved === 'false' ? false : true
 
     // Tạo query object cơ bản
-    const query = { approved: approvedFilter };
+    const query = { approved: approvedFilter }
 
     // Thêm điều kiện tìm kiếm nếu có
     if (search) {
@@ -22,54 +22,54 @@ const getAllNews = async (req, res) => {
         { title: { $regex: search, $options: 'i' } },
         { summary: { $regex: search, $options: 'i' } },
         { content: { $regex: search, $options: 'i' } }
-      ];
+      ]
     }
 
     // Đếm tổng số bài viết phù hợp
-    const totalNews = await News.countDocuments(query);
-    const totalPages = Math.ceil(totalNews / limit);
+    const totalNews = await News.countDocuments(query)
+    const totalPages = Math.ceil(totalNews / limit)
 
     // Lấy danh sách bài viết với phân trang
     const news = await News.find(query)
-      .populate({ 
-        path: 'userId', 
-        select: 'name avatar' 
+      .populate({
+        path: 'userId',
+        select: 'name avatar'
       })
-      .populate({ 
-        path: 'topicId', 
-        select: 'name description' 
+      .populate({
+        path: 'topicId',
+        select: 'name description'
       })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .lean();
+      .lean()
 
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      page, 
+      page,
       totalPages,
       totalNews,
       limit,
-      news 
-    });
+      news
+    })
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách bài viết:', error);
-    res.status(500).json({ 
+    console.error('Lỗi khi lấy danh sách bài viết:', error)
+    res.status(500).json({
       success: false,
-      error: 'Lỗi server khi lấy danh sách bài viết' 
-    });
+      error: 'Lỗi server khi lấy danh sách bài viết'
+    })
   }
-};
+}
 // Lấy 10 bài viết mới nhất
 const getLatestNews = async (req, res) => {
   try {
     const latestNews = await News.find({ approved: true })
-      .select('title createdAt slug') // Chỉ lấy title, ngày đăng và slug
-      .sort({ createdAt: -1 }) // Sắp xếp theo ngày mới nhất
-      .limit(10) // Giới hạn 10 bài
+      .sort({ createdAt: -1 })
+      .limit(10)
       .lean()
 
-    const formattedNews = latestNews.map(news => ({
+    const formattedNews = latestNews.map((news) => ({
+      _id: news._id,
       title: news.title,
       datePosted: news.createdAt,
       slug: news.slug
@@ -88,44 +88,45 @@ const getLatestNews = async (req, res) => {
 // Lấy các bài viết có nhiều like nhất
 const getMostLikedNews = async (req, res) => {
   try {
-    const { limit } = req.query;
-    const newsLimit = Math.min(Math.max(parseInt(limit) || 10, 1), 50); // Đảm bảo 1 <= limit <= 50
+    const { limit } = req.query
+    const newsLimit = Math.min(Math.max(parseInt(limit) || 10, 1), 50) // Đảm bảo 1 <= limit <= 50
 
     const mostLikedNews = await News.find({ approved: true })
       .select('title createdAt likes slug')
       .sort({ likes: -1, createdAt: -1 })
       .limit(newsLimit)
-      .lean();
+      .lean()
 
     if (!mostLikedNews.length) {
       return res.status(200).json({
         message: 'Không tìm thấy bài viết nào',
         data: []
-      });
+      })
     }
 
-    const formattedNews = mostLikedNews.map(news => ({
+    const formattedNews = mostLikedNews.map((news) => ({
       title: news.title || 'Không có tiêu đề',
       datePosted: news.createdAt,
       likes: news.likes || 0,
-      slug: news.slug || ''
-    }));
+      slug: news.slug || '',
+      _id: news._id
+    }))
 
     res.status(200).json({
       message: 'Các bài viết được thích nhiều nhất',
       data: formattedNews
-    });
+    })
   } catch (error) {
     console.error('Lỗi chi tiết khi lấy bài viết được thích nhiều nhất:', {
       message: error.message,
       stack: error.stack
-    });
+    })
     res.status(500).json({
       error: 'Lỗi server khi lấy bài viết được thích nhiều nhất',
       details: error.message
-    });
+    })
   }
-};
+}
 // Lấy chi tiết bài viết theo ID
 const getNewsById = async (req, res) => {
   try {
@@ -172,32 +173,32 @@ const approveNews = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Token không hợp lệ hoặc hết hạn'
-      });
+      })
     }
 
-    const { id } = req.params;
+    const { id } = req.params
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
         message: 'ID bài viết không hợp lệ'
-      });
+      })
     }
 
-    const news = await News.findById(id);
+    const news = await News.findById(id)
     if (!news) {
       return res.status(404).json({
         success: false,
         message: 'Không tìm thấy bài viết'
-      });
+      })
     }
 
     if (news.approved) {
       return res.status(400).json({
         success: false,
         message: 'Bài viết đã được duyệt trước đó'
-      });
+      })
     }
 
     // Kiểm tra quyền
@@ -205,30 +206,30 @@ const approveNews = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: 'Bạn không có quyền duyệt bài viết'
-      });
+      })
     }
 
     // Cập nhật thông tin duyệt bài
-    news.approved = true;
-    news.approvedBy = req.user._id;
-    news.approvedAt = new Date();
-    
-    await news.save();
+    news.approved = true
+    news.approvedBy = req.user._id
+    news.approvedAt = new Date()
+
+    await news.save()
 
     res.status(200).json({
       success: true,
       message: 'Duyệt bài viết thành công',
       news
-    });
+    })
   } catch (error) {
-    console.error('Lỗi khi duyệt bài viết:', error);
+    console.error('Lỗi khi duyệt bài viết:', error)
     res.status(500).json({
       success: false,
       message: 'Lỗi server khi duyệt bài viết',
       error: error.message
-    });
+    })
   }
-};
+}
 // Tạo slug duy nhất
 const generateUniqueSlug = async (title) => {
   let baseSlug = slugify(title, { lower: true, strict: true })
@@ -253,14 +254,13 @@ const generateUniqueSlug = async (title) => {
 // Tạo bài viết mới
 const createNews = async (req, res) => {
   try {
-    const { title, summary, content, userId, topicId, published } =
-      req.body
+    const { title, summary, content, userId, topicId, published } = req.body
     const userType = req.user.role
 
     if (!title || !summary || !content || !userId || !userType || !topicId) {
       return res.status(400).json({ error: 'Thiếu dữ liệu bắt buộc' })
     }
-    
+
     let validTopicId = topicId
     if (!topicId || topicId.trim() === '') {
       // Nếu không có topicId, tự động tạo chủ đề mới
@@ -347,7 +347,6 @@ const createNews = async (req, res) => {
 const getAllTopics = async (req, res) => {
   try {
     const topics = await Topic.find().select('name description')
-    console.log('Topics from DB:', topics) // Kiểm tra dữ liệu từ DB
     if (!topics.length) {
       console.log('No topics found in database')
     }
@@ -422,7 +421,10 @@ const shareNews = async (req, res) => {
     })
   } catch (error) {
     console.error('Lỗi khi chia sẻ bài viết:', error)
-    res.status(500).json({ message: 'Lỗi server khi chia sẻ bài viết', error: error.message })
+    res.status(500).json({
+      message: 'Lỗi server khi chia sẻ bài viết',
+      error: error.message
+    })
   }
 }
 const getMonthlyStats = async (req, res) => {
@@ -436,35 +438,35 @@ const getMonthlyStats = async (req, res) => {
       {
         $group: {
           _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" }
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
           },
           total: { $sum: 1 },
           approved: {
             $sum: {
-              $cond: [{ $eq: ["$approved", true] }, 1, 0]
+              $cond: [{ $eq: ['$approved', true] }, 1, 0]
             }
           },
           pending: {
             $sum: {
-              $cond: [{ $eq: ["$approved", false] }, 1, 0]
+              $cond: [{ $eq: ['$approved', false] }, 1, 0]
             }
           }
         }
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1 }
+        $sort: { '_id.year': 1, '_id.month': 1 }
       },
       {
         $project: {
           _id: 0,
           month: {
             $dateToString: {
-              format: "%m/%Y",
+              format: '%m/%Y',
               date: {
                 $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
+                  year: '$_id.year',
+                  month: '$_id.month',
                   day: 1
                 }
               }
@@ -475,17 +477,17 @@ const getMonthlyStats = async (req, res) => {
           pending: 1
         }
       }
-    ]);
+    ])
 
-    res.json(stats);
+    res.json(stats)
   } catch (err) {
-    console.error('Error in getMonthlyStats:', err);
-    res.status(500).json({ 
+    console.error('Error in getMonthlyStats:', err)
+    res.status(500).json({
       error: 'Lỗi khi lấy thống kê',
-      details: err.message 
-    });
+      details: err.message
+    })
   }
-};
+}
 module.exports = {
   getAllNews,
   getNewsById,
@@ -497,4 +499,4 @@ module.exports = {
   getMostLikedNews,
   shareNews,
   getMonthlyStats
-};
+}

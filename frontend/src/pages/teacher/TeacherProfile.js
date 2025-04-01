@@ -5,10 +5,6 @@ import { useSelector } from 'react-redux'
 
 const TeacherProfile = () => {
   const { currentUser, response, error } = useSelector((state) => state.user)
-
-  if (response) console.log(response)
-  else if (error) console.log(error)
-
   const teachSclass = currentUser.teachSclass
   const teachSubject = currentUser.teachSubject
   const teachSchool = currentUser.school

@@ -81,11 +81,6 @@ const ViewStudent = () => {
       dispatch(getSubjectList(userDetails.sclassName._id, 'ClassSubjects'))
     }
   }, [dispatch, userDetails])
-  if (response) {
-    console.log(response)
-  } else if (error) {
-    console.log(error)
-  }
 
   const [name, setName] = useState('')
   const [rollNum, setRollNum] = useState('')
