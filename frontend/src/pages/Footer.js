@@ -1,14 +1,9 @@
-// Footer.js
 import { Avatar, Box, Typography } from '@mui/material';
 import React from 'react';
 import styled from 'styled-components';
 
-// Đảm bảo bạn đã cài Font Awesome trong dự án:
-// npm install @fortawesome/fontawesome-free
-// Thêm vào index.html: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
 const FooterStyled = styled.footer`
-  background-color: rgb(94, 6, 6);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 2rem 0;
 
@@ -63,7 +58,7 @@ const FooterStyled = styled.footer`
   .social-icons {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Căn trái để đồng bộ với các cột khác */
+    align-items: flex-start;
     gap: 1rem;
   }
 
@@ -84,22 +79,23 @@ const FooterStyled = styled.footer`
     transition: background-color 0.3s;
   }
 
-  .social-icons a.tumblr { background-color: #36465d; }
-  .social-icons a.twitter { background-color: #1da1f2; }
-  .social-icons a.google-plus { background-color: #dd4b39; }
-  .social-icons a.linkedin { background-color: #0077b5; }
-  .social-icons a.facebook { background-color: #3b5998; }
-  .social-icons a.youtube { background-color: #ff0000; }
-  .social-icons a.rss { background-color: #f26522; }
+  .social-icons a.tumblr { background-color: rgba(54, 70, 93, 0.7); }
+  .social-icons a.twitter { background-color: rgba(29, 161, 242, 0.7); }
+  .social-icons a.google-plus { background-color: rgba(221, 75, 57, 0.7); }
+  .social-icons a.linkedin { background-color: rgba(0, 119, 181, 0.7); }
+  .social-icons a.facebook { background-color: rgba(59, 89, 152, 0.7); }
+  .social-icons a.youtube { background-color: rgba(255, 0, 0, 0.7); }
+  .social-icons a.rss { background-color: rgba(242, 101, 34, 0.7); }
 
   .social-icons a:hover {
-    opacity: 0.8;
+    opacity: 1;
+    transform: translateY(-2px);
   }
 
   .footer-bottom {
     text-align: center;
     padding-top: 2rem;
-    border-top: 1px solid #555;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     margin-top: 2rem;
   }
 
@@ -110,7 +106,7 @@ const FooterStyled = styled.footer`
     }
 
     .social-icons {
-      align-items: center; /* Căn giữa trên mobile */
+      align-items: center;
     }
 
     .social-row {
@@ -173,18 +169,15 @@ const Footer = () => {
                         Face Of The Project
                     </Typography>
 
-
-
                     <Box
                         className="avatar-group"
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center', // Căn giữa toàn bộ
+                            alignItems: 'center',
                             gap: '1rem',
                         }}
                     >
-                        {/* Hàng 1: 3 ảnh avatar */}
                         <Box
                             className="avatar-row"
                             sx={{
@@ -193,23 +186,22 @@ const Footer = () => {
                             }}
                         >
                             <Avatar
-                                src="https://via.placeholder.com/40" // Thay bằng URL ảnh của bạn
+                                src="https://via.placeholder.com/40"
                                 alt="Hải"
-                                sx={{ width: 50, height: 50 }}
+                                sx={{ width: 50, height: 50, border: '2px solid white' }}
                             />
                             <Avatar
                                 src="https://via.placeholder.com/50"
                                 alt="Soi"
-                                sx={{ width: 50, height: 50 }}
+                                sx={{ width: 50, height: 50, border: '2px solid white' }}
                             />
                             <Avatar
                                 src="https://via.placeholder.com/50"
                                 alt="Hiền"
-                                sx={{ width: 50, height: 50 }}
+                                sx={{ width: 50, height: 50, border: '2px solid white' }}
                             />
                         </Box>
 
-                        {/* Hàng 2: 2 ảnh avatar */}
                         <Box
                             className="avatar-row"
                             sx={{
@@ -220,12 +212,12 @@ const Footer = () => {
                             <Avatar
                                 src="https://via.placeholder.com/50"
                                 alt="Khánh"
-                                sx={{ width: 50, height: 50 }}
+                                sx={{ width: 50, height: 50, border: '2px solid white' }}
                             />
                             <Avatar
                                 src="https://via.placeholder.com/50"
                                 alt="Quang"
-                                sx={{ width: 50, height: 50 }}
+                                sx={{ width: 50, height: 50, border: '2px solid white' }}
                             />
                         </Box>
                     </Box>
