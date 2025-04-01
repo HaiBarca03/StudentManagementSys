@@ -215,9 +215,11 @@ const ForumPostDetailPage = () => {
                 {post.shares || 0}
               </Typography>
             </Box>
-          </CardContent>
+            </CardContent>
           {showComments && (
-            <CommentPost comments={commentList} postId={post._id} />
+            <Box sx={{ maxHeight: '800px', overflowY: 'auto', padding: 2 }}>
+              <CommentPost comments={commentList} postId={post._id} />
+            </Box>
           )}
         </Card>
       </Grid>
@@ -228,7 +230,7 @@ const ForumPostDetailPage = () => {
         sx={{
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 100px)',
-          paddingRight: 1
+          paddingRight: 1,
         }}
       >
         <TrenddingPost />
@@ -237,7 +239,6 @@ const ForumPostDetailPage = () => {
         </Box>
       </Grid>
     </Grid>
-  )
-}
-
+  );
+};
 export default ForumPostDetailPage

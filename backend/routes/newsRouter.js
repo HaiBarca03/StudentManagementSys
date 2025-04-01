@@ -5,7 +5,11 @@ const {
   getNewsById,
   createNews,
   approveNews,
-  likeNews
+  likeNews,
+  shareNews,
+  getLatestNews,
+  getMostLikedNews,
+  getMonthlyStats
 } = require('../controllers/newsController')
 const { authorizeUser, authorizeAdmin } = require('../middlewares/auth')
 const {
@@ -16,6 +20,7 @@ const {
 
 const router = express.Router()
 
+// Middleware để log request chi tiết
 // Middleware để log request chi tiết
 router.use((req, res, next) => {
   console.log('📥 Received request:', req.method, req.path)
@@ -28,10 +33,15 @@ router.use((req, res, next) => {
   next()
 })
 
+
 // Routes
 router.get('/', getAllNews)
+router.get('/latest', getLatestNews)
+router.get('/most-liked', getMostLikedNews); 
+router.get('/monthly-stats', authorizeUser, getMonthlyStats)
 router.get('/:id', getNewsById)
-router.post('/:newsId/like', authorizeUser, likeNews)
+
+router.post('/:newsId/share', authorizeUser, shareNews)
 router.post(
   '/',
   authorizeUser,
