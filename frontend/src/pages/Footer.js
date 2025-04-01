@@ -1,253 +1,183 @@
-import { Avatar, Box, Typography } from '@mui/material'
+import { Avatar, Box, Typography, Container, Link } from '@mui/material'
 import React from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
 const FooterStyled = styled.footer`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 2rem 0;
+  padding: 3rem 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+`
 
-  .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 0 1rem;
-  }
+const FooterContainer = styled(Container)`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 0 1rem;
+`
 
-  .footer-section {
-    flex: 1;
-    min-width: 200px;
-    margin: 1rem;
-  }
+const FooterSection = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+`
 
-  .footer-section h3 {
-    margin-bottom: 1rem;
-  }
-
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .footer-section ul li {
-    margin: 0.5rem 0;
-  }
-
-  .footer-section a {
-    color: white;
-    text-decoration: none;
-  }
-
-  .footer-section a:hover {
-    text-decoration: underline;
-  }
-
-  .social-links a {
-    display: block;
-    margin: 0.5rem 0;
-  }
-
-  .stay-connected h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-  }
-
-  .social-icons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .social-row {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .social-icons a {
-    color: white;
-    font-size: 1.5rem;
+const FooterTitle = styled(Typography)`
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 0.75rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
     width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.3s;
-  }
-
-  .social-icons a.tumblr {
-    background-color: rgba(54, 70, 93, 0.7);
-  }
-  .social-icons a.twitter {
-    background-color: rgba(29, 161, 242, 0.7);
-  }
-  .social-icons a.google-plus {
-    background-color: rgba(221, 75, 57, 0.7);
-  }
-  .social-icons a.linkedin {
-    background-color: rgba(0, 119, 181, 0.7);
-  }
-  .social-icons a.facebook {
-    background-color: rgba(59, 89, 152, 0.7);
-  }
-  .social-icons a.youtube {
-    background-color: rgba(255, 0, 0, 0.7);
-  }
-  .social-icons a.rss {
-    background-color: rgba(242, 101, 34, 0.7);
-  }
-
-  .social-icons a:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
-
-  .footer-bottom {
-    text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    margin-top: 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .footer-container {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .social-icons {
-      align-items: center;
-    }
-
-    .social-row {
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
   }
 `
+
+const FooterList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`
+
+const FooterLink = styled(Link)`
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  display: inline-block;
+  
+  &:hover {
+    color: white;
+    transform: translateX(4px);
+  }
+`
+
+const MemberItem = styled(Typography)`
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.6;
+`
+
+const AvatarGroup = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+`
+
+const AvatarRow = styled(Box)`
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+`
+
+const FooterBottom = styled(Box)`
+  text-align: center;
+  padding-top: 2.5rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+`
+
+const SocialLink = styled(Link)`
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: white;
+    text-decoration: underline;
+  }
+`
+
 const Footer = () => {
   return (
     <FooterStyled>
-      <div className="footer-container">
-        <div className="footer-section">
-          <h3>Thành viên thực hiện ✅</h3>
-          <p>Đoàn Đức Hải - 2100903 (L)</p>
-          <p>Đặng Thị Soi - 2101164</p>
-          <p>Nguyễn Thu Hiền - 2101317</p>
-          <p>Trịnh Quốc Khánh - 2100853</p>
-          <p>Nguyễn Văn Quang - 2100857</p>
-        </div>
+      <FooterContainer maxWidth="lg">
+        <FooterSection>
+          <FooterTitle variant="h6">Thành viên thực hiện</FooterTitle>
+          <Box display="flex" flexDirection="column" gap={1}>
+            <MemberItem>Đoàn Đức Hải - 2100903 (L)</MemberItem>
+            <MemberItem>Đặng Thị Soi - 2101164</MemberItem>
+            <MemberItem>Nguyễn Thu Hiền - 2101317</MemberItem>
+            <MemberItem>Trịnh Quốc Khánh - 2100853</MemberItem>
+            <MemberItem>Nguyễn Văn Quang - 2100857</MemberItem>
+          </Box>
+        </FooterSection>
 
-        <div className="footer-section">
-          <h3>Danh mục trang 📌 </h3>
-          <ul>
-            <li>
-              <a href="/">Trang chủ</a>
-            </li>
-            <li>
-              <a href="/forum">Diễn đàn</a>
-            </li>
-            <li>
-              <a>Phản ánh</a>
-            </li>
-            <li>
-              <a>Thông tin cá nhân</a>
-            </li>
-          </ul>
-        </div>
+        <FooterSection>
+          <FooterTitle variant="h6">Danh mục trang</FooterTitle>
+          <FooterList>
+            <li><FooterLink href="/">Trang chủ</FooterLink></li>
+            <li><FooterLink href="/forum">Diễn đàn</FooterLink></li>
+            <li><FooterLink href="#">Phản ánh</FooterLink></li>
+            <li><FooterLink href="#">Thông tin cá nhân</FooterLink></li>
+          </FooterList>
+        </FooterSection>
 
-        <div className="footer-section">
-          <h3>Thông tin sản phẩm 🌐</h3>
-          <div className="social-links">
-            <a href="https://student-sys-fe.vercel.app">MongoBD</a>
-            <a href="https://student-sys-fe.vercel.app">Demo</a>
-            <a href="https://student-sys.vercel.app">API</a>
-          </div>
-        </div>
+        <FooterSection>
+          <FooterTitle variant="h6">Thông tin sản phẩm</FooterTitle>
+          <Box display="flex" flexDirection="column" gap={0.5}>
+            <SocialLink href="https://student-sys-fe.vercel.app">MongoDB</SocialLink>
+            <SocialLink href="https://student-sys-fe.vercel.app">Demo</SocialLink>
+            <SocialLink href="https://student-sys.vercel.app">API</SocialLink>
+          </Box>
+        </FooterSection>
 
-        <Box
-          className="footer-section stay-connected"
-          sx={{
-            flex: 1,
-            minWidth: 200,
-            margin: '1rem'
-          }}
-        >
-          <Typography
-            variant="h6"
-            component="h4"
-            sx={{
-              marginBottom: '1rem',
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: 'bold'
-            }}
-          >
-            Face Of The Project
-          </Typography>
-
-          <Box
-            className="avatar-group"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '1rem'
-            }}
-          >
-            <Box
-              className="avatar-row"
-              sx={{
-                display: 'flex',
-                gap: '1rem'
-              }}
-            >
+        <FooterSection>
+          <FooterTitle variant="h6" textAlign="left">Face Of The Project</FooterTitle>
+          <AvatarGroup>
+            <AvatarRow>
               <Avatar
                 src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743508853/anhthe_v1_grpn55.jpg"
                 alt="Hải"
-                sx={{ width: 50, height: 50, border: '2px solid white' }}
+                sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
               <Avatar
                 src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743356233/news_images/zjyl9khql1slqapkvnka.jpg"
                 alt="Soi"
-                sx={{ width: 50, height: 50, border: '2px solid white' }}
+                sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
               <Avatar
                 src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509154/z6321503142207_11c7187bce51a692632024598d21293b_wuw7um.jpg"
                 alt="Hiền"
-                sx={{ width: 50, height: 50, border: '2px solid white' }}
+                sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
-            </Box>
-
-            <Box
-              className="avatar-row"
-              sx={{
-                display: 'flex',
-                gap: '1rem'
-              }}
-            >
+            </AvatarRow>
+            <AvatarRow>
               <Avatar
                 src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509152/9d6b2a40-56e4-4977-80ab-117e8fa97646_okjzdj.jpg"
                 alt="Khánh"
-                sx={{ width: 50, height: 50, border: '2px solid white' }}
+                sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
               <Avatar
                 src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509153/z6321498102634_c4afce58903bb6b7d9caf6612d4e1f61_wzkvtm.jpg"
                 alt="Quang"
-                sx={{ width: 50, height: 50, border: '2px solid white' }}
+                sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
-            </Box>
-          </Box>
-        </Box>
-      </div>
+            </AvatarRow>
+          </AvatarGroup>
+        </FooterSection>
+      </FooterContainer>
 
-      <div className="footer-bottom">
-        <p>@ Welcome to Group 10 - University Management Database System! 🎉</p>
-      </div>
+      <FooterBottom>
+        <Typography variant="body2">
+          @ Welcome to Group 10 - University Management Database System! 🎉
+        </Typography>
+      </FooterBottom>
     </FooterStyled>
   )
 }

@@ -87,7 +87,8 @@ const ChooseUser = ({ visitor }) => {
         background: 'linear-gradient(120deg, #6b48ff 0%, #00ddeb 100%)',
         display: 'flex',
         alignItems: 'center',
-        py: 0
+        py: 0,
+        paddingBottom: 10
       }}
     >
       <Container maxWidth="lg">
@@ -137,7 +138,7 @@ const ChooseUser = ({ visitor }) => {
                       borderRadius: 3,
                       cursor: 'pointer',
                       transition: 'all 0.3s ease-in-out',
-                      background: 'rgba(255, 255, 255, 0.95)', // Card trắng nhẹ
+                      background: 'rgba(251, 251, 251, 0.95)', // Card trắng nhẹ
                       border: '1px solid rgba(255,255,255,0.2)',
                       '&:hover': {
                         transform: 'translateY(-10px)',

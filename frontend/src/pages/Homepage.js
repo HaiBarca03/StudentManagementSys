@@ -23,7 +23,8 @@ const Homepage = () => {
       background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
       display: 'flex',
       alignItems: 'center',
-      py: 4
+      py: 4,
+
     }}>
       <Container maxWidth="lg">
         <Paper elevation={0} sx={{
@@ -37,7 +38,7 @@ const Homepage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                p: 4
+                p: 4,
               }}>
                 <img 
                   src={Students} 
@@ -57,18 +58,28 @@ const Homepage = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                
               }}>
-                <Typography variant="h2" component="h1" sx={{
+              <Typography 
+                variant="h2" 
+                component="h1" 
+                sx={{
                   fontWeight: 700,
                   mb: 3,
                   background: 'linear-gradient(90deg, #3f51b5 0%, #2196f3 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  lineHeight: 1.2
-                }}>
-                  Chào mừng đến với hệ thống Quản lý Trường Học
-                </Typography>
+                  lineHeight: 1.5,  // Increased line height for better readability
+                  textAlign: 'left',
+                  wordSpacing: 'normal',
+                  letterSpacing: 'normal',
+                  hyphens: 'auto',
+                  px: 2
+                }}
+              >
+                Chào mừng đến với hệ thống Quản lý Trường Học
+              </Typography>
                 
                 <Typography variant="body1" sx={{
                   color: 'text.secondary',
@@ -127,7 +138,8 @@ const Homepage = () => {
                 <Typography variant="body2" sx={{ 
                   textAlign: 'center',
                   mt: 2,
-                  color: 'text.secondary'
+                  color: 'text.secondary',
+                  paddingBottom: 5
                 }}>
                   Don't have an account?{' '}
                   <Button 
