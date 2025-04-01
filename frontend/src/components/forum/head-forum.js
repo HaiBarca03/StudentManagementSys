@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   AppBar,
   Toolbar,
@@ -18,7 +18,7 @@ import {
   ListItemButton,
   ListItemText,
   Divider
-} from '@mui/material';
+} from '@mui/material'
 import {
   Search as SearchIcon,
   ArrowDropDown as ArrowDropDownIcon,
@@ -27,30 +27,19 @@ import {
   Subject as SubjectIcon,
   Article as ArticleIcon,
   AccountCircle as AccountIcon
-} from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+} from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 const HeadForum = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const { currentUser } = useSelector((state) => state.user)
+  const navigate = useNavigate()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
+    setMobileOpen(!mobileOpen)
+  }
   const drawerContent = (
     <Box sx={{ width: 250 }}>
       <List>
@@ -60,12 +49,14 @@ const HeadForum = () => {
             <ListItemText primary="Bài viết mới" />
           </ListItemButton>
         </ListItem>
-        
+
         {currentUser?.role === 'Admin' && (
           <>
             <Divider />
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate('/forum/topic/dashboard')}>
+              <ListItemButton
+                onClick={() => navigate('/forum/topic/dashboard')}
+              >
                 <SubjectIcon sx={{ mr: 2 }} />
                 <ListItemText primary="Chủ đề" />
               </ListItemButton>
@@ -80,16 +71,11 @@ const HeadForum = () => {
         )}
       </List>
     </Box>
-  );
+  )
 
   return (
-    <AppBar
-      position="static"
-      color="default"
-      sx={{ boxShadow: 1 }}
-    >
+    <AppBar position="static" color="default" sx={{ boxShadow: 1 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Left side - Brand/Account */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {isMobile && (
             <IconButton
@@ -101,31 +87,33 @@ const HeadForum = () => {
               <MenuIcon />
             </IconButton>
           )}
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}>B</Avatar>
+            <Avatar
+              sx={{ bgcolor: 'primary.main', mr: 1 }}
+              src={currentUser?.images?.[0]?.url ?? ''}
+            >
+              {!currentUser?.images?.[0]?.url &&
+                String(currentUser.name).charAt(0)}
+            </Avatar>
             {!isMobile && (
               <>
-                <Typography variant="h6">Tài khoản</Typography>
-                <IconButton onClick={handleMenuOpen}>
-                  <ArrowDropDownIcon />
-                </IconButton>
+                <Typography variant="h6">{currentUser?.name}</Typography>
               </>
             )}
           </Box>
         </Box>
 
-        {/* Middle - Search (hidden on mobile) */}
         {!isMobile && (
           <TextField
             variant="outlined"
             placeholder="Search Topics"
             size="small"
-            sx={{ 
-              mx: 2, 
-              bgcolor: 'white', 
-              borderRadius: '5px', 
-              width: '250px' 
+            sx={{
+              mx: 2,
+              bgcolor: 'white',
+              borderRadius: '5px',
+              width: '250px'
             }}
             InputProps={{
               endAdornment: <SearchIcon />
@@ -133,7 +121,6 @@ const HeadForum = () => {
           />
         )}
 
-        {/* Right side - Buttons/Avatar */}
         {!isMobile ? (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button
@@ -165,42 +152,29 @@ const HeadForum = () => {
                 </Button>
               </>
             )}
-
-            <Avatar src="https://i.pravatar.cc/40" />
           </Box>
         ) : (
           <IconButton color="inherit">
             <SearchIcon />
           </IconButton>
         )}
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleMenuClose}>Admin</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Teacher</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Student</MenuItem>
-        </Menu>
       </Toolbar>
 
-      {/* Mobile Drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true
         }}
         sx={{
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 }
         }}
       >
         {drawerContent}
       </Drawer>
     </AppBar>
-  );
-};
+  )
+}
 
-export default HeadForum;
+export default HeadForum
