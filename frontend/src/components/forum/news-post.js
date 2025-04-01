@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -6,62 +6,210 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText
-} from '@mui/material'
-import { useNavigate } from 'react-router-dom'
-const newPosts = [
-  {
-    id: 1,
-    title: 'Data Subject access request procedure',
-    date: '31 Aug, 2018'
-  },
-  {
-    id: 2,
-    title: 'Data Subject access request procedure',
-    date: '29 Aug, 2018'
-  },
-  {
-    id: 3,
-    title: 'Data Subject access request procedure',
-    date: '21 Aug, 2018'
-  }
-]
-const NewPosts = () => {
-  const navigate = useNavigate()
+  ListItemText,
+  CircularProgress,
+  Paper,
+  useTheme,
+  Divider
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import axios from 'axios';
 
-  const handleClick = (id) => {
-    navigate(`/forum/post/${id}`)
+// Common styling configuration
+const cardStyles = (theme) => ({
+  bgcolor: theme.palette.mode === 'dark' ? 'background.default' : 'grey.100',
+  p: 3,
+  borderRadius: 2,
+  height: '100%',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+});
+
+const headerStyles = {
+  fontWeight: 600,
+  color: 'text.primary',
+  mb: 2,
+  pb: 1,
+  borderBottom: '1px solid',
+  borderColor: 'divider'
+};
+
+const listItemStyles = (theme) => ({
+  px: 0,
+  py: 1.5,
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover
   }
-  return (
-    <>
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          padding: 2,
-          borderRadius: 2,
-          boxShadow: 1
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          News Posts
-        </Typography>
-        <List>
-          {newPosts.map((news) => (
-            <ListItem
-              key={news.id}
-              onClick={() => handleClick(news.id)}
-              alignItems="flex-start"
-            >
-              <ListItemAvatar>
-                <Avatar>P</Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={news.title} secondary={news.date} />
-            </ListItem>
-          ))}
-        </List>
+});
+
+const avatarStyles = (theme) => ({
+  bgcolor: theme.palette.primary.main,
+  color: theme.palette.getContrastText(theme.palette.primary.main),
+  width: 36,
+  height: 36,
+  fontSize: '0.875rem'
+});
+
+// Common component for displaying news posts
+const NewsList = ({ posts, title, loading, error, onClick }) => {
+  const theme = useTheme();
+
+  const formatDate = (dateString) => {
+    return format(new Date(dateString), 'dd MMM, yyyy');
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" p={3}>
+        <CircularProgress />
       </Box>
-    </>
-  )
-}
+    );
+  }
 
-export default NewPosts
+  if (error) {
+    return (
+      <Box p={3} textAlign="center">
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Paper elevation={0} sx={cardStyles(theme)}>
+      <Typography variant="h6" gutterBottom sx={headerStyles}>
+        {title}
+      </Typography>
+      
+      <List disablePadding>
+        {posts.length > 0 ? (
+          posts.map((post, index) => (
+            <React.Fragment key={post.slug || post._id}>
+              <ListItem
+                button
+                onClick={() => onClick(post.slug)}
+                sx={listItemStyles(theme)}
+              >
+                <ListItemAvatar sx={{ minWidth: 44 }}>
+                  <Avatar sx={avatarStyles(theme)}>
+                    {post.title.charAt(0)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 500,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {post.title}
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: 'block', mt: 0.5 }}
+                    >
+                      {formatDate(post.datePosted || post.createdAt)}
+                      {post.likes && ` • 👍 ${post.likes}`}
+                    </Typography>
+                  }
+                  sx={{ my: 0 }}
+                />
+              </ListItem>
+              {index < posts.length - 1 && (
+                <Divider sx={{ mx: 2 }} />
+              )}
+            </React.Fragment>
+          ))
+        ) : (
+          <Typography color="textSecondary" sx={{ textAlign: 'center', py: 2 }}>
+            No posts available
+          </Typography>
+        )}
+      </List>
+    </Paper>
+  );
+};
+
+// Latest Posts Component
+export const NewPosts = () => {
+  const [latestNews, setLatestNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLatestNews = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news/latest`);
+        setLatestNews(response.data.data);
+      } catch (err) {
+        console.error('Error fetching latest news:', err);
+        setError('Failed to load latest news');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestNews();
+  }, []);
+
+  const handleClick = (slug) => {
+    navigate(`/forum/post/${slug}`);
+  };
+
+  return (
+    <NewsList
+      posts={latestNews}
+      title="Latest News"
+      loading={loading}
+      error={error}
+      onClick={handleClick}
+    />
+  );
+};
+
+// Trending Posts Component
+export const TrendingPost = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMostLikedNews = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news/most-liked?limit=5`);
+        setPosts(response.data.data || []);
+      } catch (err) {
+        console.error('Error fetching trending posts:', err);
+        setError('Failed to load trending posts');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMostLikedNews();
+  }, []);
+
+  const handleClick = (slug) => {
+    navigate(`/news/${slug}`);
+  };
+
+  return (
+    <NewsList
+      posts={posts}
+      title="Trending News"
+      loading={loading}
+      error={error}
+      onClick={handleClick}
+    />
+  );
+};
+export default NewPosts;

@@ -7,161 +7,197 @@ import {
   Container,
   CircularProgress,
   Backdrop,
+  Typography,
+  IconButton,
+  Fade
 } from '@mui/material';
-import { AccountCircle, School, Group } from '@mui/icons-material';
-import styled from 'styled-components';
+import { AccountCircle, School, Groups, ArrowForward } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/userRelated/userHandle';
 import Popup from '../components/Popup';
 
 const ChooseUser = ({ visitor }) => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const password = "zxc"
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const password = "zxc";
 
-  const { status, currentUser, currentRole } = useSelector(state => state.user);;
-
-  const [loader, setLoader] = useState(false)
+  const { status, currentUser, currentRole } = useSelector(state => state.user);
+  const [loader, setLoader] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   const navigateHandler = (user) => {
-    if (user === "Admin") {
-      if (visitor === "guest") {
-        const email = "yogendra@12"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Adminlogin');
-      }
-    }
+    const credentials = {
+      Admin: { email: "yogendra@12", password },
+      Student: { rollNum: "1", studentName: "Dipesh Awasthi", password },
+      Teacher: { email: "tony@12", password }
+    };
 
-    else if (user === "Student") {
-      if (visitor === "guest") {
-        const rollNum = "1"
-        const studentName = "Dipesh Awasthi"
-        const fields = { rollNum, studentName, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Studentlogin');
-      }
+    if (visitor === "guest") {
+      setLoader(true);
+      dispatch(loginUser(credentials[user], user));
+    } else {
+      navigate(`/${user}login`);
     }
-
-    else if (user === "Teacher") {
-      if (visitor === "guest") {
-        const email = "tony@12"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Teacherlogin');
-      }
-    }
-  }
+  };
 
   useEffect(() => {
-    if (status === 'success' || currentUser !== null) {
-      if (currentRole === 'Admin') {
-        navigate('/Admin/dashboard');
-      }
-      else if (currentRole === 'Student') {
-        navigate('/Student/dashboard');
-      } else if (currentRole === 'Teacher') {
-        navigate('/Teacher/dashboard');
-      }
-    }
-    else if (status === 'error') {
-      setLoader(false)
-      setMessage("Network Error")
-      setShowPopup(true)
+    if (status === 'success' && currentUser) {
+      navigate(`/${currentRole}/dashboard`);
+    } else if (status === 'error') {
+      setLoader(false);
+      setMessage("Network Error");
+      setShowPopup(true);
     }
   }, [status, currentRole, navigate, currentUser]);
 
+  const userTypes = [
+    {
+      role: "Admin",
+      icon: <AccountCircle fontSize="large" />,
+      description: "Login as an administrator to access the dashboard to manage app data."
+    },
+    {
+      role: "Student",
+      icon: <School fontSize="large" />,
+      description: "Login as a student to explore course materials and assignments."
+    },
+    {
+      role: "Teacher",
+      icon: <Groups fontSize="large" />,
+      description: "Login as a teacher to create courses, assignments, and track student progress."
+    }
+  ];
+
   return (
-    <StyledContainer>
-      <Container>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sm={6} md={4}>
-            <div onClick={() => navigateHandler("Admin")}>
-              <StyledPaper elevation={3}>
-                <Box mb={2}>
-                  <AccountCircle fontSize="large" />
-                </Box>
-                <StyledTypography>
-                  Admin
-                </StyledTypography>
-                Login as an administrator to access the dashboard to manage app data.
-              </StyledPaper>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <StyledPaper elevation={3}>
-              <div onClick={() => navigateHandler("Student")}>
-                <Box mb={2}>
-                  <School fontSize="large" />
-                </Box>
-                <StyledTypography>
-                  Student
-                </StyledTypography>
-                Login as a student to explore course materials and assignments.
-              </div>
-            </StyledPaper>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <StyledPaper elevation={3}>
-              <div onClick={() => navigateHandler("Teacher")}>
-                <Box mb={2}>
-                  <Group fontSize="large" />
-                </Box>
-                <StyledTypography>
-                  Teacher
-                </StyledTypography>
-                Login as a teacher to create courses, assignments, and track student progress.
-              </div>
-            </StyledPaper>
-          </Grid>
-        </Grid>
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      py: 8
+    }}>
+      <Container maxWidth="lg">
+        <Fade in timeout={800}>
+          <Box>
+            <Typography variant="h3" align="center" sx={{ 
+              mb: 6,
+              color: 'white',
+              fontWeight: 700,
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              Welcome to Learning Portal
+            </Typography>
+            
+            <Typography variant="h6" align="center" sx={{ 
+              mb: 8,
+              color: 'rgba(255,255,255,0.8)',
+              maxWidth: 600,
+              mx: 'auto'
+            }}>
+              Select your role to continue {visitor === "guest" ? "as guest" : "to login"}
+            </Typography>
+
+            <Grid container spacing={4} justifyContent="center">
+              {userTypes.map((user) => (
+                <Grid item xs={12} sm={6} md={4} key={user.role}>
+                  <Paper
+                    elevation={hoveredCard === user.role ? 8 : 3}
+                    sx={{
+                      p: 4,
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      borderRadius: 4,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        background: 'rgba(255,255,255,0.15)',
+                        boxShadow: '0 15px 30px rgba(0,0,0,0.2)'
+                      }
+                    }}
+                    onClick={() => navigateHandler(user.role)}
+                    onMouseEnter={() => setHoveredCard(user.role)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <Box sx={{
+                      width: 80,
+                      height: 80,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 3,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                      color: 'white'
+                    }}>
+                      {user.icon}
+                    </Box>
+                    
+                    <Typography variant="h5" sx={{ 
+                      mb: 2,
+                      color: 'white',
+                      fontWeight: 600
+                    }}>
+                      {user.role}
+                    </Typography>
+                    
+                    <Typography variant="body1" sx={{ 
+                      mb: 3,
+                      color: 'rgba(255,255,255,0.8)'
+                    }}>
+                      {user.description}
+                    </Typography>
+                    
+                    <IconButton
+                      sx={{
+                        color: 'white',
+                        bgcolor: 'rgba(255,255,255,0.2)',
+                        '&:hover': {
+                          bgcolor: 'rgba(255,255,255,0.3)'
+                        }
+                      }}
+                    >
+                      <ArrowForward />
+                    </IconButton>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Fade>
       </Container>
+
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ 
+          color: '#fff', 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backdropFilter: 'blur(4px)'
+        }}
         open={loader}
       >
-        <CircularProgress color="inherit" />
-        Please Wait
+        <Box textAlign="center">
+          <CircularProgress color="inherit" size={60} thickness={5} sx={{ mb: 3 }} />
+          <Typography variant="h6" sx={{ color: 'white' }}>
+            Loading {hoveredCard} Portal...
+          </Typography>
+        </Box>
       </Backdrop>
-      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-    </StyledContainer>
+
+      <Popup
+        message={message}
+        setShowPopup={setShowPopup}
+        showPopup={showPopup}
+      />
+    </Box>
   );
 };
 
 export default ChooseUser;
-
-const StyledContainer = styled.div`
-  background: linear-gradient(to bottom, #411d70, #19118b);
-  height: 120vh;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-`;
-
-const StyledPaper = styled(Paper)`
-  padding: 20px;
-  text-align: center;
-  background-color: #1f1f38;
-  color:rgba(255, 255, 255, 0.6);
-  cursor:pointer;
-
-  &:hover {
-    background-color: #2c2c6c;
-    color:white;
-  }
-`;
-
-const StyledTypography = styled.h2`
-  margin-bottom: 10px;
-`;
