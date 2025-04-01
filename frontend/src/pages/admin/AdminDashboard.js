@@ -76,7 +76,15 @@ const AdminDashboard = () => {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ flexGrow: 1 }}
+              sx={{ 
+                flexGrow: 1,
+                fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+                fontWeight: 600,
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                fontSize: '1.25rem',
+                textShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)'
+              }}
             >
               TRANG QUẢN TRỊ
             </Typography>

@@ -49,7 +49,7 @@ const TeacherClassDetails = () => {
   }
 
   const studentColumns = [
-    { id: 'name', label: 'Họ tên', minWidth: 170 },
+    { id: 'name', label: 'Họ tên', minWidth: 170, fontSize: 'bold' },
     { id: 'rollNum', label: 'Mã sinh viên', minWidth: 100 }
   ]
 

@@ -11,7 +11,7 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { ArrowForward } from '@mui/icons-material';
-import Students from "../assets/students.svg";
+import Students from "../assets/students.png";
 
 const Homepage = () => {
   const theme = useTheme();

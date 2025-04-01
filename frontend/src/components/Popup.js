@@ -8,33 +8,37 @@ import { Snackbar } from '@mui/material';
 const Popup = ({ message, setShowPopup, showPopup }) => {
     const dispatch = useDispatch();
 
-    const vertical = "top"
-    const horizontal = "right"
+    const vertical = "top";
+    const horizontal = "right";
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
         setShowPopup(false);
-        dispatch(underControl())
-        dispatch(underStudentControl())
+        dispatch(underControl());
+        dispatch(underStudentControl());
     };
 
+    // Kiểm tra điều kiện thành công rõ ràng hơn
+    const isSuccess = message && message.toLowerCase().includes('success');
+
     return (
-        <>
-            <Snackbar open={showPopup} autoHideDuration={2000} onClose={handleClose} anchorOrigin={{ vertical, horizontal }} key={vertical + horizontal}>
-                {
-                    (message === "Done Successfully") ?
-                        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                            {message}
-                        </Alert>
-                        :
-                        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                            {message}
-                        </Alert>
-                }
-            </Snackbar>
-        </>
+        <Snackbar 
+            open={showPopup} 
+            autoHideDuration={2000} 
+            onClose={handleClose} 
+            anchorOrigin={{ vertical, horizontal }} 
+            key={vertical + horizontal}
+        >
+            <Alert 
+                onClose={handleClose} 
+                severity={isSuccess ? "success" : "error"} 
+                sx={{ width: '100%' }}
+            >
+                {message}
+            </Alert>
+        </Snackbar>
     );
 };
 

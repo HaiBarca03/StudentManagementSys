@@ -57,7 +57,15 @@ const TeacherDashboard = () => {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ flexGrow: 1 }}
+              sx={{ 
+                flexGrow: 1,
+                fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif', // Hoặc font chữ hiện đại khác
+                fontWeight: 600, // Độ đậm vừa phải
+                letterSpacing: '0.5px', // Giãn cách chữ nhẹ
+                textTransform: 'uppercase', // Chữ in hoa
+                fontSize: '1.25rem', // Kích thước tùy chỉnh
+                textShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)' // Đổ bóng nhẹ (tùy chọn)
+              }}
             >
               TRANG QUẢN LÝ GIẢNG VIÊN
             </Typography>
