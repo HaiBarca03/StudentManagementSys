@@ -26,7 +26,6 @@ const getAllTopics = async (req, res) => {
 
 const getTopicDetails = async (req, res) => {
   const { slug } = req.params
-  console.log(slug)
   try {
     const topic = await Topic.findOne({ slug })
     if (!topic) {

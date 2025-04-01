@@ -30,7 +30,6 @@ export const getCommentChild = (parentId) => async (dispatch) => {
     const result = await axios.get(
       `${process.env.REACT_APP_BASE_URL}/comment/parent-comment/${parentId}`
     )
-    console.log('result', result)
     if (result.data.message) {
       dispatch(getFailed(result.data.message))
     } else {
@@ -58,7 +57,6 @@ export const createComment = (data) => async (dispatch) => {
       config
     )
 
-    console.log(result.data)
     if (result.data.message) {
       dispatch(getFailed(result.data.message))
     } else {
@@ -132,7 +130,6 @@ export const updateComment = (id, data) => async (dispatch) => {
       config
     )
 
-    console.log(result.data)
     if (result.data.message) {
       dispatch(getFailed(result.data.message))
     } else {
@@ -159,7 +156,6 @@ export const like = (commentId) => async (dispatch) => {
       config
     )
 
-    console.log(result.data)
     if (result.data.message) {
       dispatch(getFailed(result.data.message))
     } else {

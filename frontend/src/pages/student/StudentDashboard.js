@@ -97,7 +97,12 @@ const StudentDashboard = () => {
 
             {/* Forum */}
             <Route path="/forum" element={<ForumHomePage />} />
+            <Route path="/forum/news/:id" element={<ForumPostDetailPage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route
+              path="/forum/trendding-news/:id"
+              element={<ForumPostDetailPage />}
+            />
             <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />

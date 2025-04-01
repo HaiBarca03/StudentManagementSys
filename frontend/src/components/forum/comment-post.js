@@ -24,7 +24,6 @@ const CommentPost = ({ postId }) => {
   const [previewImages, setPreviewImages] = useState([])
   const [newFile, setNewFile] = useState(null)
   const dispatch = useDispatch()
-  console.log('postId:', postId)
   const comments = useSelector((state) => state.comment.commentList || [])
 
   useEffect(() => {

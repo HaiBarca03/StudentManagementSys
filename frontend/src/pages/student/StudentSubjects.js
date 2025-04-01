@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
-import { getUserDetails } from '../../redux/userRelated/userHandle';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getSubjectList } from '../../redux/sclassRelated/sclassHandle'
+import { getUserDetails } from '../../redux/userRelated/userHandle'
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -10,53 +10,52 @@ import {
   Table,
   TableBody,
   TableHead,
-  Typography,
-} from '@mui/material';
-import CustomBarChart from '../../components/CustomBarChart';
+  Typography
+} from '@mui/material'
+import CustomBarChart from '../../components/CustomBarChart'
 
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import { StyledTableCell, StyledTableRow } from '../../components/styles';
+import InsertChartIcon from '@mui/icons-material/InsertChart'
+import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined'
+import TableChartIcon from '@mui/icons-material/TableChart'
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined'
+import { StyledTableCell, StyledTableRow } from '../../components/styles'
 
 const StudentSubjects = () => {
-  const dispatch = useDispatch();
-  const { subjectsList, sclassDetails } = useSelector((state) => state.sclass);
-  const { userDetails, currentUser, loading, response, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch()
+  const { subjectsList, sclassDetails } = useSelector((state) => state.sclass)
+  const { userDetails, currentUser, loading, response, error } = useSelector(
+    (state) => state.user
+  )
 
   useEffect(() => {
     if (currentUser?._id) {
-      dispatch(getUserDetails(currentUser._id, 'Student'));
+      dispatch(getUserDetails(currentUser._id, 'Student'))
     }
-  }, [dispatch, currentUser?._id]);
+  }, [dispatch, currentUser?._id])
 
-  if (response) console.log(response);
-  if (error) console.log(error);
-
-  const [subjectMarks, setSubjectMarks] = useState([]);
-  const [selectedSection, setSelectedSection] = useState('table');
+  const [subjectMarks, setSubjectMarks] = useState([])
+  const [selectedSection, setSelectedSection] = useState('table')
 
   useEffect(() => {
     if (userDetails) {
-      setSubjectMarks(userDetails.examResult || []);
+      setSubjectMarks(userDetails.examResult || [])
     }
-  }, [userDetails]);
+  }, [userDetails])
 
   useEffect(() => {
     if (!subjectMarks.length && currentUser?.sclassName?._id) {
-      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'));
+      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'))
     }
-  }, [subjectMarks, dispatch, currentUser?.sclassName?._id]);
+  }, [subjectMarks, dispatch, currentUser?.sclassName?._id])
 
   useEffect(() => {
     if (subjectMarks == []) {
-      dispatch(getSubjectList(currentUser.sclassName._id, "ClassSubjects"));
+      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'))
     }
-  }, [subjectMarks, dispatch, currentUser.sclassName._id]);
+  }, [subjectMarks, dispatch, currentUser.sclassName._id])
   const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection);
-  };
+    setSelectedSection(newSection)
+  }
 
   const renderTableSection = () => (
     <>
@@ -71,20 +70,22 @@ const StudentSubjects = () => {
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {subjectMarks.map((result, index) => (
+          {subjectMarks.map((result, index) =>
             result.subName && result.marksObtained ? (
               <StyledTableRow key={index}>
                 <StyledTableCell>{result.subName.subName}</StyledTableCell>
                 <StyledTableCell>{result.marksObtained}</StyledTableCell>
               </StyledTableRow>
             ) : null
-          ))}
+          )}
         </TableBody>
       </Table>
     </>
-  );
+  )
 
-  const renderChartSection = () => <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />;
+  const renderChartSection = () => (
+    <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />
+  )
 
   const renderClassDetailsSection = () => (
     <Container>
@@ -103,7 +104,7 @@ const StudentSubjects = () => {
         </Typography>
       ))}
     </Container>
-  );
+  )
 
   return (
     <>
@@ -115,17 +116,36 @@ const StudentSubjects = () => {
             <>
               {selectedSection === 'table' && renderTableSection()}
               {selectedSection === 'chart' && renderChartSection()}
-              <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
+              <Paper
+                sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
+                elevation={3}
+              >
+                <BottomNavigation
+                  value={selectedSection}
+                  onChange={handleSectionChange}
+                  showLabels
+                >
                   <BottomNavigationAction
                     label="Table"
                     value="table"
-                    icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
+                    icon={
+                      selectedSection === 'table' ? (
+                        <TableChartIcon />
+                      ) : (
+                        <TableChartOutlinedIcon />
+                      )
+                    }
                   />
                   <BottomNavigationAction
                     label="Chart"
                     value="chart"
-                    icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
+                    icon={
+                      selectedSection === 'chart' ? (
+                        <InsertChartIcon />
+                      ) : (
+                        <InsertChartOutlinedIcon />
+                      )
+                    }
                   />
                 </BottomNavigation>
               </Paper>
@@ -136,7 +156,7 @@ const StudentSubjects = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default StudentSubjects;
+export default StudentSubjects

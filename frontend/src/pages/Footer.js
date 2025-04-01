@@ -1,6 +1,6 @@
-import { Avatar, Box, Typography } from '@mui/material';
-import React from 'react';
-import styled from 'styled-components';
+import { Avatar, Box, Typography } from '@mui/material'
+import React from 'react'
+import styled from 'styled-components'
 
 const FooterStyled = styled.footer`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -79,13 +79,27 @@ const FooterStyled = styled.footer`
     transition: background-color 0.3s;
   }
 
-  .social-icons a.tumblr { background-color: rgba(54, 70, 93, 0.7); }
-  .social-icons a.twitter { background-color: rgba(29, 161, 242, 0.7); }
-  .social-icons a.google-plus { background-color: rgba(221, 75, 57, 0.7); }
-  .social-icons a.linkedin { background-color: rgba(0, 119, 181, 0.7); }
-  .social-icons a.facebook { background-color: rgba(59, 89, 152, 0.7); }
-  .social-icons a.youtube { background-color: rgba(255, 0, 0, 0.7); }
-  .social-icons a.rss { background-color: rgba(242, 101, 34, 0.7); }
+  .social-icons a.tumblr {
+    background-color: rgba(54, 70, 93, 0.7);
+  }
+  .social-icons a.twitter {
+    background-color: rgba(29, 161, 242, 0.7);
+  }
+  .social-icons a.google-plus {
+    background-color: rgba(221, 75, 57, 0.7);
+  }
+  .social-icons a.linkedin {
+    background-color: rgba(0, 119, 181, 0.7);
+  }
+  .social-icons a.facebook {
+    background-color: rgba(59, 89, 152, 0.7);
+  }
+  .social-icons a.youtube {
+    background-color: rgba(255, 0, 0, 0.7);
+  }
+  .social-icons a.rss {
+    background-color: rgba(242, 101, 34, 0.7);
+  }
 
   .social-icons a:hover {
     opacity: 1;
@@ -114,121 +128,128 @@ const FooterStyled = styled.footer`
       flex-wrap: wrap;
     }
   }
-`;
-
+`
 const Footer = () => {
-    return (
-        <FooterStyled>
-            <div className="footer-container">
-                <div className="footer-section">
-                    <h3>Thành viên thực hiện ✅</h3>
-                    <p>Đoàn Đức Hải - 2100903 (L)</p>
-                    <p>Đặng Thị Soi - 2101164</p>
-                    <p>Nguyễn Thu Hiền - 2101317</p>
-                    <p>Trịnh Quốc Khánh - 2100853</p>
-                    <p>Nguyễn Văn Quang - 2100857</p>
-                </div>
+  return (
+    <FooterStyled>
+      <div className="footer-container">
+        <div className="footer-section">
+          <h3>Thành viên thực hiện ✅</h3>
+          <p>Đoàn Đức Hải - 2100903 (L)</p>
+          <p>Đặng Thị Soi - 2101164</p>
+          <p>Nguyễn Thu Hiền - 2101317</p>
+          <p>Trịnh Quốc Khánh - 2100853</p>
+          <p>Nguyễn Văn Quang - 2100857</p>
+        </div>
 
-                <div className="footer-section">
-                    <h3>Danh mục trang 📌 </h3>
-                    <ul>
-                        <li><a href="/">Trang chủ</a></li>
-                        <li><a href="/about">Diễn đàn</a></li>
-                        <li><a href="/contact">Phản ánh</a></li>
-                        <li><a href="/contact">Thông tin cá nhân</a></li>
-                    </ul>
-                </div>
+        <div className="footer-section">
+          <h3>Danh mục trang 📌 </h3>
+          <ul>
+            <li>
+              <a href="/">Trang chủ</a>
+            </li>
+            <li>
+              <a href="/forum">Diễn đàn</a>
+            </li>
+            <li>
+              <a>Phản ánh</a>
+            </li>
+            <li>
+              <a>Thông tin cá nhân</a>
+            </li>
+          </ul>
+        </div>
 
-                <div className="footer-section">
-                    <h3>Thông tin sản phẩm 🌐</h3>
-                    <div className="social-links">
-                        <a href="https://facebook.com">MongoBD</a>
-                        <a href="https://twitter.com">Demo</a>
-                        <a href="https://instagram.com">API</a>
-                    </div>
-                </div>
+        <div className="footer-section">
+          <h3>Thông tin sản phẩm 🌐</h3>
+          <div className="social-links">
+            <a href="https://student-sys-fe.vercel.app">MongoBD</a>
+            <a href="https://student-sys-fe.vercel.app">Demo</a>
+            <a href="https://student-sys.vercel.app">API</a>
+          </div>
+        </div>
 
-                <Box
-                    className="footer-section stay-connected"
-                    sx={{
-                        flex: 1,
-                        minWidth: 200,
-                        margin: '1rem',
-                    }}
-                >
-                    <Typography
-                        variant="h6"
-                        component="h4"
-                        sx={{
-                            marginBottom: '1rem',
-                            color: 'white',
-                            textAlign: 'center',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        Face Of The Project
-                    </Typography>
+        <Box
+          className="footer-section stay-connected"
+          sx={{
+            flex: 1,
+            minWidth: 200,
+            margin: '1rem'
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="h4"
+            sx={{
+              marginBottom: '1rem',
+              color: 'white',
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }}
+          >
+            Face Of The Project
+          </Typography>
 
-                    <Box
-                        className="avatar-group"
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '1rem',
-                        }}
-                    >
-                        <Box
-                            className="avatar-row"
-                            sx={{
-                                display: 'flex',
-                                gap: '1rem',
-                            }}
-                        >
-                            <Avatar
-                                src="https://via.placeholder.com/40"
-                                alt="Hải"
-                                sx={{ width: 50, height: 50, border: '2px solid white' }}
-                            />
-                            <Avatar
-                                src="https://via.placeholder.com/50"
-                                alt="Soi"
-                                sx={{ width: 50, height: 50, border: '2px solid white' }}
-                            />
-                            <Avatar
-                                src="https://via.placeholder.com/50"
-                                alt="Hiền"
-                                sx={{ width: 50, height: 50, border: '2px solid white' }}
-                            />
-                        </Box>
+          <Box
+            className="avatar-group"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem'
+            }}
+          >
+            <Box
+              className="avatar-row"
+              sx={{
+                display: 'flex',
+                gap: '1rem'
+              }}
+            >
+              <Avatar
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743508853/anhthe_v1_grpn55.jpg"
+                alt="Hải"
+                sx={{ width: 50, height: 50, border: '2px solid white' }}
+              />
+              <Avatar
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743356233/news_images/zjyl9khql1slqapkvnka.jpg"
+                alt="Soi"
+                sx={{ width: 50, height: 50, border: '2px solid white' }}
+              />
+              <Avatar
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509154/z6321503142207_11c7187bce51a692632024598d21293b_wuw7um.jpg"
+                alt="Hiền"
+                sx={{ width: 50, height: 50, border: '2px solid white' }}
+              />
+            </Box>
 
-                        <Box
-                            className="avatar-row"
-                            sx={{
-                                display: 'flex',
-                                gap: '1rem',
-                            }}
-                        >
-                            <Avatar
-                                src="https://via.placeholder.com/50"
-                                alt="Khánh"
-                                sx={{ width: 50, height: 50, border: '2px solid white' }}
-                            />
-                            <Avatar
-                                src="https://via.placeholder.com/50"
-                                alt="Quang"
-                                sx={{ width: 50, height: 50, border: '2px solid white' }}
-                            />
-                        </Box>
-                    </Box>
-                </Box>
-            </div>
+            <Box
+              className="avatar-row"
+              sx={{
+                display: 'flex',
+                gap: '1rem'
+              }}
+            >
+              <Avatar
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509152/9d6b2a40-56e4-4977-80ab-117e8fa97646_okjzdj.jpg"
+                alt="Khánh"
+                sx={{ width: 50, height: 50, border: '2px solid white' }}
+              />
+              <Avatar
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743509153/z6321498102634_c4afce58903bb6b7d9caf6612d4e1f61_wzkvtm.jpg"
+                alt="Quang"
+                sx={{ width: 50, height: 50, border: '2px solid white' }}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </div>
 
-            <div className="footer-bottom">
-                <p>@ Welcome to Group 10 - University Management Database System! 🎉</p>
-            </div>
-        </FooterStyled>
-    );
-};
+      <div className="footer-bottom">
+        <p>@ Welcome to Group 10 - University Management Database System! 🎉</p>
+      </div>
+    </FooterStyled>
+  )
+}
 
-export default Footer;
+export default Footer

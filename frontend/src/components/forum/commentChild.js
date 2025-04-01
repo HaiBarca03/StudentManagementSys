@@ -59,8 +59,7 @@ const CommentChild = ({
     const socket = io(SOCKET_URL)
 
     socket.on(`new-comment-${postId}`, (data) => {
-      console.log('Có bình luận mới:', data)
-      dispatch(getCommentByNews(postId)) // Tải lại danh sách bình luận
+      dispatch(getCommentByNews(postId))
     })
 
     return () => {

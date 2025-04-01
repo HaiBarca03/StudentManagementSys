@@ -20,24 +20,10 @@ const {
 
 const router = express.Router()
 
-// Middleware để log request chi tiết
-// Middleware để log request chi tiết
-router.use((req, res, next) => {
-  console.log('📥 Received request:', req.method, req.path)
-  console.log('📦 Body:', req.body)
-  console.log('📎 Files:', req.files)
-  console.log(
-    '📋 Field names received:',
-    Object.keys(req.body).concat(req.files ? Object.keys(req.files) : [])
-  )
-  next()
-})
-
-
 // Routes
 router.get('/', getAllNews)
 router.get('/latest', getLatestNews)
-router.get('/most-liked', getMostLikedNews); 
+router.get('/most-liked', getMostLikedNews)
 router.get('/monthly-stats', authorizeUser, getMonthlyStats)
 router.get('/:id', getNewsById)
 

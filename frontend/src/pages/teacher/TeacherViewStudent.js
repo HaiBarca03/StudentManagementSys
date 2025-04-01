@@ -42,12 +42,6 @@ const TeacherViewStudent = () => {
     dispatch(getUserDetails(studentID, address))
   }, [dispatch, studentID])
 
-  if (response) {
-    console.log(response)
-  } else if (error) {
-    console.log(error)
-  }
-
   const [sclassName, setSclassName] = useState('')
   const [studentSchool, setStudentSchool] = useState('')
   const [subjectMarks, setSubjectMarks] = useState('')

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Typography,
@@ -6,57 +6,55 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,  
-  Divider,
+  ListItemText,
+  Divider
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
-//const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news/most-liked`
-const API_URL = `http://localhost:5000/api/news/most-liked?limit=5`
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news/most-liked?limit=5`
 
 const TrendingPost = () => {
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const navigate = useNavigate()
+  const [posts, setPosts] = useState([])
 
   useEffect(() => {
     const fetchMostLikedNews = async () => {
       if (!API_URL) {
-        console.error('API_URL is not defined. Check your .env file.');
-        return;
+        console.error('API_URL is not defined. Check your .env file.')
+        return
       }
 
       try {
-        const response = await fetch(`${API_URL}?limit=5`);
+        const response = await fetch(`${API_URL}?limit=5`)
 
-        let result;
+        let result
         try {
-          result = await response.json();
+          result = await response.json()
         } catch (jsonError) {
-          console.error('Error parsing JSON response:', jsonError);
-          result = null;
+          console.error('Error parsing JSON response:', jsonError)
+          result = null
         }
 
         if (!response.ok) {
           console.error(
             `Error ${response.status}: ${response.statusText}`,
             result || 'No JSON response'
-          );
-          return;
+          )
+          return
         }
 
-        setPosts(result?.data || []);
+        setPosts(result?.data || [])
       } catch (error) {
-        console.error('Fetch request failed:', error);
+        console.error('Fetch request failed:', error)
       }
-    };
+    }
 
-    fetchMostLikedNews();
-  }, []);
+    fetchMostLikedNews()
+  }, [])
 
-  const handleClick = (slug) => {
-    navigate(`/news/${slug}`);
-  };
+  const handleClick = (id) => {
+    navigate(`/forum/trendding-news/${id}`)
+  }
 
   return (
     <Box
@@ -67,7 +65,7 @@ const TrendingPost = () => {
         padding: 3,
         borderRadius: 3,
         boxShadow: 3,
-        mx: 'auto',
+        mx: 'auto'
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -78,7 +76,7 @@ const TrendingPost = () => {
           posts.map((post, index) => (
             <React.Fragment key={index}>
               <ListItem
-                onClick={() => handleClick(post.slug)}
+                onClick={() => handleClick(post._id)}
                 sx={{
                   cursor: 'pointer',
                   transition: 'background 0.3s',
@@ -87,7 +85,7 @@ const TrendingPost = () => {
                   paddingY: 2,
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <ListItemText
@@ -128,7 +126,7 @@ const TrendingPost = () => {
         )}
       </List>
     </Box>
-  );
-};
+  )
+}
 
-export default TrendingPost;
+export default TrendingPost

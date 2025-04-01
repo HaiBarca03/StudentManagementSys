@@ -47,13 +47,6 @@ const ViewStdAttendance = () => {
   useEffect(() => {
     dispatch(getUserDetails(currentUser._id, 'Student'))
   }, [dispatch, currentUser._id])
-
-  if (response) {
-    console.log(response)
-  } else if (error) {
-    console.log(error)
-  }
-
   const [subjectAttendance, setSubjectAttendance] = useState([])
   const [selectedSection, setSelectedSection] = useState('table')
 

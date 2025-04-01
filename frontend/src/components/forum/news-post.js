@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -11,10 +11,10 @@ import {
   Paper,
   useTheme,
   Divider
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import axios from 'axios';
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { format } from 'date-fns'
+import axios from 'axios'
 
 // Common styling configuration
 const cardStyles = (theme) => ({
@@ -23,7 +23,7 @@ const cardStyles = (theme) => ({
   borderRadius: 2,
   height: '100%',
   boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-});
+})
 
 const headerStyles = {
   fontWeight: 600,
@@ -32,7 +32,7 @@ const headerStyles = {
   pb: 1,
   borderBottom: '1px solid',
   borderColor: 'divider'
-};
+}
 
 const listItemStyles = (theme) => ({
   px: 0,
@@ -40,7 +40,7 @@ const listItemStyles = (theme) => ({
   '&:hover': {
     backgroundColor: theme.palette.action.hover
   }
-});
+})
 
 const avatarStyles = (theme) => ({
   bgcolor: theme.palette.primary.main,
@@ -48,22 +48,23 @@ const avatarStyles = (theme) => ({
   width: 36,
   height: 36,
   fontSize: '0.875rem'
-});
+})
 
-// Common component for displaying news posts
-const NewsList = ({ posts, title, loading, error, onClick }) => {
-  const theme = useTheme();
-
+const NewsList = ({ posts, title, loading, error }) => {
+  const theme = useTheme()
+  const navigate = useNavigate()
   const formatDate = (dateString) => {
-    return format(new Date(dateString), 'dd MMM, yyyy');
-  };
-
+    return format(new Date(dateString), 'dd MMM, yyyy')
+  }
+  const onClick = (id) => {
+    navigate(`/forum/news/${id}`)
+  }
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" p={3}>
         <CircularProgress />
       </Box>
-    );
+    )
   }
 
   if (error) {
@@ -71,7 +72,7 @@ const NewsList = ({ posts, title, loading, error, onClick }) => {
       <Box p={3} textAlign="center">
         <Typography color="error">{error}</Typography>
       </Box>
-    );
+    )
   }
 
   return (
@@ -79,14 +80,14 @@ const NewsList = ({ posts, title, loading, error, onClick }) => {
       <Typography variant="h6" gutterBottom sx={headerStyles}>
         {title}
       </Typography>
-      
+
       <List disablePadding>
         {posts.length > 0 ? (
           posts.map((post, index) => (
             <React.Fragment key={post.slug || post._id}>
               <ListItem
                 button
-                onClick={() => onClick(post.slug)}
+                onClick={() => onClick(post._id)}
                 sx={listItemStyles(theme)}
               >
                 <ListItemAvatar sx={{ minWidth: 44 }}>
@@ -122,9 +123,7 @@ const NewsList = ({ posts, title, loading, error, onClick }) => {
                   sx={{ my: 0 }}
                 />
               </ListItem>
-              {index < posts.length - 1 && (
-                <Divider sx={{ mx: 2 }} />
-              )}
+              {index < posts.length - 1 && <Divider sx={{ mx: 2 }} />}
             </React.Fragment>
           ))
         ) : (
@@ -134,35 +133,29 @@ const NewsList = ({ posts, title, loading, error, onClick }) => {
         )}
       </List>
     </Paper>
-  );
-};
-
-// Latest Posts Component
+  )
+}
 export const NewPosts = () => {
-  const [latestNews, setLatestNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
+  const [latestNews, setLatestNews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news/latest`);
-        setLatestNews(response.data.data);
+        const response = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}/api/news/latest`
+        )
+        setLatestNews(response.data.data)
       } catch (err) {
-        console.error('Error fetching latest news:', err);
-        setError('Failed to load latest news');
+        console.error('Error fetching latest news:', err)
+        setError('Failed to load latest news')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchLatestNews();
-  }, []);
-
-  const handleClick = (slug) => {
-    navigate(`/forum/post/${slug}`);
-  };
+    fetchLatestNews()
+  }, [])
 
   return (
     <NewsList
@@ -170,46 +163,7 @@ export const NewPosts = () => {
       title="Latest News"
       loading={loading}
       error={error}
-      onClick={handleClick}
     />
-  );
-};
-
-// Trending Posts Component
-export const TrendingPost = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchMostLikedNews = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/news/most-liked?limit=5`);
-        setPosts(response.data.data || []);
-      } catch (err) {
-        console.error('Error fetching trending posts:', err);
-        setError('Failed to load trending posts');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMostLikedNews();
-  }, []);
-
-  const handleClick = (slug) => {
-    navigate(`/news/${slug}`);
-  };
-
-  return (
-    <NewsList
-      posts={posts}
-      title="Trending News"
-      loading={loading}
-      error={error}
-      onClick={handleClick}
-    />
-  );
-};
-export default NewPosts;
+  )
+}
+export default NewPosts
