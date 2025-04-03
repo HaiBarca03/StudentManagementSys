@@ -25,9 +25,9 @@ const getAllTopics = async (req, res) => {
 }
 
 const getTopicDetails = async (req, res) => {
-  const { slug } = req.params
+  const { id } = req.params
   try {
-    const topic = await Topic.findOne({ slug })
+    const topic = await Topic.findById({ _id: id })
     if (!topic) {
       return res.status(404).json({ message: 'Topic not found' })
     }

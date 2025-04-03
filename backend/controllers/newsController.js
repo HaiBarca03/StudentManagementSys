@@ -642,7 +642,6 @@ const updateNew = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
-
 const deleteNewImage = async (req, res) => {
   try {
     const { newId, imageId } = req.params
@@ -680,6 +679,44 @@ const deleteNewImage = async (req, res) => {
       .json({ message: 'Internal server error', error: error.message })
   }
 }
+const getNewByTopic = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const newsList = await News.find({
+      topicId: id,
+      published: true,
+      approved: true
+    })
+      .populate({
+        path: 'userId',
+        select: 'name username avatar email'
+      })
+      .sort({ createdAt: -1 })
+
+    if (!newsList.length) {
+      return res
+        .status(404)
+        .json({ message: 'Không có bài viết nào cho chủ đề này' })
+    }
+    const formattedNews = newsList.map((news) => ({
+      _id: news._id,
+      title: news.title,
+      datePosted: news.createdAt,
+      slug: news.slug,
+      comments: news.comments,
+      likes: news.likes,
+      thumbnail: news.thumbnail,
+      user: news.userId,
+      summary: news.summary,
+      type: 'topic'
+    }))
+    res.status(200).json(formattedNews)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Lỗi server' })
+  }
+}
 module.exports = {
   getNewsByUserId,
   getAllNews,
@@ -694,5 +731,6 @@ module.exports = {
   getMonthlyStats,
   deleteNewsById,
   updateNew,
-  deleteNewImage
+  deleteNewImage,
+  getNewByTopic
 }

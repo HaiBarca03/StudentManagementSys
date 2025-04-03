@@ -26,7 +26,6 @@ const ArticleCard = ({ onDeleteSuccess, ...post }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
-
   const handleClick = (id) => {
     navigate(`/forum/post/${id}`)
   }
@@ -112,16 +111,23 @@ const ArticleCard = ({ onDeleteSuccess, ...post }) => {
                         : 'N/A'}
                     </Typography>
                   </Box>
-                  <IconButton onClick={handleMenuOpen}>
-                    <MoreVertIcon />
-                  </IconButton>
+                  {post.type !== 'topic' && (
+                    <IconButton onClick={handleMenuOpen}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  )}
+
                   <Menu
                     anchorEl={anchorEl}
                     open={open}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={handleEdit}>Sửa</MenuItem>
-                    <MenuItem onClick={handleDelete}>Xóa</MenuItem>
+                    {post.type !== 'topic' && (
+                      <>
+                        <MenuItem onClick={handleEdit}>Sửa</MenuItem>
+                        <MenuItem onClick={handleDelete}>Xóa</MenuItem>
+                      </>
+                    )}
                   </Menu>
                 </Box>
                 <Typography

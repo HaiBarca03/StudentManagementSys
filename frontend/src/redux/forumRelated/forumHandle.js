@@ -7,7 +7,9 @@ import {
   getError,
   stuffDone,
   getNewsUserSuccess,
-  getNewDetailSuccess
+  getNewDetailSuccess,
+  getNewsTopicSuccess,
+  getDetailTopicSuccess
 } from './forumSlice'
 
 // Consistent header configuration
@@ -172,6 +174,50 @@ export const getNewsByUser = (status) => async (dispatch) => {
       dispatch(getFailed(result.data.message))
     } else {
       dispatch(getNewsUserSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}
+
+export const getNewsByTopic = (id) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    let url = `${process.env.REACT_APP_BASE_URL}/api/news/topic/${id}`
+
+    const result = await axios.get(url, getAuthConfig())
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getNewsTopicSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}
+
+export const getDetailTopic = (id) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    let url = `${process.env.REACT_APP_BASE_URL}/topic/${id}`
+
+    const result = await axios.get(url, getAuthConfig())
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getDetailTopicSuccess(result.data))
     }
   } catch (error) {
     dispatch(
