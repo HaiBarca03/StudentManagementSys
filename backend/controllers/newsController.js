@@ -84,7 +84,66 @@ const getLatestNews = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server khi lấy bài viết mới nhất' })
   }
 }
+const getNewsByUserId = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { status } = req.query
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' })
+    }
+
+    let query = { userId: userId }
+    if (status === 'true') {
+      query.approved = true
+    } else if (status === 'false') {
+      query.approved = false
+    }
+
+    const userNews = await News.find(query)
+      .populate({
+        path: 'userId',
+        select: 'name images'
+      })
+      .populate({
+        path: 'topicId',
+        select: 'name description'
+      })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean()
+
+    if (!userNews || userNews.length === 0) {
+      return res.status(404).json({
+        message: `No news found for this user with status ${status || 'all'}`
+      })
+    }
+
+    const formattedNews = userNews.map((news) => ({
+      _id: news._id,
+      title: news.title,
+      datePosted: news.createdAt,
+      slug: news.slug,
+      comments: news.comments,
+      likes: news.likes,
+      thumbnail: news.thumbnail,
+      user: news.userId,
+      summary: news.summary
+    }))
+
+    res.status(200).json({
+      message: `Latest news articles by user ${userId} with status ${
+        status || 'all'
+      }`,
+      data: formattedNews
+    })
+  } catch (error) {
+    console.error('Error fetching news by user ID:', error)
+    res
+      .status(500)
+      .json({ error: 'Server error while fetching news by user ID' })
+  }
+}
 // Lấy các bài viết có nhiều like nhất
 const getMostLikedNews = async (req, res) => {
   try {
@@ -163,7 +222,34 @@ const getNewsById = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server khi lấy chi tiết bài viết' })
   }
 }
+const deleteNewsById = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const userRole = req.user.role
+    const { newsId } = req.params
+    if (!mongoose.Types.ObjectId.isValid(newsId)) {
+      return res.status(400).json({ error: 'Invalid news ID' })
+    }
 
+    const newsItem = await News.findById(newsId)
+
+    if (!newsItem) {
+      return res.status(404).json({ error: 'News article not found' })
+    }
+
+    if (newsItem.userId.toString() !== userId && userRole !== 'Admin') {
+      return res
+        .status(403)
+        .json({ error: 'Unauthorized to delete this article' })
+    }
+
+    await News.findByIdAndDelete(newsId)
+    res.status(200).json({ message: 'News article deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting news article:', error)
+    res.status(500).json({ error: 'Server error while deleting news article' })
+  }
+}
 // Duyệt bài viết (Admin)
 // newsController.js - sửa lại hàm approveNews
 const approveNews = async (req, res) => {
@@ -250,7 +336,6 @@ const generateUniqueSlug = async (title) => {
   const nextNumber = Math.max(...slugNumbers) + 1
   return `${baseSlug}-${nextNumber}`
 }
-
 // Tạo bài viết mới
 const createNews = async (req, res) => {
   try {
@@ -356,7 +441,6 @@ const getAllTopics = async (req, res) => {
     res.status(500).json({ error: 'Lỗi server khi lấy danh sách chủ đề' })
   }
 }
-
 const likeNews = async (req, res) => {
   try {
     const { newsId } = req.params
@@ -488,7 +572,116 @@ const getMonthlyStats = async (req, res) => {
     })
   }
 }
+const updateNew = async (req, res) => {
+  try {
+    const { id } = req.params
+    const userId = req.user.id
+    const useRole = req.user.role
+    const { title, summary, content, topicId } = req.body
+
+    const news = await News.findById(id)
+    if (!news) {
+      return res.status(404).json({ message: 'News not found' })
+    }
+
+    if (
+      !new mongoose.Types.ObjectId(userId).equals(news.userId) ||
+      !useRole === 'Admin'
+    ) {
+      return res
+        .status(403)
+        .json({ message: 'Unauthorized: You cannot update this comment' })
+    }
+
+    let newImages = []
+    if (req.files && req.files.length > 0) {
+      newImages = await Promise.all(
+        req.files.map(async (file) => {
+          const uploadedImage = await cloudinary.uploader.upload(file.path, {
+            folder: 'student-managements/news_images'
+          })
+          return {
+            public_id: uploadedImage.public_id,
+            url: uploadedImage.secure_url
+          }
+        })
+      )
+    }
+
+    let newThumbnail = null
+    if (req.files && req.files['thumbnail']) {
+      const thumbnailFile = req.files['thumbnail'][0]
+      const uploadedThumbnail = await cloudinary.uploader.upload(
+        thumbnailFile.path,
+        {
+          folder: 'student-managements/thumbnails'
+        }
+      )
+      fs.unlinkSync(thumbnailFile.path)
+
+      newThumbnail = {
+        public_id: uploadedThumbnail.public_id,
+        url: uploadedThumbnail.secure_url
+      }
+
+      if (news.thumbnail && news.thumbnail.public_id) {
+        await cloudinary.uploader.destroy(news.thumbnail.public_id)
+      }
+    }
+
+    if (title) news.title = title
+    if (summary) news.summary = summary
+    if (content) news.content = content
+    if (topicId) news.topicId = topicId
+    if (newImages.length > 0) news.images.push(...newImages)
+    if (newThumbnail) news.thumbnail = newThumbnail
+
+    const updatedNews = await news.save()
+    res.status(200).json(updatedNews)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const deleteNewImage = async (req, res) => {
+  try {
+    const { newId, imageId } = req.params
+    const userId = req.user.id
+
+    const news = await News.findById(newId)
+    if (!news) {
+      return res.status(404).json({ message: 'news not found' })
+    }
+
+    if (!new mongoose.Types.ObjectId(userId).equals(news.userId)) {
+      return res
+        .status(403)
+        .json({ message: 'Unauthorized: You cannot delete this image' })
+    }
+
+    const imageToDelete = news.images.find(
+      (img) => img._id.toString() === imageId
+    )
+    if (!imageToDelete) {
+      return res.status(404).json({ message: 'Image not found in this news' })
+    }
+
+    await cloudinary.uploader.destroy(imageToDelete.public_id)
+
+    news.images = news.images.filter((img) => img._id.toString() !== imageId)
+
+    await news.save()
+
+    res.status(200).json({ message: 'Image deleted successfully', news })
+  } catch (error) {
+    console.error('Error deleting image from news:', error)
+    res
+      .status(500)
+      .json({ message: 'Internal server error', error: error.message })
+  }
+}
 module.exports = {
+  getNewsByUserId,
   getAllNews,
   getNewsById,
   createNews,
@@ -498,5 +691,8 @@ module.exports = {
   getLatestNews,
   getMostLikedNews,
   shareNews,
-  getMonthlyStats
+  getMonthlyStats,
+  deleteNewsById,
+  updateNew,
+  deleteNewImage
 }

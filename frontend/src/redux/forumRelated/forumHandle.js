@@ -5,7 +5,9 @@ import {
   getSuccess,
   getFailed,
   getError,
-  stuffDone
+  stuffDone,
+  getNewsUserSuccess,
+  getNewDetailSuccess
 } from './forumSlice'
 
 // Consistent header configuration
@@ -153,5 +155,117 @@ export const likeNews = (newsId) => async (dispatch) => {
         status: error.response?.status
       })
     )
+  }
+}
+
+export const getNewsByUser = (status) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    let url = `${process.env.REACT_APP_BASE_URL}/api/news/user`
+    if (status !== undefined) {
+      url += `?status=${status}`
+    }
+
+    const result = await axios.get(url, getAuthConfig())
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getNewsUserSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}
+
+export const getNewsDetail = (id) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    let url = `${process.env.REACT_APP_BASE_URL}/api/news/${id}`
+
+    const result = await axios.get(url, getAuthConfig())
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getNewDetailSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}
+
+export const deleteNew = (newId) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    const result = await axios.delete(
+      `${process.env.REACT_APP_BASE_URL}/api/news/${newId}`,
+      getAuthConfig()
+    )
+
+    if (result.data?.error) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(
+      getError({
+        message: error.response?.data?.message || error.message,
+        status: error.response?.status
+      })
+    )
+  }
+}
+
+export const deleteImageNew = (newId, imageId) => async (dispatch) => {
+  dispatch(getRequest())
+  try {
+    const result = await axios.delete(
+      `${process.env.REACT_APP_BASE_URL}/api/news/${newId}/image/${imageId}`,
+      getAuthConfig()
+    )
+    if (result.data.message) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch(getSuccess(result.data))
+    }
+  } catch (error) {
+    dispatch(getError(error))
+  }
+}
+
+export const updateNew = (id, data) => async (dispatch) => {
+  dispatch(getRequest())
+  const token = localStorage.getItem('token')
+  const config = {
+    headers: {
+      token: `Bearer ${token}`
+    }
+  }
+  try {
+    const result = await axios.put(
+      `${process.env.REACT_APP_BASE_URL}/api/news/${id}`,
+      data,
+      config
+    )
+
+    if (result.data.message) {
+      dispatch(getFailed(result.data.message))
+    } else {
+      dispatch({ type: 'news/updateSuccess', payload: result.data })
+    }
+  } catch (error) {
+    dispatch(getError(error))
   }
 }

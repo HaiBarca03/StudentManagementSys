@@ -9,7 +9,11 @@ const {
   shareNews,
   getLatestNews,
   getMostLikedNews,
-  getMonthlyStats
+  getMonthlyStats,
+  getNewsByUserId,
+  deleteNewsById,
+  updateNew,
+  deleteNewImage
 } = require('../controllers/newsController')
 const { authorizeUser, authorizeAdmin } = require('../middlewares/auth')
 const {
@@ -25,8 +29,16 @@ router.get('/', getAllNews)
 router.get('/latest', getLatestNews)
 router.get('/most-liked', getMostLikedNews)
 router.get('/monthly-stats', authorizeUser, getMonthlyStats)
+router.get('/user', authorizeUser, getNewsByUserId)
 router.get('/:id', getNewsById)
-
+router.delete('/:newsId', authorizeUser, deleteNewsById)
+router.delete(
+  '/:newId/image/:imageId',
+  authorizeUser,
+  uploadImages,
+  deleteNewImage
+)
+router.put('/:id', authorizeUser, uploadNewsFiles, updateNew)
 router.post('/:newsId/share', authorizeUser, shareNews)
 router.post(
   '/',

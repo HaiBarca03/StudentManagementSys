@@ -23,6 +23,7 @@ import { AppBar, Drawer } from '../../components/styles'
 import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
+import MyArticlePage from '../forum/myArticlePage'
 
 const StudentDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -53,7 +54,7 @@ const StudentDashboard = () => {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ 
+              sx={{
                 flexGrow: 1,
                 fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
                 fontWeight: 600,
@@ -103,6 +104,7 @@ const StudentDashboard = () => {
               path="/forum/trendding-news/:id"
               element={<ForumPostDetailPage />}
             />
+            <Route path="/forum/news/my-article" element={<MyArticlePage />} />
             <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />

@@ -46,6 +46,8 @@ import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
 import TopicDashboard from '../../components/forum/topic-dashboard'
 import NewsDashboard from './newsDashboard'
+import MyArticlePage from '../forum/myArticlePage'
+import EditArticlePage from '../forum/editArticlePage'
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false)
@@ -76,7 +78,7 @@ const AdminDashboard = () => {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ 
+              sx={{
                 flexGrow: 1,
                 fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
                 fontWeight: 600,
@@ -119,12 +121,14 @@ const AdminDashboard = () => {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
             <Route path="/forum/news/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/edit-news/:id" element={<EditArticlePage />} />
             <Route
               path="/forum/trendding-news/:id"
               element={<ForumPostDetailPage />}
             />
             <Route path="/forum/create/post" element={<CreatePostForum />} />
             <Route path="/forum/topic/dashboard" element={<TopicDashboard />} />
+            <Route path="/forum/news/my-article" element={<MyArticlePage />} />
             <Route path="/forum/news/dashboard" element={<NewsDashboard />} />
             {/* Notice */}
             <Route path="/Admin/addnotice" element={<AddNotice />} />
