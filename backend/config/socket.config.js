@@ -12,7 +12,7 @@ const initializeSocket = (server) => {
 
   io.on('connection', (socket) => {
     socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket)
+      // console.log('Client disconnected:', socket)
     })
   })
 }

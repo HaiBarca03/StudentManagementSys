@@ -26,21 +26,22 @@ import {
 
 const StudentProfile = () => {
   const { currentUser, response, error } = useSelector((state) => state.user)
-
-  if (response) {
-    console.log(response)
-  } else if (error) {
-    console.log(error)
-  }
-
   const formatDate = (isoDate) => {
     const date = new Date(isoDate)
     return date.toLocaleDateString('vi-VN')
   }
 
   const personalInfoItems = [
-    { icon: <Cake />, label: 'Ngày Sinh', value: formatDate(currentUser.dateOfBirth) },
-    { icon: null, label: 'Giới Tính', value: currentUser.sex === 'male' ? 'Nam' : 'Nữ' },
+    {
+      icon: <Cake />,
+      label: 'Ngày Sinh',
+      value: formatDate(currentUser.dateOfBirth)
+    },
+    {
+      icon: null,
+      label: 'Giới Tính',
+      value: currentUser.sex === 'male' ? 'Nam' : 'Nữ'
+    },
     { icon: <Email />, label: 'Email', value: currentUser.email },
     { icon: <Phone />, label: 'SĐT', value: currentUser.phone },
     { icon: <Home />, label: 'Địa chỉ', value: currentUser.address },
@@ -48,7 +49,11 @@ const StudentProfile = () => {
     { icon: <People />, label: 'Dân tộc', value: currentUser.nation },
     { icon: null, label: 'Tôn giáo', value: currentUser.religion },
     { icon: <School />, label: 'Ngành học', value: currentUser.major },
-    { icon: <Workspaces />, label: 'Trình độ đào tạo', value: currentUser.trainingLevel }
+    {
+      icon: <Workspaces />,
+      label: 'Trình độ đào tạo',
+      value: currentUser.trainingLevel
+    }
   ]
 
   return (
@@ -59,8 +64,8 @@ const StudentProfile = () => {
           <Avatar
             alt="Student Avatar"
             src={currentUser.images[0]?.url}
-            sx={{ 
-              width: 120, 
+            sx={{
+              width: 120,
               height: 120,
               fontSize: '3rem',
               mb: 2,
@@ -69,18 +74,23 @@ const StudentProfile = () => {
           >
             {!currentUser.images[0]?.url && String(currentUser.name).charAt(0)}
           </Avatar>
-          
-          <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             {currentUser.name}
           </Typography>
-          
-          <Chip 
-            label={`Mã sinh viên: ${currentUser.rollNum}`} 
-            color="primary" 
+
+          <Chip
+            label={`Mã sinh viên: ${currentUser.rollNum}`}
+            color="primary"
             variant="outlined"
             sx={{ mb: 1 }}
           />
-          
+
           <Box textAlign="center" mt={1}>
             <Typography variant="subtitle1" color="text.secondary">
               <strong>Lớp:</strong> {currentUser.sclassName.sclassName}
@@ -100,9 +110,9 @@ const StudentProfile = () => {
               Thông Tin Cá Nhân
             </Typography>
           </Box>
-          
+
           <Divider sx={{ mb: 3 }} />
-          
+
           <Grid container spacing={3}>
             {personalInfoItems.map((item, index) => (
               <Grid item xs={12} sm={6} key={index}>

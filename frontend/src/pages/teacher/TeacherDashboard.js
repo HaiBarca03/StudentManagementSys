@@ -27,6 +27,7 @@ import ForumHomePage from '../forum/forumHomePage'
 import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
 import StudentComplain from '../student/StudentComplain'
+import MyArticlePage from '../forum/myArticlePage'
 
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -57,7 +58,7 @@ const TeacherDashboard = () => {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ 
+              sx={{
                 flexGrow: 1,
                 fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif', // Hoặc font chữ hiện đại khác
                 fontWeight: 600, // Độ đậm vừa phải
@@ -120,6 +121,8 @@ const TeacherDashboard = () => {
               path="/forum/trendding-news/:id"
               element={<ForumPostDetailPage />}
             />
+            <Route path="/forum/news/my-article" element={<MyArticlePage />} />
+
             <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />

@@ -53,7 +53,6 @@ const CommentPost = ({ postId }) => {
     const formData = new FormData()
     formData.append('content', newComment)
     formData.append('newsId', postId)
-
     newImages.forEach((file) => formData.append('images', file))
     if (newFile) formData.append('file', newFile)
 

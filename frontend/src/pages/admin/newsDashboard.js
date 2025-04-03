@@ -32,11 +32,20 @@ import {
   Snackbar,
   Alert
 } from '@mui/material'
-import { Search, CheckCircle, Cancel, Visibility } from '@mui/icons-material'
+import {
+  Search,
+  CheckCircle,
+  Cancel,
+  Visibility,
+  DeleteIcon,
+  AutoDeleteOutlined,
+  AutoDelete
+} from '@mui/icons-material'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import HeadForum from '../../components/forum/head-forum'
+import { deleteNew } from '../../redux/forumRelated/forumHandle'
 
 const NewsDashboard = () => {
   const [news, setNews] = useState([])
@@ -59,17 +68,11 @@ const NewsDashboard = () => {
   })
   const { currentUser } = useSelector((state) => state.user)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const fetchNews = async () => {
     try {
       setLoading(true)
-      console.log('Fetching news with params:', {
-        page,
-        limit,
-        approved: !showApproved,
-        search: searchTerm
-      })
-
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}/api/news`,
         {
@@ -192,7 +195,10 @@ const NewsDashboard = () => {
     setSelectedNews(newsItem)
     setPreviewOpen(true)
   }
-
+  const handleDelete = (newId) => {
+    dispatch(deleteNew(newId))
+    fetchNews()
+  }
   const handleClosePreview = () => {
     setPreviewOpen(false)
     setSelectedNews(null)
@@ -368,6 +374,15 @@ const NewsDashboard = () => {
                           startIcon={<Visibility />}
                         >
                           Xem
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          sx={{ mr: 1 }}
+                          onClick={() => handleDelete(item._id)}
+                          startIcon={<AutoDelete />}
+                        >
+                          Xoá
                         </Button>
                         {!item.approved && (
                           <Button

@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   forumList: [],
+  newsByUser: [],
+  articleDetail: [],
   loading: false,
   error: null,
   response: null
@@ -16,6 +18,18 @@ const forumSlice = createSlice({
     },
     getSuccess: (state, action) => {
       state.forumList = action.payload
+      state.loading = false
+      state.error = null
+      state.response = null
+    },
+    getNewsUserSuccess: (state, action) => {
+      state.newsByUser = action.payload
+      state.loading = false
+      state.error = null
+      state.response = null
+    },
+    getNewDetailSuccess: (state, action) => {
+      state.articleDetail = action.payload
       state.loading = false
       state.error = null
       state.response = null
@@ -38,7 +52,14 @@ const forumSlice = createSlice({
   }
 })
 
-export const { getRequest, getSuccess, getFailed, stuffDone, getError } =
-  forumSlice.actions
+export const {
+  getRequest,
+  getSuccess,
+  getFailed,
+  stuffDone,
+  getError,
+  getNewsUserSuccess,
+  getNewDetailSuccess
+} = forumSlice.actions
 
 export const forumReducer = forumSlice.reducer
