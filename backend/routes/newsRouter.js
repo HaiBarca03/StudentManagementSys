@@ -21,7 +21,7 @@ const {
   uploadThumbnail,
   uploadImages,
   uploadNewsFiles
-} = require('../middlewares/uploadCloudinary') // Đảm bảo đường dẫn đúng
+} = require('../middlewares/uploadCloudinary')
 
 const router = express.Router()
 
@@ -61,5 +61,6 @@ router.post(
   createNews
 )
 router.put('/approve/:id', authorizeUser, authorizeAdmin, approveNews)
+router.post('/:newsId/like', authorizeUser, likeNews)
 
 module.exports = router
