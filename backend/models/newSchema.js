@@ -55,6 +55,12 @@ const newsSchema = new mongoose.Schema(
         refPath: 'userRef'
       }
     ],
+    shareBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'userRef'
+      }
+    ],
     // số lượng cmt
     comments: {
       type: Number,
@@ -100,4 +106,15 @@ newsSchema.virtual('userRef').get(function () {
   }
   return typeToCollection[this.userType]
 })
+
+newsSchema.methods.createShare = async function (userId) {
+  if (!this.shareBy.includes(userId)) {
+    this.shareBy.push(userId)
+  }
+
+  this.shares += 1
+  await this.save()
+  return true
+}
+
 module.exports = mongoose.model('news', newsSchema)

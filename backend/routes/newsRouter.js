@@ -14,7 +14,8 @@ const {
   deleteNewsById,
   updateNew,
   deleteNewImage,
-  getNewByTopic
+  getNewByTopic,
+  createShare
 } = require('../controllers/newsController')
 const { authorizeUser, authorizeAdmin } = require('../middlewares/auth')
 const {
@@ -41,7 +42,7 @@ router.delete(
   deleteNewImage
 )
 router.put('/:id', authorizeUser, uploadNewsFiles, updateNew)
-router.post('/:newsId/share', authorizeUser, shareNews)
+// router.post('/:newsId/share', authorizeUser, shareNews)
 router.post(
   '/',
   authorizeUser,
@@ -62,5 +63,6 @@ router.post(
 )
 router.put('/approve/:id', authorizeUser, authorizeAdmin, approveNews)
 router.post('/:newsId/like', authorizeUser, likeNews)
+router.post('/:newsId/share', authorizeUser, createShare)
 
 module.exports = router

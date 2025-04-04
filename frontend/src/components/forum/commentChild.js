@@ -25,7 +25,7 @@ import {
 } from '../../redux/forumRelated/commentHandle'
 import { useSelector } from 'react-redux'
 
-const SOCKET_URL = process.env.REACT_APP_BASE_URL // URL của server WebSocket
+const SOCKET_URL = process.env.REACT_APP_BASE_URL
 
 const CommentChild = ({
   comment,
@@ -54,7 +54,6 @@ const CommentChild = ({
   const [remainingImages, setRemainingImages] = useState(comment.images)
   const hasChildren = comment.children && comment.children.length > 0
 
-  // Tích hợp WebSocket để lắng nghe bình luận mới
   useEffect(() => {
     const socket = io(SOCKET_URL)
 
@@ -158,7 +157,9 @@ const CommentChild = ({
     const id = comment._id
     formData.append('_id', id)
     formData.append('content', editContent)
-    editImages.forAtch((file) => formData.append('images', file))
+    if (editImages && editImages.length > 0) {
+      editImages.forEach((file) => formData.append('images', file))
+    }
 
     try {
       await dispatch(updateComment(id, formData))

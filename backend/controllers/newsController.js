@@ -717,6 +717,24 @@ const getNewByTopic = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server' })
   }
 }
+const createShare = async (req, res) => {
+  try {
+    const { newsId } = req.params
+    const userId = req.user.id
+
+    const post = await News.findById(newsId)
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' })
+    }
+
+    const shareSuccess = await post.createShare(userId)
+    return res.send({ message: 'Post shared successfully' })
+  } catch (error) {
+    console.error('Error sharing post:', error)
+    res.status(500).json(error)
+  }
+}
+
 module.exports = {
   getNewsByUserId,
   getAllNews,
@@ -732,5 +750,6 @@ module.exports = {
   deleteNewsById,
   updateNew,
   deleteNewImage,
-  getNewByTopic
+  getNewByTopic,
+  createShare
 }

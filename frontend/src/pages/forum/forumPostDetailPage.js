@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 import axios from 'axios'
 import {
   Box,
@@ -21,7 +22,7 @@ import NewPosts from '../../components/forum/news-post'
 import CommentPost from '../../components/forum/comment-post'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCommentByNews } from '../../redux/forumRelated/commentHandle'
-import { likeNews } from '../../redux/forumRelated/forumHandle'
+import { likeNews, shareNews } from '../../redux/forumRelated/forumHandle'
 
 const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
 
@@ -78,6 +79,14 @@ const ForumPostDetailPage = () => {
   const handleToggleComments = () => {
     setShowComments((prev) => !prev)
   }
+  const handleShare = () => {
+    const shareUrl = `${process.env.REACT_APP_BASE_URL}/news/${id}`
+    const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      shareUrl
+    )}`
+    window.open(fbShareUrl)
+    dispatch(shareNews(id))
+  }
 
   const handleLike = async () => {
     try {
@@ -128,6 +137,7 @@ const ForumPostDetailPage = () => {
     )
   }
 
+  const urlShareFb = `${process.env.REACT_APP_BASE_URL}/api/news/${id}`
   return (
     <Grid
       container
@@ -207,9 +217,11 @@ const ForumPostDetailPage = () => {
               <Typography variant="body2" sx={{ fontFamily: 'Roboto', mr: 2 }}>
                 {likes}
               </Typography>
-              <IconButton>
-                <ShareIcon />
-              </IconButton>
+              <div>
+                <IconButton onClick={handleShare}>
+                  <ShareIcon />
+                </IconButton>
+              </div>
               <Typography variant="body2" sx={{ fontFamily: 'Roboto' }}>
                 {post.shares || 0}
               </Typography>

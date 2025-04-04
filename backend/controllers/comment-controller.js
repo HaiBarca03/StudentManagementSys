@@ -138,6 +138,12 @@ const updateComment = async (req, res) => {
     if (newImages.length > 0) comment.images = newImages
     if (status) comment.status = status
 
+    const io = getIO()
+    io.emit(`new-comment-${id}`, {
+      message: 'Có bình luận mới',
+      commentId: comment._id
+    })
+
     await comment.save()
     res.status(200).json({ message: 'Comment updated successfully', comment })
   } catch (error) {
