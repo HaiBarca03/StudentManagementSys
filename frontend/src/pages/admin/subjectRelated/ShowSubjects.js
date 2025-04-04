@@ -31,13 +31,9 @@ const ShowSubjects = () => {
   const [message, setMessage] = useState('')
 
   const deleteHandler = (deleteID, address) => {
-    setMessage('Rất tiếc, hiện tại bạn không thể sử dụng chức năng xóa.')
-    setShowPopup(true)
-
-    // dispatch(deleteUser(deleteID, address))
-    //     .then(() => {
-    //         dispatch(getSubjectList(currentUser._id, "AllSubjects"));
-    //     })
+    dispatch(deleteUser(deleteID, address)).then(() => {
+      dispatch(getSubjectList(currentUser._id, 'AllSubjects'))
+    })
   }
 
   const subjectColumns = [

@@ -9,7 +9,10 @@ import {
   Paper,
   Table,
   TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
+  TableRow,
   Typography
 } from '@mui/material'
 import CustomBarChart from '../../components/CustomBarChart'
@@ -26,7 +29,6 @@ const StudentSubjects = () => {
   const { userDetails, currentUser, loading, response, error } = useSelector(
     (state) => state.user
   )
-
   useEffect(() => {
     if (currentUser?._id) {
       dispatch(getUserDetails(currentUser._id, 'Student'))
@@ -92,17 +94,41 @@ const StudentSubjects = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Chi tiết lớp học
       </Typography>
-      <Typography variant="h5" gutterBottom>
-        Bạn hiện đang ở trong lớp {sclassDetails?.sclassName}
-      </Typography>
+
       <Typography variant="h6" gutterBottom>
-        Và đây là những chủ đề:
+        Danh sách môn học:
       </Typography>
-      {subjectsList?.map((subject, index) => (
-        <Typography key={index} variant="subtitle1">
-          {subject.subName} ({subject.subCode})
-        </Typography>
-      ))}
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>STT</TableCell>
+              <TableCell>Tên môn học</TableCell>
+              <TableCell>Mã môn học</TableCell>
+              <TableCell>Số buổi</TableCell>
+              <TableCell>Ngày tạo</TableCell>
+              <TableCell>Ngày cập nhật</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {subjectsList?.map((subject, index) => (
+              <TableRow key={subject._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{subject.subName}</TableCell>
+                <TableCell>{subject.subCode}</TableCell>
+                <TableCell>{subject.sessions}</TableCell>
+                <TableCell>
+                  {new Date(subject.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(subject.updatedAt).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Container>
   )
 

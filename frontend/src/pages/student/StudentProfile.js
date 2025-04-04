@@ -21,7 +21,8 @@ import {
   People,
   Cake,
   School,
-  Workspaces
+  Workspaces,
+  EmojiNature
 } from '@mui/icons-material'
 
 const StudentProfile = () => {
@@ -47,7 +48,7 @@ const StudentProfile = () => {
     { icon: <Home />, label: 'Địa chỉ', value: currentUser.address },
     { icon: <Public />, label: 'Quốc tịch', value: currentUser.nationality },
     { icon: <People />, label: 'Dân tộc', value: currentUser.nation },
-    { icon: null, label: 'Tôn giáo', value: currentUser.religion },
+    { icon: <EmojiNature />, label: 'Tôn giáo', value: currentUser.religion },
     { icon: <School />, label: 'Ngành học', value: currentUser.major },
     {
       icon: <Workspaces />,

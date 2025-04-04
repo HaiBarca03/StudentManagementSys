@@ -53,11 +53,10 @@ const teacherSchema = new mongoose.Schema(
 
 teacherSchema.pre('save', async function (next) {
   try {
-    const existingTeacher = await Teacher.findOne({
+    const existingTeacher = await this.constructor.findOne({
       teachSubject: this.teachSubject,
       teachSclass: this.teachSclass
     })
-
     if (existingTeacher) {
       return next(
         new Error(
@@ -65,7 +64,6 @@ teacherSchema.pre('save', async function (next) {
         )
       )
     }
-
     next()
   } catch (err) {
     next(err)
@@ -74,15 +72,18 @@ teacherSchema.pre('save', async function (next) {
 
 teacherSchema.pre('findOneAndUpdate', async function (next) {
   try {
-    const updatedTeacher = this.getUpdate()
-
-    if (updatedTeacher.teachSubject && updatedTeacher.teachSclass) {
-      const existingTeacher = await Teacher.findOne({
-        teachSubject: updatedTeacher.teachSubject,
-        teachSclass: updatedTeacher.teachSclass
+    const update = this.getUpdate()
+    if (update.teachSubject && update.teachSclass) {
+      const docToUpdate = await this.model.findOne(this.getQuery())
+      const existingTeacher = await this.model.findOne({
+        teachSubject: update.teachSubject,
+        teachSclass: update.teachSclass
       })
 
-      if (existingTeacher) {
+      if (
+        existingTeacher &&
+        existingTeacher._id.toString() !== docToUpdate._id.toString()
+      ) {
         return next(
           new Error(
             'A teacher is already assigned to teach this subject in this class.'
@@ -90,7 +91,6 @@ teacherSchema.pre('findOneAndUpdate', async function (next) {
         )
       }
     }
-
     next()
   } catch (err) {
     next(err)
