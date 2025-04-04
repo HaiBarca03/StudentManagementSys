@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Helmet } from 'react-helmet'
 import axios from 'axios'
 import {
   Box,
