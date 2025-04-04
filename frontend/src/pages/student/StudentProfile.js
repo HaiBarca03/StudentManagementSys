@@ -27,9 +27,9 @@ import {
 
 const StudentProfile = () => {
   const { currentUser, response, error } = useSelector((state) => state.user)
-  const formatDate = (isoDate) => {
-    const date = new Date(isoDate)
-    return date.toLocaleDateString('vi-VN')
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' }
+    return new Date(dateString).toLocaleDateString('vi-VN', options)
   }
 
   const personalInfoItems = [
