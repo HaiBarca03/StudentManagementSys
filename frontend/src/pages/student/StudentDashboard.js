@@ -25,6 +25,7 @@ import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
 import MyArticlePage from '../forum/myArticlePage'
 import NewsByTopicPage from '../forum/newsByTopicPage'
+import EditArticlePage from '../forum/editArticlePage'
 
 const StudentDashboard = () => {
   const [open, setOpen] = useState(true)
@@ -101,6 +102,7 @@ const StudentDashboard = () => {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/news/:id" element={<ForumPostDetailPage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/edit-news/:id" element={<EditArticlePage />} />
             <Route
               path="/forum/trendding-news/:id"
               element={<ForumPostDetailPage />}
