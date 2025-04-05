@@ -196,9 +196,26 @@ const NewsDashboard = () => {
   }
 
   const handlePreview = (newsItem) => {
-    setSelectedNews(newsItem)
-    setPreviewOpen(true)
-  }
+    // Tạo bản sao của newsItem để không ảnh hưởng đến dữ liệu gốc
+    const processedNewsItem = { ...newsItem };
+    
+    // Xử lý nội dung: loại bỏ các thẻ HTML không mong muốn và mã đặc biệt
+    if (processedNewsItem.content) {
+      // Thay thế các thẻ HTML không cần thiết
+      let cleanContent = processedNewsItem.content
+        .replace(/<\/?span[^>]*>/g, '')
+        .replace(/<\/?s>/g, '')
+        .replace(/<\/?p>/g, '\n') // Thay thế thẻ p bằng xuống dòng
+        .replace(/<br\s*\/?>/g, '\n') // Thay thế thẻ br bằng xuống dòng
+        .replace(/&nbsp;/g, ' ') // Thay thế &nbsp; bằng khoảng trắng
+        .replace(/&[a-z]+;/g, ''); // Loại bỏ các HTML entities khác
+      
+      processedNewsItem.content = cleanContent;
+    }
+    
+    setSelectedNews(processedNewsItem);
+    setPreviewOpen(true);
+  };
 
   const handleDeleteClick = (newId) => {
     setNewsToDelete(newId)
@@ -435,7 +452,14 @@ const NewsDashboard = () => {
                 <Typography variant="h6" gutterBottom>
                   Nội dung
                 </Typography>
-                <Typography paragraph>{selectedNews.content}</Typography>
+                <Box sx={{ 
+                  whiteSpace: 'pre-line',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.6
+                }}>
+                  {selectedNews.content}
+                </Box>
+              <Typography paragraph>{selectedNews.content}</Typography>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleClosePreview}>Đóng</Button>
