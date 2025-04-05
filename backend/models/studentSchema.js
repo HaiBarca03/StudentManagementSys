@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Subject = require('../models/subjectSchema.js')
 
 const studentSchema = new mongoose.Schema(
   {
@@ -34,10 +35,15 @@ const studentSchema = new mongoose.Schema(
           type: String,
           required: true
         }
-      }],
+      }
+    ],
     email: {
       type: String,
-      required: false
+      required: false,
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        'Please fill a valid email address'
+      ]
     },
     phone: {
       type: Number,
@@ -141,5 +147,48 @@ const studentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+
+studentSchema.pre('save', async function (next) {
+  const studentCount = await Student.countDocuments({
+    school: this.school,
+    sclassName: this.sclassName
+  })
+
+  if (studentCount >= 45) {
+    return next(new Error('Lớp đã đạt giới hạn 45 học sinh'))
+  }
+
+  next()
+})
+
+studentSchema.pre('save', async function (next) {
+  const student = this
+
+  for (const attendance of student.attendance) {
+    const subject = await Subject.findById(attendance.subName)
+
+    if (!subject) {
+      return next(new Error('Subject not found'))
+    }
+
+    const attendedSessions = student.attendance.filter(
+      (a) =>
+        a.subName.toString() === attendance.subName.toString() &&
+        a.status === 'present'
+    ).length
+
+    const attendanceThreshold = Math.ceil(subject.sessions * 0.8)
+
+    if (attendedSessions < attendanceThreshold) {
+      return next(
+        new Error(
+          'You are not eligible for the exam due to insufficient attendance'
+        )
+      )
+    }
+  }
+
+  next()
+})
 
 module.exports = mongoose.model('student', studentSchema)

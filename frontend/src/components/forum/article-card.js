@@ -10,7 +10,15 @@ import {
   Menu,
   MenuItem,
   Grid,
-  Chip
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Snackbar,
+  Alert
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
@@ -19,12 +27,17 @@ import ShareIcon from '@mui/icons-material/Share'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { deleteNew } from '../../redux/forumRelated/forumHandle'
-import EditArticlePage from '../../pages/forum/editArticlePage'
 
 const ArticleCard = ({ onDeleteSuccess, ...post }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  })
   const open = Boolean(anchorEl)
 
   const handleClick = (id) => {
@@ -45,11 +58,38 @@ const ArticleCard = ({ onDeleteSuccess, ...post }) => {
     handleMenuClose()
   }
 
-  const handleDelete = () => {
-    const newId = post._id
-    dispatch(deleteNew(newId))
-    onDeleteSuccess()
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true)
     handleMenuClose()
+  }
+
+  const handleDeleteConfirm = async () => {
+    try {
+      const newId = post._id
+      await dispatch(deleteNew(newId))
+      setSnackbar({
+        open: true,
+        message: 'Xóa bài viết thành công!',
+        severity: 'success'
+      })
+      onDeleteSuccess()
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Xóa bài viết thất bại!',
+        severity: 'error'
+      })
+    } finally {
+      setDeleteDialogOpen(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+  }
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false })
   }
 
   return (
@@ -101,27 +141,31 @@ const ArticleCard = ({ onDeleteSuccess, ...post }) => {
                     <Typography variant="body2" color="textSecondary">
                       {post?.user?.name || 'Người dùng ẩn danh'} -{' '}
                       {post.datePosted
-                        ? new Date(post.datePosted).toLocaleDateString(
-                            'vi-VN',
-                            {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric'
-                            }
-                          )
+                        ? new Date(post.datePosted).toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })
                         : 'N/A'}
                     </Typography>
                   </Box>
-                  <IconButton onClick={handleMenuOpen}>
-                    <MoreVertIcon />
-                  </IconButton>
+                  {post.type !== 'topic' && (
+                    <IconButton onClick={handleMenuOpen}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  )}
+
                   <Menu
                     anchorEl={anchorEl}
                     open={open}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={handleEdit}>Sửa</MenuItem>
-                    <MenuItem onClick={handleDelete}>Xóa</MenuItem>
+                    {post.type !== 'topic' && (
+                      <>
+                        <MenuItem onClick={handleEdit}>Sửa</MenuItem>
+                        <MenuItem onClick={handleDeleteClick}>Xóa</MenuItem>
+                      </>
+                    )}
                   </Menu>
                 </Box>
                 <Typography
@@ -193,6 +237,45 @@ const ArticleCard = ({ onDeleteSuccess, ...post }) => {
           </Grid>
         </Grid>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Xác nhận xóa bài viết</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn có chắc chắn muốn xóa bài viết "{post.title}"? Hành động này không thể hoàn tác.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Hủy bỏ
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Success Notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

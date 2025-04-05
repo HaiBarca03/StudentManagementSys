@@ -37,4 +37,15 @@ complainSchema.virtual('userRef').get(function () {
   }
   return typeToCollection[this.userType]
 })
+
+complainSchema.pre('save', function (next) {
+  const currentDate = new Date()
+
+  if (this.date > currentDate) {
+    return next(new Error('Date of complaint cannot be in the future'))
+  }
+
+  next()
+})
+
 module.exports = mongoose.model('complain', complainSchema)

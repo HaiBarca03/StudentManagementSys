@@ -37,8 +37,7 @@ import {
   CheckCircle,
   Cancel,
   Visibility,
-  DeleteIcon,
-  AutoDeleteOutlined,
+  Delete as DeleteIcon,
   AutoDelete
 } from '@mui/icons-material'
 import axios from 'axios'
@@ -66,6 +65,10 @@ const NewsDashboard = () => {
     message: '',
     severity: 'success'
   })
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [newsToDelete, setNewsToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const { currentUser } = useSelector((state) => state.user)
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -102,6 +105,7 @@ const NewsDashboard = () => {
       setLoading(false)
     }
   }
+
   const fetchStats = async () => {
     try {
       setStatsLoading(true)
@@ -114,11 +118,10 @@ const NewsDashboard = () => {
         }
       )
 
-      // Xử lý dữ liệu nhận được
       const processedData = response.data.map((item) => ({
         ...item,
-        name: item.month, // Recharts cần trường 'name' cho XAxis
-        approved: item.approved || 0, // Đảm bảo có giá trị số
+        name: item.month,
+        approved: item.approved || 0,
         pending: item.pending || 0
       }))
 
@@ -134,6 +137,7 @@ const NewsDashboard = () => {
       setStatsLoading(false)
     }
   }
+
   useEffect(() => {
     fetchNews()
   }, [page, showApproved, searchTerm])
@@ -192,13 +196,60 @@ const NewsDashboard = () => {
   }
 
   const handlePreview = (newsItem) => {
-    setSelectedNews(newsItem)
-    setPreviewOpen(true)
+    // Tạo bản sao của newsItem để không ảnh hưởng đến dữ liệu gốc
+    const processedNewsItem = { ...newsItem };
+    
+    // Xử lý nội dung: loại bỏ các thẻ HTML không mong muốn và mã đặc biệt
+    if (processedNewsItem.content) {
+      // Thay thế các thẻ HTML không cần thiết
+      let cleanContent = processedNewsItem.content
+        .replace(/<\/?span[^>]*>/g, '')
+        .replace(/<\/?s>/g, '')
+        .replace(/<\/?p>/g, '\n') // Thay thế thẻ p bằng xuống dòng
+        .replace(/<br\s*\/?>/g, '\n') // Thay thế thẻ br bằng xuống dòng
+        .replace(/&nbsp;/g, ' ') // Thay thế &nbsp; bằng khoảng trắng
+        .replace(/&[a-z]+;/g, ''); // Loại bỏ các HTML entities khác
+      
+      processedNewsItem.content = cleanContent;
+    }
+    
+    setSelectedNews(processedNewsItem);
+    setPreviewOpen(true);
+  };
+
+  const handleDeleteClick = (newId) => {
+    setNewsToDelete(newId)
+    setDeleteDialogOpen(true)
   }
-  const handleDelete = (newId) => {
-    dispatch(deleteNew(newId))
-    fetchNews()
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true)
+      await dispatch(deleteNew(newsToDelete)).unwrap()
+      fetchNews()
+      setSnackbar({
+        open: true,
+        message: 'Bài viết đã được xóa thành công',
+        severity: 'success'
+      })
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Xóa bài viết thất bại: ' + error.message,
+        severity: 'error'
+      })
+    } finally {
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
+      setNewsToDelete(null)
+    }
   }
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false)
+    setNewsToDelete(null)
+  }
+
   const handleClosePreview = () => {
     setPreviewOpen(false)
     setSelectedNews(null)
@@ -237,61 +288,7 @@ const NewsDashboard = () => {
         <Typography variant="h4" gutterBottom>
           Quản lý bài viết
         </Typography>
-        {/* <Box sx={{ mb: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            Thống kê bài viết theo tháng
-          </Typography>
-          
-          {statsLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', height: 300, alignItems: 'center' }}>
-              <CircularProgress />
-            </Box>
-          ) : statsData.length === 0 ? (
-            <Typography variant="body1" sx={{ textAlign: 'center', height: 300, lineHeight: '300px' }}>
-              Không có dữ liệu thống kê
-            </Typography>
-          ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={statsData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis 
-                  dataKey="month"
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => value.replace('/', '/')}
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  label={{ 
-                    value: 'Số bài viết', 
-                    angle: -90, 
-                    position: 'insideLeft',
-                    fontSize: 12 
-                  }}
-                />
-                <Tooltip 
-                  formatter={(value) => [value, 'Số bài']}
-                  labelFormatter={(label) => `Tháng: ${label}`}
-                />
-                <Legend />
-                <Bar 
-                  dataKey="approved" 
-                  name="Bài đã duyệt" 
-                  fill="#4caf50" 
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar 
-                  dataKey="pending" 
-                  name="Bài chờ duyệt" 
-                  fill="#ff9800" 
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </Box> */}
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <TextField
             variant="outlined"
@@ -379,8 +376,9 @@ const NewsDashboard = () => {
                           variant="outlined"
                           size="small"
                           sx={{ mr: 1 }}
-                          onClick={() => handleDelete(item._id)}
-                          startIcon={<AutoDelete />}
+                          onClick={() => handleDeleteClick(item._id)}
+                          startIcon={<DeleteIcon />}
+                          color="error"
                         >
                           Xoá
                         </Button>
@@ -454,7 +452,14 @@ const NewsDashboard = () => {
                 <Typography variant="h6" gutterBottom>
                   Nội dung
                 </Typography>
-                <Typography paragraph>{selectedNews.content}</Typography>
+                <Box sx={{ 
+                  whiteSpace: 'pre-line',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.6
+                }}>
+                  {selectedNews.content}
+                </Box>
+              <Typography paragraph>{selectedNews.content}</Typography>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleClosePreview}>Đóng</Button>
@@ -476,11 +481,44 @@ const NewsDashboard = () => {
           )}
         </Dialog>
 
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Xác nhận xóa bài viết</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button 
+              onClick={handleCloseDeleteDialog}
+              disabled={isDeleting}
+            >
+              Hủy
+            </Button>
+            <Button 
+              onClick={handleDelete} 
+              color="error"
+              variant="contained"
+              startIcon={<DeleteIcon />}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Đang xóa...' : 'Xác nhận xóa'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         {/* Snackbar for notifications */}
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert
             onClose={() => setSnackbar({ ...snackbar, open: false })}

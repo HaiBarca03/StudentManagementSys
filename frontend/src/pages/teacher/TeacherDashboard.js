@@ -28,7 +28,8 @@ import ForumPostDetailPage from '../forum/forumPostDetailPage'
 import CreatePostForum from '../../components/forum/create-post-forum'
 import StudentComplain from '../student/StudentComplain'
 import MyArticlePage from '../forum/myArticlePage'
-
+import NewsByTopicPage from '../forum/newsByTopicPage'
+import EditArticlePage from '../forum/editArticlePage'
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true)
   const toggleDrawer = () => {
@@ -117,12 +118,16 @@ const TeacherDashboard = () => {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/news/:id" element={<ForumPostDetailPage />} />
             <Route path="/forum/post/:id" element={<ForumPostDetailPage />} />
+            <Route path="/forum/edit-news/:id" element={<EditArticlePage />} />
             <Route
               path="/forum/trendding-news/:id"
               element={<ForumPostDetailPage />}
             />
             <Route path="/forum/news/my-article" element={<MyArticlePage />} />
-
+            <Route
+              path="/forum/news-by-topic/:id"
+              element={<NewsByTopicPage />}
+            />
             <Route path="/forum/create/post" element={<CreatePostForum />} />
 
             <Route path="/logout" element={<Logout />} />

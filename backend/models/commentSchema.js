@@ -65,4 +65,17 @@ commentSchema.virtual('userRef').get(function () {
   return typeToCollection[this.userType]
 })
 
+const badWords = ['mẹ mày', 'cụ mày', 'thằng chó', 'thằng dở hơi']
+
+commentSchema.pre('save', function (next) {
+  const content = this.content
+
+  if (badWords.some((word) => content.toLowerCase().includes(word))) {
+    const error = new Error('Comment contains inappropriate language.')
+    next(error)
+  } else {
+    next()
+  }
+})
+
 module.exports = mongoose.model('comment', commentSchema)

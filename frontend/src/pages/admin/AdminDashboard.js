@@ -48,6 +48,7 @@ import TopicDashboard from '../../components/forum/topic-dashboard'
 import NewsDashboard from './newsDashboard'
 import MyArticlePage from '../forum/myArticlePage'
 import EditArticlePage from '../forum/editArticlePage'
+import NewsByTopicPage from '../forum/newsByTopicPage'
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false)
@@ -129,6 +130,10 @@ const AdminDashboard = () => {
             <Route path="/forum/create/post" element={<CreatePostForum />} />
             <Route path="/forum/topic/dashboard" element={<TopicDashboard />} />
             <Route path="/forum/news/my-article" element={<MyArticlePage />} />
+            <Route
+              path="/forum/news-by-topic/:id"
+              element={<NewsByTopicPage />}
+            />
             <Route path="/forum/news/dashboard" element={<NewsDashboard />} />
             {/* Notice */}
             <Route path="/Admin/addnotice" element={<AddNotice />} />

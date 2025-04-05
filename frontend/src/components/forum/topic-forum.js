@@ -4,21 +4,23 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getAllTopic } from '../../redux/forumRelated/forumHandle'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
+import { useNavigate } from 'react-router-dom'
 
 const TopicForum = () => {
   const scrollContainerRef = useRef(null)
   const [showBackButton, setShowBackButton] = useState(false)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { forumList, loading, error, response } = useSelector(
     (state) => state.forum
   )
   useEffect(() => {
     dispatch(getAllTopic())
   }, [dispatch])
-  const topics = Array.isArray(forumList)
-    ? forumList.map((topic) => topic.name)
-    : []
-
+  const topics = Array.isArray(forumList) ? forumList.map((topic) => topic) : []
+  const navigateNewTopic = (id) => {
+    navigate(`/forum/news-by-topic/${id}`)
+  }
   const checkScroll = () => {
     if (scrollContainerRef.current) {
       setShowBackButton(scrollContainerRef.current.scrollLeft > 0)
@@ -82,8 +84,9 @@ const TopicForum = () => {
                 flexShrink: 0,
                 '&:hover': { color: 'blue' }
               }}
+              onClick={() => navigateNewTopic(topic._id)}
             >
-              {topic}
+              {topic?.name}
             </Typography>
           ))}
         </Box>

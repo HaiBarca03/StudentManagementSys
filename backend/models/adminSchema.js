@@ -9,7 +9,11 @@ const adminSchema = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
-      required: true
+      required: true,
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        'Please fill a valid email address'
+      ]
     },
     password: {
       type: String,
@@ -31,5 +35,27 @@ const adminSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+
+adminSchema.pre('save', async function (next) {
+  const admin = this
+
+  const existingAdminBySchoolName = await mongoose.model('admin').findOne({
+    schoolName: admin.schoolName
+  })
+
+  const existingAdminByEmail = await mongoose.model('admin').findOne({
+    email: admin.email
+  })
+
+  if (existingAdminBySchoolName) {
+    return next(new Error('An admin account already exists for this school.'))
+  }
+
+  if (existingAdminByEmail) {
+    return next(new Error('An admin account already exists with this email.'))
+  }
+
+  next()
+})
 
 module.exports = mongoose.model('admin', adminSchema)

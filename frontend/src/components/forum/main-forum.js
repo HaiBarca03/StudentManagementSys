@@ -173,10 +173,10 @@ const PostList = ({
                           sx={{
                             width: '100%',
                             height: '100%',
-                            minHeight: '120px', // Đảm bảo không quá nhỏ
-                            maxHeight: '200px', // Giữ thumbnail cân đối
-                            objectFit: 'cover', // Giữ tỷ lệ ảnh mà không bị méo
-                            aspectRatio: '16/9', // Đảm bảo ảnh có tỷ lệ đẹp
+                            minHeight: '120px',
+                            maxHeight: '200px',
+                            objectFit: 'cover',
+                            aspectRatio: '16/9',
                             borderRadius: '8px 0 0 8px',
                             overflow: 'hidden',
                             padding: 1.5
@@ -193,22 +193,18 @@ const PostList = ({
                           gap: 1
                         }}
                       >
-                        {/* Thông tin tác giả */}
+                        {/* Thông tin tác giả - Đã sửa để hiển thị đúng thông tin từng bài */}
                         <Box display="flex" alignItems="center" gap={1}>
                           <Avatar
-                            src={featuredPosts?.[0]?.userId?.avatar || ''}
+                            src={post.userId?.avatar || ''}
                             sx={{ width: 36, height: 36 }}
                           >
-                            {featuredPosts?.[0]?.userId?.name?.charAt(0) || 'U'}
+                            {post.userId?.name?.charAt(0) || 'U'}
                           </Avatar>
                           <Typography variant="body2" color="textSecondary">
-                            {featuredPosts?.[0]?.userId?.name ||
-                              'Người dùng ẩn danh'}{' '}
-                            -{' '}
-                            {featuredPosts?.[0]?.createdAt
-                              ? new Date(
-                                  featuredPosts[0].createdAt
-                                ).toLocaleDateString('vi-VN', {
+                            {post.userId?.name || 'Người dùng ẩn danh'} -{' '}
+                            {post.createdAt
+                              ? new Date(post.createdAt).toLocaleDateString('vi-VN', {
                                   day: '2-digit',
                                   month: '2-digit',
                                   year: 'numeric'
@@ -234,7 +230,7 @@ const PostList = ({
                           {post.title || 'Không có tiêu đề'}
                         </Typography>
 
-                        {/* Mô tả bài viết */}
+                        {/* Mô tả bài viết - Đã sửa để hiển thị đúng summary từng bài */}
                         <Typography
                           variant="body2"
                           color="textSecondary"
@@ -246,7 +242,7 @@ const PostList = ({
                             textOverflow: 'ellipsis'
                           }}
                         >
-                          {featuredPosts?.[0]?.summary || 'Không có mô tả'}
+                          {post.summary || 'Không có mô tả'}
                         </Typography>
                       </CardContent>
                     </Grid>
@@ -393,7 +389,7 @@ const PostList = ({
                 page={page}
                 onChange={handlePageChange}
                 color="primary"
-                sx={{ margin: '0 auto' }} // Center the pagination
+                sx={{ margin: '0 auto' }}
               />
             </Box>
           )}
@@ -423,7 +419,7 @@ const MainForum = () => {
       try {
         setLoading(true)
         const response = await axios.get(API_URL, {
-          params: { page, limit: 10, approved: true } // Lấy 10 bài mỗi trang
+          params: { page, limit: 10, approved: true }
         })
         if (Array.isArray(response.data.news)) {
           setPosts(response.data.news)
@@ -443,15 +439,15 @@ const MainForum = () => {
       }
     }
     fetchPosts()
-  }, [page]) // Gọi lại API khi page thay đổi
+  }, [page])
 
   const handleClick = (id) => {
     navigate(`/forum/post/${id}`)
   }
 
   const handlePageChange = (event, value) => {
-    setPage(value) // Update the page state
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to the top of the page
+    setPage(value)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (loading) {

@@ -13,14 +13,16 @@ const {
   getNewsByUserId,
   deleteNewsById,
   updateNew,
-  deleteNewImage
+  deleteNewImage,
+  getNewByTopic,
+  createShare
 } = require('../controllers/newsController')
 const { authorizeUser, authorizeAdmin } = require('../middlewares/auth')
 const {
   uploadThumbnail,
   uploadImages,
   uploadNewsFiles
-} = require('../middlewares/uploadCloudinary') // Đảm bảo đường dẫn đúng
+} = require('../middlewares/uploadCloudinary')
 
 const router = express.Router()
 
@@ -30,6 +32,7 @@ router.get('/latest', getLatestNews)
 router.get('/most-liked', getMostLikedNews)
 router.get('/monthly-stats', authorizeUser, getMonthlyStats)
 router.get('/user', authorizeUser, getNewsByUserId)
+router.get('/topic/:id', getNewByTopic)
 router.get('/:id', getNewsById)
 router.delete('/:newsId', authorizeUser, deleteNewsById)
 router.delete(
@@ -39,7 +42,7 @@ router.delete(
   deleteNewImage
 )
 router.put('/:id', authorizeUser, uploadNewsFiles, updateNew)
-router.post('/:newsId/share', authorizeUser, shareNews)
+// router.post('/:newsId/share', authorizeUser, shareNews)
 router.post(
   '/',
   authorizeUser,
@@ -59,5 +62,7 @@ router.post(
   createNews
 )
 router.put('/approve/:id', authorizeUser, authorizeAdmin, approveNews)
+router.post('/:newsId/like', authorizeUser, likeNews)
+router.post('/:newsId/share', authorizeUser, createShare)
 
 module.exports = router

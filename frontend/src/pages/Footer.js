@@ -29,7 +29,7 @@ const FooterTitle = styled(Typography)`
   letter-spacing: 0.5px;
   position: relative;
   padding-bottom: 0.75rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -73,7 +73,7 @@ const FooterLink = styled(Link)`
   transition: all 0.3s ease;
   font-size: 0.95rem;
   display: inline-block;
-  
+
   &:hover {
     color: white;
     transform: translateX(4px);
@@ -114,7 +114,7 @@ const SocialLink = styled(Link)`
   padding: 0.5rem 0;
   color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
-  
+
   &:hover {
     color: white;
     text-decoration: underline;
@@ -139,10 +139,18 @@ const Footer = () => {
         <FooterSection>
           <FooterTitle variant="h6">Danh mục trang</FooterTitle>
           <FooterList>
-            <li><FooterLink href="/">Trang chủ</FooterLink></li>
-            <li><FooterLink href="/forum">Diễn đàn</FooterLink></li>
-            <li><FooterLink href="#">Phản ánh</FooterLink></li>
-            <li><FooterLink href="#">Thông tin cá nhân</FooterLink></li>
+            <li>
+              <FooterLink href="/">Trang chủ</FooterLink>
+            </li>
+            <li>
+              <FooterLink href="/forum">Diễn đàn</FooterLink>
+            </li>
+            <li>
+              <FooterLink href="#">Phản ánh</FooterLink>
+            </li>
+            <li>
+              <FooterLink href="#">Thông tin cá nhân</FooterLink>
+            </li>
           </FooterList>
         </FooterSection>
 
@@ -160,13 +168,13 @@ const Footer = () => {
           <AvatarGroup>
             <AvatarRow>
               <Avatar
-                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743508853/anhthe_v1_grpn55.jpg"
-                alt="Hải"
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743696539/c4563c5e55fbe5a5bcea_d2l4oj.jpg"
+                alt="Soi"
                 sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
               <Avatar
-                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743356233/news_images/zjyl9khql1slqapkvnka.jpg"
-                alt="Soi"
+                src="https://res.cloudinary.com/demwoy6ku/image/upload/v1743696975/avt_hjwukp.jpg"
+                alt="Hải"
                 sx={{ width: 56, height: 56, border: '2px solid white' }}
               />
               <Avatar

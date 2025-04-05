@@ -4,6 +4,8 @@ const initialState = {
   forumList: [],
   newsByUser: [],
   articleDetail: [],
+  articleByTopic: [],
+  topicDetail: [],
   loading: false,
   error: null,
   response: null
@@ -34,6 +36,18 @@ const forumSlice = createSlice({
       state.error = null
       state.response = null
     },
+    getNewsTopicSuccess: (state, action) => {
+      state.articleByTopic = action.payload
+      state.loading = false
+      state.error = null
+      state.response = null
+    },
+    getDetailTopicSuccess: (state, action) => {
+      state.topicDetail = action.payload
+      state.loading = false
+      state.error = null
+      state.response = null
+    },
     getFailed: (state, action) => {
       state.response = action.payload
       state.loading = false
@@ -59,7 +73,9 @@ export const {
   stuffDone,
   getError,
   getNewsUserSuccess,
-  getNewDetailSuccess
+  getNewDetailSuccess,
+  getNewsTopicSuccess,
+  getDetailTopicSuccess
 } = forumSlice.actions
 
 export const forumReducer = forumSlice.reducer

@@ -91,10 +91,9 @@ const studentLogIn = async (req, res) => {
 
 const getStudents = async (req, res) => {
   try {
-    let students = await Student.find({ school: req.params.id }).populate(
-      'sclassName',
-      'sclassName'
-    )
+    let students = await Student.find({ school: req.params.id })
+      .populate('sclassName', 'sclassName')
+      .sort({ rollNum: 1 })
     if (students.length > 0) {
       let modifiedStudents = students.map((student) => {
         return { ...student._doc, password: undefined }

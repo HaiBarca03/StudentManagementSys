@@ -24,13 +24,19 @@ const teacherRegister = async (req, res) => {
     const existingTeacherByEmail = await Teacher.findOne({ email })
 
     if (existingTeacherByEmail) {
-      res.send({ message: 'Email already exists' })
-    } else {
-      let result = await teacher.save()
-      await Subject.findByIdAndUpdate(teachSubject, { teacher: teacher._id })
-      result.password = undefined
-      res.send(result)
+      return res.send({ message: 'Email already exists' })
     }
+
+    let result
+    try {
+      result = await teacher.save()
+    } catch (saveErr) {
+      return res.status(400).send({ message: saveErr.message })
+    }
+
+    await Subject.findByIdAndUpdate(teachSubject, { teacher: result._id })
+    result.password = undefined // Remove password from response
+    res.send(result)
   } catch (err) {
     res.status(500).json(err)
   }

@@ -12,7 +12,7 @@ topicRouter = express.Router()
 
 topicRouter.post('/', authorizeAdmin, createTopic)
 topicRouter.get('/', getAllTopics)
-topicRouter.get('/:slug', getTopicDetails)
+topicRouter.get('/:id', getTopicDetails)
 topicRouter.put('/:id', authorizeAdmin, updateTopic)
 topicRouter.delete('/:id', authorizeAdmin, deleteTopic)
 
