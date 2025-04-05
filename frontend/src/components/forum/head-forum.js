@@ -58,7 +58,14 @@ const HeadForum = () => {
             </ListItemButton>
           </ListItem>
         )}
-
+        {currentUser?.role === 'Teacher' && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate('/forum/news/my-article')}>
+              <ArticleIcon sx={{ mr: 2 }} />
+              <ListItemText primary="Bài viết của tôi" />
+            </ListItemButton>
+          </ListItem>
+        )}
         {currentUser?.role === 'Admin' && (
           <>
             <Divider />
@@ -141,6 +148,16 @@ const HeadForum = () => {
               Bài viết mới
             </Button>
             {currentUser?.role === 'Student' && (
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mr: 2 }}
+                onClick={() => navigate('/forum/news/my-article')}
+              >
+                Bài viết của tôi
+              </Button>
+            )}
+            {currentUser?.role === 'Teacher' && (
               <Button
                 variant="contained"
                 color="primary"
