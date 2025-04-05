@@ -5,7 +5,13 @@ import { underStudentControl } from '../redux/studentRelated/studentSlice';
 import MuiAlert from '@mui/material/Alert';
 import { Snackbar } from '@mui/material';
 
-const Popup = ({ message, setShowPopup, showPopup }) => {
+const Popup = ({ 
+    message, 
+    setShowPopup, 
+    showPopup, 
+    severity,  // Optional explicit severity prop
+    autoHideDuration = 3000 
+}) => {
     const dispatch = useDispatch();
 
     const vertical = "top";
@@ -20,21 +26,64 @@ const Popup = ({ message, setShowPopup, showPopup }) => {
         dispatch(underStudentControl());
     };
 
-    // Kiểm tra điều kiện thành công rõ ràng hơn
-    const isSuccess = message && message.toLowerCase().includes('success');
+    // Enhanced severity detection with Vietnamese support
+    const detectSeverity = () => {
+        // Use explicit severity if provided
+        if (severity) return severity;
+        
+        if (!message) return 'info';
+        
+        const msg = message.toLowerCase();
+        
+        // Success cases (English and Vietnamese)
+        if (msg.includes('success') || 
+            msg.includes('thành công') || 
+            msg.includes('hoàn tất') ||
+            msg.includes('done')) {
+            return 'success';
+        }
+        
+        // Error cases (English and Vietnamese)
+        if (msg.includes('error') || 
+            msg.includes('lỗi') || 
+            msg.includes('fail') ||
+            msg.includes('thất bại')) {
+            return 'error';
+        }
+        
+        // Warning cases (English and Vietnamese)
+        if (msg.includes('warning') || 
+            msg.includes('cảnh báo') || 
+            msg.includes('chú ý')) {
+            return 'warning';
+        }
+        
+        // Default to info
+        return 'info';
+    };
+
+    const alertSeverity = detectSeverity();
 
     return (
         <Snackbar 
             open={showPopup} 
-            autoHideDuration={2000} 
+            autoHideDuration={autoHideDuration} 
             onClose={handleClose} 
             anchorOrigin={{ vertical, horizontal }} 
             key={vertical + horizontal}
         >
             <Alert 
                 onClose={handleClose} 
-                severity={isSuccess ? "success" : "error"} 
-                sx={{ width: '100%' }}
+                severity={alertSeverity}
+                sx={{ 
+                    width: '100%',
+                    minWidth: '300px',
+                    borderRadius: '8px',
+                    boxShadow: '0px 3px 10px rgba(0, 0, 0, 0.1)',
+                    '& .MuiAlert-message': {
+                        padding: '8px 0'
+                    }
+                }}
             >
                 {message}
             </Alert>
@@ -45,5 +94,10 @@ const Popup = ({ message, setShowPopup, showPopup }) => {
 export default Popup;
 
 const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    return <MuiAlert 
+        elevation={6} 
+        ref={ref} 
+        variant="filled" 
+        {...props} 
+    />;
 });
