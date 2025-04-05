@@ -3,7 +3,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 
 const FooterStyled = styled.footer`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8b99db 0%, #764ba2 100%);
   color: white;
   padding: 3rem 0;
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -15,6 +15,7 @@ const FooterContainer = styled(Container)`
   gap: 2rem;
   padding: 0 1rem;
 `
+
 
 const FooterSection = styled(Box)`
   display: flex;
@@ -34,6 +35,23 @@ const FooterTitle = styled(Typography)`
     position: absolute;
     bottom: 0;
     left: 0;
+    width: 40px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+  }
+`
+const FooterTitleAvt = styled(Typography)`
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 0.75rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 115px;
     width: 40px;
     height: 2px;
     background: rgba(255, 255, 255, 0.5);
@@ -131,14 +149,14 @@ const Footer = () => {
         <FooterSection>
           <FooterTitle variant="h6">Thông tin sản phẩm</FooterTitle>
           <Box display="flex" flexDirection="column" gap={0.5}>
-            <SocialLink href="https://student-sys-fe.vercel.app">MongoDB</SocialLink>
-            <SocialLink href="https://student-sys-fe.vercel.app">Demo</SocialLink>
-            <SocialLink href="https://student-sys.vercel.app">API</SocialLink>
+            <FooterLink href="https://student-sys-fe.vercel.app">MongoDB</FooterLink>
+            <FooterLink href="https://student-sys-fe.vercel.app">Demo</FooterLink>
+            <FooterLink href="https://student-sys.vercel.app">API</FooterLink>
           </Box>
         </FooterSection>
 
         <FooterSection>
-          <FooterTitle variant="h6" textAlign="left">Face Of The Project</FooterTitle>
+          <FooterTitleAvt variant="h6" textAlign="center">Face Of The Project</FooterTitleAvt>
           <AvatarGroup>
             <AvatarRow>
               <Avatar

@@ -70,7 +70,7 @@ const AddClass = () => {
                     <form onSubmit={submitHandler}>
                         <Stack spacing={3}>
                             <TextField
-                                label="Create a class"
+                                label="Tạo một lớp học"
                                 variant="outlined"
                                 value={sclassName}
                                 onChange={(event) => {

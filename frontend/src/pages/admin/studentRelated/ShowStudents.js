@@ -212,7 +212,7 @@ const ShowStudents = () => {
                 variant="contained"
                 onClick={() => navigate('/Admin/addstudents')}
               >
-                Thêm Sinh Viên
+                THÊM SINH VIÊN
               </GreenButton>
             </Box>
           ) : (

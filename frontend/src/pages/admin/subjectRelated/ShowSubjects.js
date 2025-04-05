@@ -105,7 +105,7 @@ const ShowSubjects = () => {
                 variant="contained"
                 onClick={() => navigate('/Admin/subjects/chooseclass')}
               >
-                Add Subjects
+                THÊM MÔN HỌC
               </GreenButton>
             </Box>
           ) : (

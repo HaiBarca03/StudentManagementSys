@@ -265,6 +265,9 @@ const ClassDetails = () => {
         {getresponse && (
           <GreenButton
             variant="contained"
+            sx={{
+              marginRight: '16px'
+            }}
             onClick={() => navigate('/Admin/class/addstudents/' + classID)}
           >
             Thêm sinh viên
@@ -300,10 +303,10 @@ const ClassDetails = () => {
                     zIndex: 1
                   }}
                 >
-                  <Tab label="Details" value="1" />
-                  <Tab label="Subjects" value="2" />
-                  <Tab label="Students" value="3" />
-                  <Tab label="Teachers" value="4" />
+                  <Tab label="Chi tiết" value="1" />
+                  <Tab label="Môn học" value="2" />
+                  <Tab label="Sinh viên" value="3" />
+                  <Tab label="Giảng viên" value="4" />
                 </TabList>
               </Box>
               <Container sx={{ marginTop: '3rem', marginBottom: '4rem' }}>

@@ -112,7 +112,7 @@ const ShowClasses = () => {
         <Box
           sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
         >
-          <Tooltip title="Add Students & Subjects">
+          <Tooltip title="Thêm môn học và sinh viên">
             <IconButton
               onClick={handleClick}
               size="small"
@@ -153,12 +153,12 @@ const ShowClasses = () => {
   const actions = [
     {
       icon: <AddCardIcon color="primary" />,
-      name: 'Thêm môn học mới',
+      name: 'Thêm lớp học mới',
       action: () => navigate('/Admin/addclass')
     },
     {
       icon: <DeleteIcon color="error" />,
-      name: 'Xóa tất cả môn học',
+      name: 'Xóa tất cả lớp học',
       action: () => deleteHandler(adminID, 'Sclasses')
     }
   ]
@@ -181,7 +181,7 @@ const ShowClasses = () => {
                 variant="contained"
                 onClick={() => navigate('/Admin/addclass')}
               >
-                Add Class
+                THÊM LỚP HỌC
               </GreenButton>
             </Box>
           ) : (
