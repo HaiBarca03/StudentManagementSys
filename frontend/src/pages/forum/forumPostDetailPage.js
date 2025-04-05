@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 import axios from 'axios'
 import {
   Box,
@@ -74,16 +75,43 @@ const ForumPostDetailPage = () => {
       dispatch(getCommentByNews(id))
     }
   }, [id, dispatch, user?._id])
-
   const handleToggleComments = () => {
     setShowComments((prev) => !prev)
   }
+  const isLocal = process.env.REACT_APP_DOMAIN_CHECK_LOCAL === '0'
+  const shareUrl = isLocal
+    ? `http://localhost:3000/forum/post/${id}`
+    : `https://student-sys-fe.vercel.app/forum/post/${id}`
+  useEffect(() => {
+    if (!window.FB) {
+      const script = document.createElement('script')
+      script.src = 'https://connect.facebook.net/en_US/sdk.js'
+      script.async = true
+      script.defer = true
+      script.crossOrigin = 'anonymous'
+
+      script.onload = () => {
+        window.fbAsyncInit = () => {
+          window.FB.init({
+            appId: process.env.REACT_APP_FB_APP_ID,
+            autoLogAppEvents: true,
+            xfbml: true,
+            version: 'v19.0'
+          })
+        }
+      }
+
+      document.body.appendChild(script)
+    }
+  }, [])
+
   const handleShare = () => {
-    const shareUrl = `${process.env.REACT_APP_BASE_URL}/news/${id}`
+    const urlToShare = shareUrl
     const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-      shareUrl
+      urlToShare
     )}`
-    window.open(fbShareUrl)
+
+    window.open(fbShareUrl, '_blank', 'width=600,height=400')
     dispatch(shareNews(id))
   }
 
@@ -136,7 +164,6 @@ const ForumPostDetailPage = () => {
     )
   }
 
-  const urlShareFb = `${process.env.REACT_APP_BASE_URL}/api/news/${id}`
   return (
     <Grid
       container
