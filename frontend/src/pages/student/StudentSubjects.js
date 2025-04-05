@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getSubjectList } from '../../redux/sclassRelated/sclassHandle'
-import { getUserDetails } from '../../redux/userRelated/userHandle'
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
+import { getUserDetails } from '../../redux/userRelated/userHandle';
 import {
   Box,
   BottomNavigation,
@@ -17,58 +17,63 @@ import {
   TableRow,
   Typography,
   useTheme
-} from '@mui/material'
-import CustomBarChart from '../../components/CustomBarChart'
-import InsertChartIcon from '@mui/icons-material/InsertChart'
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined'
-import TableChartIcon from '@mui/icons-material/TableChart'
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined'
-import { StyledTableCell, StyledTableRow } from '../../components/styles'
-import SchoolIcon from '@mui/icons-material/School'
-import SubjectIcon from '@mui/icons-material/Subject'
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
+} from '@mui/material';
+import CustomBarChart from '../../components/CustomBarChart';
+import InsertChartIcon from '@mui/icons-material/InsertChart';
+import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+import { StyledTableCell, StyledTableRow } from '../../components/styles';
+import SchoolIcon from '@mui/icons-material/School';
+import SubjectIcon from '@mui/icons-material/Subject';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const StudentSubjects = () => {
-  const dispatch = useDispatch()
-  const theme = useTheme()
-  const { subjectsList } = useSelector((state) => state.sclass)
-  const { userDetails, currentUser, loading } = useSelector((state) => state.user)
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const { subjectsList } = useSelector((state) => state.sclass);
+  const { userDetails, currentUser, loading } = useSelector((state) => state.user);
   
-  const [subjectMarks, setSubjectMarks] = useState([])
-  const [selectedSection, setSelectedSection] = useState('table')
+  const [subjectMarks, setSubjectMarks] = useState([]);
+  const [selectedSection, setSelectedSection] = useState('table');
 
   useEffect(() => {
     if (currentUser?._id) {
-      dispatch(getUserDetails(currentUser._id, 'Student'))
+      dispatch(getUserDetails(currentUser._id, 'Student'));
     }
-  }, [dispatch, currentUser?._id])
+  }, [dispatch, currentUser?._id]);
 
   useEffect(() => {
     if (userDetails) {
-      setSubjectMarks(userDetails.examResult || [])
+      setSubjectMarks(userDetails.examResult || []);
     }
-  }, [userDetails])
+  }, [userDetails]);
 
   useEffect(() => {
     if (currentUser?.sclassName?._id && subjectMarks.length === 0) {
-      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'))
+      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'));
     }
-  }, [subjectMarks, dispatch, currentUser?.sclassName?._id])
+  }, [subjectMarks, dispatch, currentUser?.sclassName?._id]);
 
   const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection)
-  }
+    setSelectedSection(newSection);
+  };
 
   const renderTableSection = () => (
     <Box sx={{ mb: 8 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        gap: 1,
-        mb: 3
-      }}>
-        <EmojiEventsIcon fontSize="large" />
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: 1,
+          mb: 3
+        }}
+      >
+        <EmojiEventsIcon fontSize="large" sx={{ mt: '5', paddingTop:10 }} />
         Điểm Môn Học
       </Typography>
       <TableContainer component={Paper} elevation={3} sx={{ borderRadius: '12px' }}>
@@ -92,11 +97,23 @@ const StudentSubjects = () => {
         </Table>
       </TableContainer>
     </Box>
-  )
+  );
 
   const renderChartSection = () => (
     <Box sx={{ mb: 8, p: 2 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ mb: 3 }}>
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom 
+        sx={{ 
+          mb: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 1
+        }}
+      >
+        <InsertChartIcon fontSize="large" />
         Biểu Đồ Điểm Môn Học
       </Typography>
       <CustomBarChart 
@@ -105,32 +122,41 @@ const StudentSubjects = () => {
         height={400}
       />
     </Box>
-  )
+  );
 
   const renderClassDetailsSection = () => (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        gap: 1,
-        mb: 4
-      }}>
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: 1,
+          mb: 4
+        }}
+      >
         <SchoolIcon fontSize="large" />
         Chi Tiết Lớp Học
       </Typography>
 
-      <Typography variant="h5" gutterBottom sx={{ 
-        display: 'flex', 
-        alignItems: 'center',
-        gap: 1,
-        mb: 2
-      }}>
+      <Typography 
+        variant="h5" 
+        gutterBottom 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 1,
+          mb: 2
+        }}
+      >
         <SubjectIcon />
         Danh Sách Môn Học
       </Typography>
 
-      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: '12px' }}>
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: '12px', mb: 8 }}>
         <Table>
           <TableHead>
             <StyledTableRow>
@@ -161,7 +187,7 @@ const StudentSubjects = () => {
         </Table>
       </TableContainer>
     </Container>
-  )
+  );
 
   if (loading) {
     return (
@@ -173,7 +199,7 @@ const StudentSubjects = () => {
       }}>
         <CircularProgress size={60} thickness={4} />
       </Box>
-    )
+    );
   }
 
   return (
@@ -237,7 +263,7 @@ const StudentSubjects = () => {
         renderClassDetailsSection()
       )}
     </>
-  )
-}
+  );
+};
 
-export default StudentSubjects
+export default StudentSubjects;

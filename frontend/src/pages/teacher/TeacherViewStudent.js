@@ -12,18 +12,115 @@ import {
   Grid,
   Table,
   TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
-  Typography
+  Paper,
+  Typography,
+  Avatar,
+  Chip
 } from '@mui/material'
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import {
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  CheckCircle,
+  Cancel
+} from '@mui/icons-material'
 import {
   calculateOverallAttendancePercentage,
   calculateSubjectAttendancePercentage,
   groupAttendanceBySubject
 } from '../../components/attendanceCalculator'
-import CustomPieChart from '../../components/CustomPieChart'
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { PurpleButton } from '../../components/buttonStyles'
 import { StyledTableCell, StyledTableRow } from '../../components/styles'
+
+const COLORS = ['#00C49F', '#FF8042', '#0088FE', '#FFBB28'];
+
+const CustomPieChart = ({ data }) => {
+  return (
+<Box sx={{ 
+  height: 400, 
+  width: '100%', 
+  mt: 4,
+  position: 'relative'
+}}>
+  <Typography variant="h6" gutterBottom align="center">
+    Tổng quan điểm danh
+  </Typography>
+  <ResponsiveContainer width="100%" height="100%">
+    <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
+      <Pie
+        data={data}
+        cx="50%"
+        cy="50%"
+        labelLine={true}
+        outerRadius={100} // Giảm bán kính để chừa chỗ cho label
+        innerRadius={50} // Thêm innerRadius để tạo donut chart
+        fill="#8884d8"
+        dataKey="value"
+        label={({ name, percent, cx, cy, midAngle, innerRadius, outerRadius, index }) => {
+          const RADIAN = Math.PI / 180;
+          // Tính toán vị trí chính xác hơn
+          const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+          
+          return (
+            <text
+              x={x}
+              y={y}
+              fill="#333"
+              textAnchor="middle"
+              dominantBaseline="central"
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                pointerEvents: 'none'
+              }}
+            >
+              {`${(percent * 100).toFixed(0)}%`}
+            </text>
+          );
+        }}
+      >
+        {data.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+      <Tooltip 
+        formatter={(value) => [`${value}%`, 'Tỷ lệ']}
+        contentStyle={{
+          borderRadius: '8px',
+          padding: '8px 12px',
+          border: 'none',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+          fontSize: '14px'
+        }}
+      />
+      <Legend 
+        layout="horizontal"
+        verticalAlign="bottom"
+        align="center"
+        wrapperStyle={{
+          paddingTop: '30px',
+          fontSize: '14px'
+        }}
+        formatter={(value) => (
+          <span style={{ 
+            color: '#333',
+            padding: '0 10px',
+            whiteSpace: 'nowrap'
+          }}>
+            {value}
+          </span>
+        )}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</Box>
+  );
+};
 
 const TeacherViewStudent = () => {
   const navigate = useNavigate()
@@ -70,224 +167,335 @@ const TeacherViewStudent = () => {
   const overallAbsentPercentage = 100 - overallAttendancePercentage
 
   const chartData = [
-    { name: 'Present', value: overallAttendancePercentage },
-    { name: 'Absent', value: overallAbsentPercentage }
+    { name: 'Có mặt', value: overallAttendancePercentage },
+    { name: 'Vắng mặt', value: overallAbsentPercentage }
   ]
 
   return (
     <>
       {loading ? (
-        <>
-          <div>Loading...</div>
-        </>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+          <Typography variant="h6">Đang tải...</Typography>
+        </Box>
       ) : (
-        <Box sx={{ m: 10 }}>
-          <Box sx={{ mb: 4 }}>
-            <Card sx={{ mb: 3 }}>
-              <CardHeader
-                title="Thông tin sinh viên"
-                sx={{ bgcolor: '#f5f5f5' }}
-              />
-              <CardContent>
-                <Typography variant="body1">
-                  <strong>Họ tên:</strong> {userDetails.name}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Mã sinh viên:</strong> {userDetails.rollNum}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Lớp:</strong> {sclassName.sclassName}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Trường:</strong> {studentSchool.schoolName}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-          <h3>Điểm danh:</h3>
-          {subjectAttendance &&
-            Array.isArray(subjectAttendance) &&
-            subjectAttendance.length > 0 && (
-              <>
-                {Object.entries(
-                  groupAttendanceBySubject(subjectAttendance)
-                ).map(
-                  ([subName, { present, allData, subId, sessions }], index) => {
-                    if (subName === teachSubject) {
-                      const subjectAttendancePercentage =
-                        calculateSubjectAttendancePercentage(present, sessions)
-
-                      return (
-                        <Table key={index}>
-                          <TableHead>
-                            <StyledTableRow>
-                              <StyledTableCell>Môn học</StyledTableCell>
-                              <StyledTableCell>Hiện tại</StyledTableCell>
-                              <StyledTableCell>Tổng tiết học</StyledTableCell>
-                              <StyledTableCell>Tỉ lệ</StyledTableCell>
-                              <StyledTableCell align="center">
-                                Hành động
-                              </StyledTableCell>
-                            </StyledTableRow>
-                          </TableHead>
-
-                          <TableBody>
-                            <StyledTableRow>
-                              <StyledTableCell>{subName}</StyledTableCell>
-                              <StyledTableCell>{present}</StyledTableCell>
-                              <StyledTableCell>{sessions}</StyledTableCell>
-                              <StyledTableCell>
-                                {subjectAttendancePercentage}%
-                              </StyledTableCell>
-                              <StyledTableCell align="center">
-                                <Button
-                                  variant="contained"
-                                  onClick={() => handleOpen(subId)}
-                                >
-                                  {openStates[subId] ? (
-                                    <KeyboardArrowUp />
-                                  ) : (
-                                    <KeyboardArrowDown />
-                                  )}
-                                  Chi tiết
-                                </Button>
-                              </StyledTableCell>
-                            </StyledTableRow>
-                            <StyledTableRow>
-                              <StyledTableCell
-                                style={{ paddingBottom: 0, paddingTop: 0 }}
-                                colSpan={6}
-                              >
-                                <Collapse
-                                  in={openStates[subId]}
-                                  timeout="auto"
-                                  unmountOnExit
-                                >
-                                  <Box sx={{ margin: 1 }}>
-                                    <Typography
-                                      variant="h6"
-                                      gutterBottom
-                                      component="div"
-                                    >
-                                      Chi tiết điểm danh
-                                    </Typography>
-                                    <Table size="small" aria-label="purchases">
-                                      <TableHead>
-                                        <StyledTableRow>
-                                          <StyledTableCell>
-                                            Ngày
-                                          </StyledTableCell>
-                                          <StyledTableCell align="right">
-                                            Trạng thái
-                                          </StyledTableCell>
-                                        </StyledTableRow>
-                                      </TableHead>
-                                      <TableBody>
-                                        {allData.map((data, index) => {
-                                          const date = new Date(data.date)
-                                          const dateString =
-                                            date.toString() !== 'Invalid Date'
-                                              ? date
-                                                  .toISOString()
-                                                  .substring(0, 10)
-                                              : 'Invalid Date'
-                                          return (
-                                            <StyledTableRow key={index}>
-                                              <StyledTableCell
-                                                component="th"
-                                                scope="row"
-                                              >
-                                                {dateString}
-                                              </StyledTableCell>
-                                              <StyledTableCell align="right">
-                                                {data.status}
-                                              </StyledTableCell>
-                                            </StyledTableRow>
-                                          )
-                                        })}
-                                      </TableBody>
-                                    </Table>
-                                  </Box>
-                                </Collapse>
-                              </StyledTableCell>
-                            </StyledTableRow>
-                          </TableBody>
-                        </Table>
-                      )
-                    } else {
-                      return null
+        <Box sx={{ p: 3 }}>
+          <Grid container spacing={3}>
+            {/* Student Info Card */}
+            <Grid item xs={12} md={4}>
+              <Card elevation={3}>
+                <CardHeader
+                  title="Thông tin sinh viên"
+                  sx={{ 
+                    bgcolor: 'primary.main', 
+                    color: 'white',
+                    '& .MuiCardHeader-title': {
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold'
                     }
-                  }
-                )}
-                <div>
-                  Tỷ lệ đi học: {overallAttendancePercentage.toFixed(2)}%
-                </div>
+                  }}
+                />
+                <CardContent>
+                  <Box display="flex" alignItems="center" mb={2}>
+                    <Avatar sx={{ width: 80, height: 80, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h6" fontWeight="bold">
+                        {userDetails.name}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Mã SV: {userDetails.rollNum}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1" gutterBottom>
+                      <strong>Lớp:</strong> {sclassName.sclassName}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Trường:</strong> {studentSchool.schoolName}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
 
-                <CustomPieChart data={chartData} />
-              </>
-            )}
-          <br />
-          <br />
-          <Button
-            variant="contained"
-            onClick={() =>
-              navigate(
-                `/Teacher/class/student/attendance/${studentID}/${teachSubjectID}`
-              )
-            }
-          >
-            Điểm danh
-          </Button>
-          <br />
-          <br />
-          <br />
-          <h3>Điểm thành phần:</h3>
-          {subjectMarks &&
-            Array.isArray(subjectMarks) &&
-            subjectMarks.length > 0 && (
-              <>
-                {subjectMarks.map((result, index) => {
-                  if (result.subName.subName === teachSubject) {
-                    return (
-                      <Table key={index}>
-                        <TableHead>
-                          <StyledTableRow>
-                            <StyledTableCell>Môn học</StyledTableCell>
-                            <StyledTableCell>Điểm</StyledTableCell>
-                          </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                          <StyledTableRow>
-                            <StyledTableCell>
-                              {result.subName.subName}
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              {result.marksObtained}
-                            </StyledTableCell>
-                          </StyledTableRow>
-                        </TableBody>
-                      </Table>
-                    )
-                  } else if (!result.subName || !result.marksObtained) {
-                    return null
-                  }
-                  return null
-                })}
-              </>
-            )}
-          <PurpleButton
-            variant="contained"
-            onClick={() =>
-              navigate(
-                `/Teacher/class/student/marks/${studentID}/${teachSubjectID}`
-              )
-            }
-          >
-            Chấm điểm
-          </PurpleButton>
-          <br />
-          <br />
-          <br />
+              {/* Attendance Summary Card */}
+              <Card elevation={3} sx={{ mt: 3 }}>
+                <CardHeader
+                  title="Tổng quan điểm danh"
+                  sx={{ 
+                    bgcolor: 'secondary.main', 
+                    color: 'white',
+                    '& .MuiCardHeader-title': {
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold'
+                    }
+                  }}
+                />
+                <CardContent>
+                  <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Typography>
+                      <Chip 
+                        icon={<CheckCircle />} 
+                        label={`Có mặt: ${overallAttendancePercentage.toFixed(2)}%`} 
+                        color="success" 
+                        variant="outlined"
+                      />
+                    </Typography>
+                    <Typography>
+                      <Chip 
+                        icon={<Cancel />} 
+                        label={`Vắng mặt: ${overallAbsentPercentage.toFixed(2)}%`} 
+                        color="error" 
+                        variant="outlined"
+                      />
+                    </Typography>
+                  </Box>
+                  <CustomPieChart data={chartData} />
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Attendance Details */}
+            <Grid item xs={12} md={8}>
+              <Card elevation={3}>
+                <CardHeader
+                  title="Chi tiết điểm danh"
+                  sx={{ 
+                    bgcolor: 'primary.main', 
+                    color: 'white',
+                    '& .MuiCardHeader-title': {
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold'
+                    }
+                  }}
+                />
+                <CardContent>
+                  {subjectAttendance &&
+                    Array.isArray(subjectAttendance) &&
+                    subjectAttendance.length > 0 && (
+                      <>
+                        {Object.entries(
+                          groupAttendanceBySubject(subjectAttendance)
+                        ).map(
+                          ([subName, { present, allData, subId, sessions }], index) => {
+                            if (subName === teachSubject) {
+                              const subjectAttendancePercentage =
+                                calculateSubjectAttendancePercentage(present, sessions)
+
+                              return (
+                                <TableContainer component={Paper} key={index} sx={{ mb: 3 }}>
+                                  <Table>
+                                    <TableHead>
+                                      <StyledTableRow>
+                                        <StyledTableCell>Môn học</StyledTableCell>
+                                        <StyledTableCell align="center">Có mặt</StyledTableCell>
+                                        <StyledTableCell align="center">Tổng buổi</StyledTableCell>
+                                        <StyledTableCell align="center">Tỷ lệ</StyledTableCell>
+                                        <StyledTableCell align="center">Hành động</StyledTableCell>
+                                      </StyledTableRow>
+                                    </TableHead>
+
+                                    <TableBody>
+                                      <StyledTableRow>
+                                        <StyledTableCell>{subName}</StyledTableCell>
+                                        <StyledTableCell align="center">
+                                          <Chip 
+                                            label={present} 
+                                            color="success" 
+                                            size="small"
+                                          />
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                          {sessions}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                          <Chip 
+                                            label={`${subjectAttendancePercentage}%`}
+                                            color={
+                                              subjectAttendancePercentage >= 80 
+                                                ? 'success' 
+                                                : subjectAttendancePercentage >= 50 
+                                                ? 'warning' 
+                                                : 'error'
+                                            }
+                                          />
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                          <Button
+                                            variant="outlined"
+                                            onClick={() => handleOpen(subId)}
+                                            endIcon={
+                                              openStates[subId] 
+                                                ? <KeyboardArrowUp /> 
+                                                : <KeyboardArrowDown />
+                                            }
+                                          >
+                                            Chi tiết
+                                          </Button>
+                                        </StyledTableCell>
+                                      </StyledTableRow>
+                                      <StyledTableRow>
+                                        <StyledTableCell
+                                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                                          colSpan={6}
+                                        >
+                                          <Collapse
+                                            in={openStates[subId]}
+                                            timeout="auto"
+                                            unmountOnExit
+                                          >
+                                            <Box sx={{ margin: 1 }}>
+                                              <Typography
+                                                variant="h6"
+                                                gutterBottom
+                                                component="div"
+                                              >
+                                                Lịch sử điểm danh
+                                              </Typography>
+                                              <Table size="small" aria-label="purchases">
+                                                <TableHead>
+                                                  <StyledTableRow>
+                                                    <StyledTableCell>
+                                                      Ngày
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="right">
+                                                      Trạng thái
+                                                    </StyledTableCell>
+                                                  </StyledTableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                  {allData.map((data, index) => {
+                                                    const date = new Date(data.date)
+                                                    const dateString =
+                                                      date.toString() !== 'Invalid Date'
+                                                        ? date
+                                                            .toISOString()
+                                                            .substring(0, 10)
+                                                        : 'Invalid Date'
+                                                    return (
+                                                      <StyledTableRow key={index}>
+                                                        <StyledTableCell
+                                                          component="th"
+                                                          scope="row"
+                                                        >
+                                                          {dateString}
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="right">
+                                                          <Chip 
+                                                            label={data.status}
+                                                            color={data.status === 'Present' ? 'success' : 'error'}
+                                                            size="small"
+                                                          />
+                                                        </StyledTableCell>
+                                                      </StyledTableRow>
+                                                    )
+                                                  })}
+                                                </TableBody>
+                                              </Table>
+                                            </Box>
+                                          </Collapse>
+                                        </StyledTableCell>
+                                      </StyledTableRow>
+                                    </TableBody>
+                                  </Table>
+                                </TableContainer>
+                              )
+                            } else {
+                              return null
+                            }
+                          }
+                        )}
+
+                        <Box display="flex" justifyContent="space-between" mt={3}>
+                          <PurpleButton
+                            variant="contained"
+                            onClick={() =>
+                              navigate(
+                                `/Teacher/class/student/attendance/${studentID}/${teachSubjectID}`
+                              )
+                            }
+                          >
+                            Điểm danh
+                          </PurpleButton>
+                        </Box>
+                      </>
+                    )}
+                </CardContent>
+              </Card>
+
+              {/* Marks Section */}
+              <Card elevation={3} sx={{ mt: 3 }}>
+                <CardHeader
+                  title="Điểm thành phần"
+                  sx={{ 
+                    bgcolor: 'secondary.main', 
+                    color: 'white',
+                    '& .MuiCardHeader-title': {
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold'
+                    }
+                  }}
+                />
+                <CardContent>
+                  {subjectMarks &&
+                    Array.isArray(subjectMarks) &&
+                    subjectMarks.length > 0 && (
+                      <>
+                        {subjectMarks.map((result, index) => {
+                          if (result.subName.subName === teachSubject) {
+                            return (
+                              <TableContainer component={Paper} key={index}>
+                                <Table>
+                                  <TableHead>
+                                    <StyledTableRow>
+                                      <StyledTableCell>Môn học</StyledTableCell>
+                                      <StyledTableCell align="center">Điểm</StyledTableCell>
+                                    </StyledTableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    <StyledTableRow>
+                                      <StyledTableCell>
+                                        {result.subName.subName}
+                                      </StyledTableCell>
+                                      <StyledTableCell align="center">
+                                        <Chip 
+                                          label={result.marksObtained}
+                                          color={
+                                            result.marksObtained >= 8 
+                                              ? 'success' 
+                                              : result.marksObtained >= 5 
+                                              ? 'warning' 
+                                              : 'error'
+                                          }
+                                        />
+                                      </StyledTableCell>
+                                    </StyledTableRow>
+                                  </TableBody>
+                                </Table>
+                              </TableContainer>
+                            )
+                          } else if (!result.subName || !result.marksObtained) {
+                            return null
+                          }
+                          return null
+                        })}
+                      </>
+                    )}
+                  <Box display="flex" justifyContent="flex-end" mt={3}>
+                    <PurpleButton
+                      variant="contained"
+                      onClick={() =>
+                        navigate(
+                          `/Teacher/class/student/marks/${studentID}/${teachSubjectID}`
+                        )
+                      }
+                    >
+                      Chấm điểm
+                    </PurpleButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Box>
       )}
     </>
