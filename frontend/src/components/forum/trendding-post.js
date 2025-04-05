@@ -69,7 +69,7 @@ const TrendingPost = () => {
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-        Trending News
+        Bài Viết Xu Hướng
       </Typography>
       <List>
         {posts.length > 0 ? (

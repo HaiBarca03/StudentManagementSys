@@ -46,10 +46,17 @@ const ShowClasses = () => {
   const [message, setMessage] = useState('')
 
   const deleteHandler = (deleteID, address) => {
+    setMessage(`Đang xoá lớp học...`)
     setShowPopup(true)
-    dispatch(deleteUser(deleteID, address)).then(() => {
-      dispatch(getAllSclasses(adminID, 'Sclass'))
-    })
+
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        setMessage('Xoá lớp học thành công!')
+        dispatch(getAllSclasses(adminID, 'Sclass'))
+      })
+      .catch(() => {
+        setMessage('Đã xảy ra lỗi khi xoá lớp học.')
+      })
   }
 
   const sclassColumns = [{ id: 'name', label: 'Tên lớp', minWidth: 170 }]

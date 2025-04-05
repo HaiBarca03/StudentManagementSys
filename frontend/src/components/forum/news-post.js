@@ -128,7 +128,7 @@ const NewsList = ({ posts, title, loading, error }) => {
           ))
         ) : (
           <Typography color="textSecondary" sx={{ textAlign: 'center', py: 2 }}>
-            No posts available
+            Không có bài viết nào để hiển thị !
           </Typography>
         )}
       </List>
@@ -160,7 +160,7 @@ export const NewPosts = () => {
   return (
     <NewsList
       posts={latestNews}
-      title="Latest News"
+      title="Bài Viết Mới Nhất"
       loading={loading}
       error={error}
     />

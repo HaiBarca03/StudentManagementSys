@@ -149,7 +149,7 @@ const studentSchema = new mongoose.Schema(
 )
 
 studentSchema.pre('save', async function (next) {
-  const studentCount = await Student.countDocuments({
+  const studentCount = await this.constructor.countDocuments({
     school: this.school,
     sclassName: this.sclassName
   })
@@ -165,7 +165,7 @@ studentSchema.pre('save', async function (next) {
   const student = this
 
   for (const attendance of student.attendance) {
-    const subject = await Subject.findById(attendance.subName)
+    const subject = await this.constructor.findById(attendance.subName)
 
     if (!subject) {
       return next(new Error('Subject not found'))

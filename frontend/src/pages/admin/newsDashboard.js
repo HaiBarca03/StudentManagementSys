@@ -197,8 +197,8 @@ const NewsDashboard = () => {
 
   const handlePreview = (newsItem) => {
     // Tạo bản sao của newsItem để không ảnh hưởng đến dữ liệu gốc
-    const processedNewsItem = { ...newsItem };
-    
+    const processedNewsItem = { ...newsItem }
+
     // Xử lý nội dung: loại bỏ các thẻ HTML không mong muốn và mã đặc biệt
     if (processedNewsItem.content) {
       // Thay thế các thẻ HTML không cần thiết
@@ -208,14 +208,14 @@ const NewsDashboard = () => {
         .replace(/<\/?p>/g, '\n') // Thay thế thẻ p bằng xuống dòng
         .replace(/<br\s*\/?>/g, '\n') // Thay thế thẻ br bằng xuống dòng
         .replace(/&nbsp;/g, ' ') // Thay thế &nbsp; bằng khoảng trắng
-        .replace(/&[a-z]+;/g, ''); // Loại bỏ các HTML entities khác
-      
-      processedNewsItem.content = cleanContent;
+        .replace(/&[a-z]+;/g, '') // Loại bỏ các HTML entities khác
+
+      processedNewsItem.content = cleanContent
     }
-    
-    setSelectedNews(processedNewsItem);
-    setPreviewOpen(true);
-  };
+
+    setSelectedNews(processedNewsItem)
+    setPreviewOpen(true)
+  }
 
   const handleDeleteClick = (newId) => {
     setNewsToDelete(newId)
@@ -225,13 +225,13 @@ const NewsDashboard = () => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await dispatch(deleteNew(newsToDelete)).unwrap()
-      fetchNews()
+      await dispatch(deleteNew(newsToDelete))
       setSnackbar({
         open: true,
         message: 'Bài viết đã được xóa thành công',
         severity: 'success'
       })
+      fetchNews()
     } catch (error) {
       setSnackbar({
         open: true,
@@ -411,7 +411,6 @@ const NewsDashboard = () => {
           </>
         )}
 
-        {/* Preview Dialog */}
         <Dialog
           open={previewOpen}
           onClose={handleClosePreview}
@@ -452,14 +451,16 @@ const NewsDashboard = () => {
                 <Typography variant="h6" gutterBottom>
                   Nội dung
                 </Typography>
-                <Box sx={{ 
-                  whiteSpace: 'pre-line',
-                  fontFamily: 'inherit',
-                  lineHeight: 1.6
-                }}>
+                <Box
+                  sx={{
+                    whiteSpace: 'pre-line',
+                    fontFamily: 'inherit',
+                    lineHeight: 1.6
+                  }}
+                >
                   {selectedNews.content}
                 </Box>
-              <Typography paragraph>{selectedNews.content}</Typography>
+                <Typography paragraph>{selectedNews.content}</Typography>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleClosePreview}>Đóng</Button>
@@ -491,18 +492,16 @@ const NewsDashboard = () => {
           <DialogTitle>Xác nhận xóa bài viết</DialogTitle>
           <DialogContent>
             <Typography variant="body1">
-              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể
+              hoàn tác.
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button 
-              onClick={handleCloseDeleteDialog}
-              disabled={isDeleting}
-            >
+            <Button onClick={handleCloseDeleteDialog} disabled={isDeleting}>
               Hủy
             </Button>
-            <Button 
-              onClick={handleDelete} 
+            <Button
+              onClick={handleDelete}
               color="error"
               variant="contained"
               startIcon={<DeleteIcon />}

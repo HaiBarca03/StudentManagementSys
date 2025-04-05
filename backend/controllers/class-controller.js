@@ -55,7 +55,9 @@ const getSclassDetail = async (req, res) => {
 
 const getSclassStudents = async (req, res) => {
   try {
-    let students = await Student.find({ sclassName: req.params.id })
+    let students = await Student.find({ sclassName: req.params.id }).sort({
+      rollNum: 1
+    })
     if (students.length > 0) {
       let modifiedStudents = students.map((student) => {
         return { ...student._doc, password: undefined }

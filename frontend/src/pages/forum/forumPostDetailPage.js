@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import axios from 'axios'
 import {
   Box,
   Typography,
@@ -12,26 +12,41 @@ import {
   CardContent,
   Grid,
   CircularProgress
-} from '@mui/material';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
-import ShareIcon from '@mui/icons-material/Share';
-import TrenddingPost from '../../components/forum/trendding-post';
-import NewPosts from '../../components/forum/news-post';
-import CommentPost from '../../components/forum/comment-post';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCommentByNews } from '../../redux/forumRelated/commentHandle';
-import { likeNews, shareNews } from '../../redux/forumRelated/forumHandle';
-import DOMPurify from 'dompurify';
+} from '@mui/material'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined'
+import ShareIcon from '@mui/icons-material/Share'
+import TrenddingPost from '../../components/forum/trendding-post'
+import NewPosts from '../../components/forum/news-post'
+import CommentPost from '../../components/forum/comment-post'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCommentByNews } from '../../redux/forumRelated/commentHandle'
+import { likeNews, shareNews } from '../../redux/forumRelated/forumHandle'
+import DOMPurify from 'dompurify'
 
-const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`;
+const API_URL = `${process.env.REACT_APP_BASE_URL}/api/news`
 
 const PostContent = ({ html }) => {
   const cleanHtml = DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['p', 'br', 'img', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span'],
+    ALLOWED_TAGS: [
+      'p',
+      'br',
+      'img',
+      'strong',
+      'em',
+      'u',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'div',
+      'span'
+    ],
     ALLOWED_ATTR: ['src', 'alt', 'width', 'height', 'style', 'class']
-  });
+  })
 
   return (
     <Box
@@ -43,88 +58,90 @@ const PostContent = ({ html }) => {
           margin: '1rem auto',
           borderRadius: '8px',
           '@media (max-width: 600px)': {
-            maxHeight: '300px',
+            maxHeight: '300px'
           },
           '@media (min-width: 601px)': {
-            maxHeight: '500px',
-          },
+            maxHeight: '500px'
+          }
         },
         fontFamily: 'Roboto',
         lineHeight: 1.6,
         textAlign: 'justify',
-        wordBreak: 'break-word',
+        wordBreak: 'break-word'
       }}
       dangerouslySetInnerHTML={{ __html: cleanHtml }}
     />
-  );
-};
+  )
+}
 
 const ForumPostDetailPage = () => {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const [post, setPost] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showComments, setShowComments] = useState(false);
-  const [likes, setLikes] = useState(0);
-  const [hasLiked, setHasLiked] = useState(false);
-  const { commentList } = useSelector((state) => state.comment);
-  const { currentUser } = useSelector((state) => state.user);
+  const { id } = useParams()
+  const dispatch = useDispatch()
+  const [post, setPost] = useState(null)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [showComments, setShowComments] = useState(false)
+  const [likes, setLikes] = useState(0)
+  const [hasLiked, setHasLiked] = useState(false)
+  const { commentList } = useSelector((state) => state.comment)
+  const { currentUser } = useSelector((state) => state.user)
 
   useEffect(() => {
     const fetchPostDetails = async () => {
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true)
+        setError(null)
 
-        const response = await axios.get(`${API_URL}/${id}`);
-        setPost(response.data);
-        setLikes(response.data.likes || 0);
-        setHasLiked(response.data.likedBy?.includes(currentUser?._id ?? '') || false);
+        const response = await axios.get(`${API_URL}/${id}`)
+        setPost(response.data)
+        setLikes(response.data.likes || 0)
+        setHasLiked(
+          response.data.likedBy?.includes(currentUser?._id ?? '') || false
+        )
 
         if (response.data?.userId) {
           setUser({
             username: response.data.userId.name || 'Người dùng ẩn danh',
             avatar: response.data.userId.avatar || ''
-          });
+          })
         } else {
           setUser({
             username: 'Người dùng ẩn danh',
             avatar: ''
-          });
+          })
         }
       } catch (error) {
-        console.error('Error fetching post:', error);
-        setError('Không thể tải bài viết. Vui lòng thử lại sau.');
-        setPost(null);
+        console.error('Error fetching post:', error)
+        setError('Không thể tải bài viết. Vui lòng thử lại sau.')
+        setPost(null)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (id) {
-      fetchPostDetails();
-      dispatch(getCommentByNews(id));
+      fetchPostDetails()
+      dispatch(getCommentByNews(id))
     }
-  }, [id, dispatch, currentUser?._id ?? '']);
+  }, [id, dispatch, currentUser?._id ?? ''])
 
   const handleToggleComments = () => {
-    setShowComments((prev) => !prev);
-  };
+    setShowComments((prev) => !prev)
+  }
 
-  const isLocal = process.env.REACT_APP_DOMAIN_CHECK_LOCAL === '0';
+  const isLocal = process.env.REACT_APP_DOMAIN_CHECK_LOCAL === '0'
   const shareUrl = isLocal
     ? `http://localhost:3000/forum/post/${id}`
-    : `https://student-sys-fe.vercel.app/forum/post/${id}`;
+    : `https://student-sys-fe.vercel.app/forum/post/${id}`
 
   useEffect(() => {
     if (!window.FB) {
-      const script = document.createElement('script');
-      script.src = 'https://connect.facebook.net/en_US/sdk.js';
-      script.async = true;
-      script.defer = true;
-      script.crossOrigin = 'anonymous';
+      const script = document.createElement('script')
+      script.src = 'https://connect.facebook.net/en_US/sdk.js'
+      script.async = true
+      script.defer = true
+      script.crossOrigin = 'anonymous'
 
       script.onload = () => {
         window.fbAsyncInit = () => {
@@ -133,37 +150,37 @@ const ForumPostDetailPage = () => {
             autoLogAppEvents: true,
             xfbml: true,
             version: 'v19.0'
-          });
-        };
-      };
+          })
+        }
+      }
 
-      document.body.appendChild(script);
+      document.body.appendChild(script)
     }
-  }, []);
+  }, [])
 
   const handleShare = () => {
-    const urlToShare = shareUrl;
+    const urlToShare = shareUrl
     const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
       urlToShare
-    )}`;
+    )}`
 
-    window.open(fbShareUrl, '_blank', 'width=600,height=400');
-    dispatch(shareNews(id));
-  };
+    window.open(fbShareUrl, '_blank', 'width=600,height=400')
+    dispatch(shareNews(id))
+  }
 
   const handleLike = async () => {
     try {
-      setHasLiked(!hasLiked);
-      setLikes(hasLiked ? likes - 1 : likes + 1);
+      setHasLiked(!hasLiked)
+      setLikes(hasLiked ? likes - 1 : likes + 1)
 
-      await dispatch(likeNews(id)).unwrap();
-      await axios.get(`${API_URL}/${id}`);
+      await dispatch(likeNews(id)).unwrap()
+      await axios.get(`${API_URL}/${id}`)
     } catch (error) {
-      console.error('Error liking post:', error);
-      setHasLiked(hasLiked);
-      setLikes(likes);
+      console.error('Error liking post:', error)
+      setHasLiked(hasLiked)
+      setLikes(likes)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -177,7 +194,7 @@ const ForumPostDetailPage = () => {
       >
         <CircularProgress />
       </Box>
-    );
+    )
   }
 
   if (error) {
@@ -187,7 +204,7 @@ const ForumPostDetailPage = () => {
           {error}
         </Typography>
       </Box>
-    );
+    )
   }
 
   if (!post) {
@@ -197,16 +214,19 @@ const ForumPostDetailPage = () => {
           Bài viết không tồn tại hoặc đã bị xóa!
         </Typography>
       </Box>
-    );
+    )
   }
 
   return (
     <>
       <Helmet>
         <title>{post.title || 'Bài viết diễn đàn'}</title>
-        <meta name="description" content={post.summary || 'Bài viết diễn đàn'} />
+        <meta
+          name="description"
+          content={post.summary || 'Bài viết diễn đàn'}
+        />
       </Helmet>
-      
+
       <Grid
         container
         spacing={2}
@@ -236,7 +256,12 @@ const ForumPostDetailPage = () => {
               <Box display="flex" gap={1} mb={2}>
                 {Array.isArray(post.tags) &&
                   post.tags.map((tag, index) => (
-                    <Chip key={index} label={tag} color="success" size="small" />
+                    <Chip
+                      key={index}
+                      label={tag}
+                      color="success"
+                      size="small"
+                    />
                   ))}
               </Box>
               {post.images &&
@@ -257,14 +282,17 @@ const ForumPostDetailPage = () => {
                     />
                   </Box>
                 ))}
-              
+
               <PostContent html={post.content} />
-              
+
               <Box display="flex" alignItems="center" mt={2}>
                 <IconButton onClick={handleToggleComments}>
                   <ChatBubbleOutlineIcon />
                 </IconButton>
-                <Typography variant="body2" sx={{ fontFamily: 'Roboto', mr: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontFamily: 'Roboto', mr: 2 }}
+                >
                   {commentList.length}
                 </Typography>
                 <IconButton onClick={handleLike}>
@@ -274,8 +302,11 @@ const ForumPostDetailPage = () => {
                     <ThumbUpAltOutlinedIcon />
                   )}
                 </IconButton>
-                <Typography variant="body2" sx={{ fontFamily: 'Roboto', mr: 2 }}>
-                  {likes}
+                <Typography
+                  variant="body2"
+                  sx={{ fontFamily: 'Roboto', mr: 2 }}
+                >
+                  {post.likes}
                 </Typography>
                 <div>
                   <IconButton onClick={handleShare}>
@@ -311,7 +342,7 @@ const ForumPostDetailPage = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default ForumPostDetailPage;
+export default ForumPostDetailPage

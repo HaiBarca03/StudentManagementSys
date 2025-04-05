@@ -31,9 +31,17 @@ const ShowSubjects = () => {
   const [message, setMessage] = useState('')
 
   const deleteHandler = (deleteID, address) => {
-    dispatch(deleteUser(deleteID, address)).then(() => {
-      dispatch(getSubjectList(currentUser._id, 'AllSubjects'))
-    })
+    setMessage(`Đang xoá môn học...`)
+    setShowPopup(true)
+
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        setMessage('Xoá môn học thành công!')
+        dispatch(getSubjectList(currentUser._id, 'AllSubjects'))
+      })
+      .catch(() => {
+        setMessage('Đã xảy ra lỗi khi xoá môn học.')
+      })
   }
 
   const subjectColumns = [

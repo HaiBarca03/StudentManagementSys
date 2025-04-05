@@ -46,11 +46,17 @@ const ShowStudents = () => {
   const [message, setMessage] = React.useState('')
 
   const deleteHandler = (deleteID, address) => {
+    setMessage(`Đang xoá sinh viên...`)
     setShowPopup(true)
 
-    dispatch(deleteUser(deleteID, address)).then(() => {
-      dispatch(getAllStudents(currentUser._id))
-    })
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        setMessage('Xoá thành công!')
+        dispatch(getAllStudents(currentUser._id))
+      })
+      .catch(() => {
+        setMessage('Đã xảy ra lỗi khi xoá.')
+      })
   }
 
   const studentColumns = [

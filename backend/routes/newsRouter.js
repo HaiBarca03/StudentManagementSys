@@ -55,7 +55,6 @@ router.post(
       } else if (err) {
         return res.status(400).json({ error: err.message })
       }
-      console.log('✅ Files uploaded successfully:', req.files)
       next()
     })
   },
