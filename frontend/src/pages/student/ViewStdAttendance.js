@@ -197,12 +197,12 @@ const ViewStdAttendance = () => {
   return (
     <>
       {loading ? (
-        <div>Đang tải...</div>
+        <div>Loading...</div>
       ) : (
         <div>
           {subjectAttendance &&
-          Array.isArray(subjectAttendance) &&
-          subjectAttendance.length > 0 ? (
+            Array.isArray(subjectAttendance) &&
+            subjectAttendance.length > 0 ? (
             <>
               {selectedSection === 'table' && renderTableSection()}
               {selectedSection === 'chart' && renderChartSection()}
@@ -244,7 +244,7 @@ const ViewStdAttendance = () => {
           ) : (
             <>
               <Typography variant="h6" gutterBottom component="div">
-                Hiện tại bạn không có thông tin tham dự
+                Hiện tại bạn không có thông tin tham dự !
               </Typography>
             </>
           )}

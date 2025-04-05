@@ -50,7 +50,7 @@ const ShowTeachers = () => {
           variant="contained"
           onClick={() => navigate('/Admin/teachers/chooseclass')}
         >
-          Add Teacher
+          THÊM GIẢNG VIÊN
         </GreenButton>
       </Box>
     )
@@ -141,7 +141,7 @@ const ShowTeachers = () => {
                                   )
                                 }}
                               >
-                                Add Subject
+                                Thêm môn học
                               </Button>
                             )}
                           </StyledTableCell>

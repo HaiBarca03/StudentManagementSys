@@ -305,7 +305,7 @@ const NewsDashboard = () => {
             color={showApproved ? 'primary' : 'secondary'}
             onClick={() => setShowApproved(!showApproved)}
           >
-            {showApproved ? 'Hiển thị bài chưa duyệt' : 'Hiển thị bài đã duyệt'}
+            {showApproved ? 'Hiển thị bài đã duyệt' : 'Hiển thị bài chưa duyệt'}
           </Button>
         </Box>
 

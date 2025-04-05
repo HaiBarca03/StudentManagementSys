@@ -82,7 +82,7 @@ const ShowNotices = () => {
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                             <GreenButton variant="contained"
                                 onClick={() => navigate("/Admin/addnotice")}>
-                                Add Notice
+                                THÊM THÔNG BÁO
                             </GreenButton>
                         </Box>
                         :

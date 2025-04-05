@@ -36,11 +36,11 @@ const ChooseSubject = ({ situation }) => {
         return <div>Loading...</div>;
     } else if (response) {
         return <div>
-            <h1>Sorry all subjects have teachers assigned already</h1>
+            <h1>Xin lỗi tất cả các môn học đã được chỉ định giáo viên !</h1>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                 <PurpleButton variant="contained"
                     onClick={() => navigate("/Admin/addsubject/" + classID)}>
-                    Add Subjects
+                    Thêm môn học
                 </PurpleButton>
             </Box>
         </div>;
@@ -57,7 +57,7 @@ const ChooseSubject = ({ situation }) => {
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <Typography variant="h6" gutterBottom component="div">
-                Choose a subject
+                Chọn một môn học
             </Typography>
             <>
                 <TableContainer>
@@ -65,9 +65,9 @@ const ChooseSubject = ({ situation }) => {
                         <TableHead>
                             <StyledTableRow>
                                 <StyledTableCell></StyledTableCell>
-                                <StyledTableCell align="center">Subject Name</StyledTableCell>
-                                <StyledTableCell align="center">Subject Code</StyledTableCell>
-                                <StyledTableCell align="center">Actions</StyledTableCell>
+                                <StyledTableCell align="center">Tên môn học</StyledTableCell>
+                                <StyledTableCell align="center">Mã môn học</StyledTableCell>
+                                <StyledTableCell align="center">Hành động</StyledTableCell>
                             </StyledTableRow>
                         </TableHead>
                         <TableBody>
@@ -82,7 +82,7 @@ const ChooseSubject = ({ situation }) => {
                                         {situation === "Norm" ?
                                             <GreenButton variant="contained"
                                                 onClick={() => navigate("/Admin/teachers/addteacher/" + subject._id)}>
-                                                Choose
+                                                CHỌN
                                             </GreenButton>
                                             :
                                             <GreenButton variant="contained" disabled={loader}

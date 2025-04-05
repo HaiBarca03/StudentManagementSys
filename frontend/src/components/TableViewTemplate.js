@@ -1,6 +1,29 @@
-import React, { useState } from 'react'
-import { StyledTableCell, StyledTableRow } from './styles';
-import { Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material';
+import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
+import { Table, TableBody, TableContainer, TableHead, TablePagination, TableCell, TableRow } from '@mui/material';
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    color: theme.palette.common.white,
+    padding: '12px',
+    borderBottom: '2px solid #ddd',
+    '&.MuiTableCell-head': {
+        backgroundColor: 'black',
+    },
+    '&.MuiTableCell-body': {
+        color: theme.palette.text.primary,
+        fontSize: '14px',
+        textAlign: 'justify'
+    }
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+    },
+    '&:hover': {
+        backgroundColor: theme.palette.action.selected,
+    },
+}));
 
 const TableViewTemplate = ({ columns, rows }) => {
     const [page, setPage] = useState(0);
@@ -59,7 +82,7 @@ const TableViewTemplate = ({ columns, rows }) => {
                 }}
             />
         </>
-    )
+    );
 }
 
-export default TableViewTemplate
+export default TableViewTemplate;

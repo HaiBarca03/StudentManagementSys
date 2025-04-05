@@ -43,10 +43,10 @@ const AdminHomePage = () => {
                             <Typography variant="h6" component="div">
                                 Tổng Số Sinh Viên
                             </Typography>
-                            <StatsNumber 
-                                start={0} 
-                                end={numberOfStudents} 
-                                duration={2.5} 
+                            <StatsNumber
+                                start={0}
+                                end={numberOfStudents}
+                                duration={2.5}
                                 separator=","
                             />
                         </CardContent>
@@ -59,10 +59,10 @@ const AdminHomePage = () => {
                             <Typography variant="h6" component="div">
                                 Tổng Số Lớp Học
                             </Typography>
-                            <StatsNumber 
-                                start={0} 
-                                end={numberOfClasses} 
-                                duration={5} 
+                            <StatsNumber
+                                start={0}
+                                end={numberOfClasses}
+                                duration={5}
                                 separator=","
                             />
                         </CardContent>
@@ -75,10 +75,10 @@ const AdminHomePage = () => {
                             <Typography variant="h6" component="div">
                                 Tổng Số Giảng Viên
                             </Typography>
-                            <StatsNumber 
-                                start={0} 
-                                end={numberOfTeachers} 
-                                duration={2.5} 
+                            <StatsNumber
+                                start={0}
+                                end={numberOfTeachers}
+                                duration={2.5}
                                 separator=","
                             />
                         </CardContent>
@@ -91,11 +91,11 @@ const AdminHomePage = () => {
                             <Typography variant="h6" component="div">
                                 Doanh Thu
                             </Typography>
-                            <StatsNumber 
-                                start={0} 
-                                end={23000} 
-                                duration={2.5} 
-                                prefix="₫" 
+                            <StatsNumber
+                                start={0}
+                                end={23000}
+                                duration={2.5}
+                                prefix="₫"
                                 separator=","
                                 suffix=" VND"
                             />
@@ -105,9 +105,9 @@ const AdminHomePage = () => {
 
                 {/* Notice Section */}
                 <Grid item xs={12}>
-                    <Paper sx={{ 
-                        p: 3, 
-                        display: 'flex', 
+                    <Paper sx={{
+                        p: 3,
+                        display: 'flex',
                         flexDirection: 'column',
                         borderRadius: 3,
                         boxShadow: 3
@@ -154,7 +154,7 @@ const CardContent = styled.div`
 
 const StatsNumber = styled(CountUp)`
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1976d2;
   margin-top: 8px;
 `;
