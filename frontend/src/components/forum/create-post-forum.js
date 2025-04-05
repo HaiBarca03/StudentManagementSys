@@ -18,8 +18,8 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
-import ReactQuill from 'react-quill' // Thêm editor WYSIWYG
-import 'react-quill/dist/quill.snow.css' // CSS cho ReactQuill
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -37,6 +37,22 @@ const CreateNews = () => {
     message: '',
     severity: 'success'
   })
+  const [userType, setUserType] = useState('') // State để lưu loại tài khoản
+
+  // Lấy thông tin người dùng từ token khi component mount
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token)
+        console.log('Decoded token:', decodedToken)
+        setUserType(decodedToken.role) // Giả sử role được lưu trong token
+      } catch (error) {
+        console.error('Lỗi khi giải mã token:', error)
+      }
+    }
+  }, [])
+
   // Fetch topics từ backend
   useEffect(() => {
     const fetchTopics = async () => {
@@ -66,6 +82,7 @@ const CreateNews = () => {
     }
     fetchTopics()
   }, [])
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -74,7 +91,6 @@ const CreateNews = () => {
       images: [],
       content: '',
       published: false,
-      userType: 'admin',
       topicId: ''
     },
     validationSchema: Yup.object({
@@ -85,10 +101,7 @@ const CreateNews = () => {
         .max(255, 'Tối đa 255 ký tự')
         .required('Tóm tắt là bắt buộc'),
       content: Yup.string().required('Nội dung là bắt buộc'),
-      userType: Yup.string()
-        .oneOf(['student', 'teacher', 'admin'], 'Chọn loại tài khoản hợp lệ')
-        .required('Loại tài khoản là bắt buộc'),
-      topicId: Yup.string().required('Chủ đề là bắt buộc'), // Thêm validation cho topicId
+      topicId: Yup.string().required('Chủ đề là bắt buộc'),
       thumbnail: Yup.mixed()
         .required('Thumbnail là bắt buộc')
         .test(
@@ -132,7 +145,7 @@ const CreateNews = () => {
         formData.append('summary', values.summary)
         formData.append('content', values.content)
         formData.append('published', values.published)
-        formData.append('userType', values.userType)
+        formData.append('userType', userType) // Sử dụng userType từ state
         formData.append('thumbnail', values.thumbnail)
         formData.append('userId', decodedToken.id)
         formData.append('topicId', values.topicId)
@@ -247,6 +260,17 @@ const CreateNews = () => {
       </Typography>
       <Divider sx={{ mb: 3 }} />
 
+      {userType && (
+        <Typography variant="subtitle1" sx={{ mb: 2, fontStyle: 'italic' }}>
+          Bạn đang đăng nhập với tư cách: {
+            userType.toLowerCase() === 'student' ? 'Sinh viên' : 
+            userType.toLowerCase() === 'teacher' ? 'Giảng viên' : 
+            userType.toLowerCase() === 'admin' ? 'Quản trị viên' : 
+            userType 
+          }
+        </Typography>
+      )}
+      
       <Box component="form" onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
@@ -430,24 +454,6 @@ const CreateNews = () => {
             {formik.errors.content}
           </Typography>
         )}
-
-        <TextField
-          fullWidth
-          select
-          label="Loại tài khoản"
-          name="userType"
-          value={formik.values.userType}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.userType && Boolean(formik.errors.userType)}
-          helperText={formik.touched.userType && formik.errors.userType}
-          sx={{ mb: 3 }}
-          variant="outlined"
-        >
-          <MenuItem value="student">Học sinh</MenuItem>
-          <MenuItem value="teacher">Giáo viên</MenuItem>
-          <MenuItem value="admin">Quản trị viên</MenuItem>
-        </TextField>
 
         <FormControlLabel
           control={
