@@ -7,7 +7,9 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Snackbar,
+  Alert
 } from '@mui/material'
 import ArticleCard from '../../components/forum/article-card'
 import { getNewsByUser } from '../../redux/forumRelated/forumHandle'
@@ -17,9 +19,13 @@ const MyArticlePage = () => {
   const dispatch = useDispatch()
   const { newsByUser, loading, error } = useSelector((state) => state.forum)
   const [statusFilter, setStatusFilter] = useState('all')
+  const [deleteSuccess, setDeleteSuccess] = useState(false)
+  
   const fetchArticles = () => {
     dispatch(getNewsByUser(statusFilter))
+    setDeleteSuccess(true) // Show success notification when articles are refreshed after delete
   }
+  
   useEffect(() => {
     if (statusFilter === 'all') {
       dispatch(getNewsByUser())
@@ -30,6 +36,13 @@ const MyArticlePage = () => {
 
   const handleStatusChange = (event) => {
     setStatusFilter(event.target.value)
+  }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setDeleteSuccess(false)
   }
 
   return (
@@ -98,6 +111,22 @@ const MyArticlePage = () => {
             )}
         </Box>
       </Box>
+
+      {/* Success Notification */}
+      <Snackbar
+        open={deleteSuccess}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Xóa bài viết thành công!
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
