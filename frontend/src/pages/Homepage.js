@@ -62,7 +62,7 @@ const Homepage = () => {
                 
               }}>
               <Typography 
-                variant="h2" 
+                variant="h3" 
                 component="h1" 
                 sx={{
                   fontWeight: 700,
@@ -70,22 +70,24 @@ const Homepage = () => {
                   background: 'linear-gradient(90deg, #3f51b5 0%, #2196f3 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  lineHeight: 1.5,  // Increased line height for better readability
+                  lineHeight: 1.3,  // Increased line height for better readability
                   textAlign: 'left',
                   wordSpacing: 'normal',
                   letterSpacing: 'normal',
                   hyphens: 'auto',
-                  px: 2
+                  px: 2,
+                  textAlign: 'justify',
                 }}
               >
-                Chào mừng đến với hệ thống Quản lý Trường Học
+                CHÀO MỪNG ĐẾN VỚI HỆ THỐNG QUẢN LÝ TRƯỜNG HỌC
               </Typography>
                 
                 <Typography variant="body1" sx={{
                   color: 'text.secondary',
                   mb: 4,
                   fontSize: '1.1rem',
-                  lineHeight: 1.6
+                  lineHeight: 1.6,
+                  textAlign: 'justify',
                 }}>
                     Đơn giản hóa việc quản lý trường học, tổ chức lớp học, thêm sinh viên và giảng viên.
                     Theo dõi điểm danh, đánh giá hiệu suất và gửi phản hồi dễ dàng.

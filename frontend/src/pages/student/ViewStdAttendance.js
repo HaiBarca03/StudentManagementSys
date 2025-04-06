@@ -99,11 +99,11 @@ const ViewStdAttendance = () => {
         <Table>
           <TableHead>
             <StyledTableRow>
-              <StyledTableCell sx={{ fontWeight: 'bold' }}>Môn Học</StyledTableCell>
-              <StyledTableCell sx={{ fontWeight: 'bold' }}>Điểm Danh</StyledTableCell>
-              <StyledTableCell sx={{ fontWeight: 'bold' }}>Số tiết học</StyledTableCell>
-              <StyledTableCell sx={{ fontWeight: 'bold' }}>Tỷ Lệ Tham Dự</StyledTableCell>
-              <StyledTableCell align="center" sx={{ fontWeight: 'bold' }}>Hành Động</StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold' }}>Tên Môn Học</StyledTableCell>
+              <StyledTableCell sx={{ fontWeight: 'bold' }}>Số Buổi Điểm Danh</StyledTableCell>
+              <StyledTableCell sx={{ fontWeight: 'bold' }}>Tổng Số Tiết Học</StyledTableCell>
+              <StyledTableCell sx={{ fontWeight: 'bold' }}>Tỷ Lệ Chuyên Cần</StyledTableCell>
+              <StyledTableCell align="center" sx={{ fontWeight: 'bold' }}>Thao Tác</StyledTableCell>
             </StyledTableRow>
           </TableHead>
           {Object.entries(attendanceBySubject).map(
@@ -143,7 +143,7 @@ const ViewStdAttendance = () => {
                       >
                         <Box sx={{ margin: 1 }}>
                           <Typography variant="h6" gutterBottom component="div">
-                            Chi Tiết Tham Dự
+                            Tỷ Lệ Chuyên Cần
                           </Typography>
                           <Table size="small">
                             <TableHead>
@@ -183,7 +183,7 @@ const ViewStdAttendance = () => {
         </Table>
       </TableContainer>
       <Typography variant="h6" align="center" sx={{ mt: 2 }}>
-        Tỷ Lệ Tham Dự Tổng Thể: {overallAttendancePercentage.toFixed(2)}%
+        Tỷ Lệ Chuyên Cần: {overallAttendancePercentage.toFixed(2)}%
       </Typography>
     </Box>
   );
