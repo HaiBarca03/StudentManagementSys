@@ -78,9 +78,9 @@ const StudentHomePage = () => {
                 {/* First row - Statistics cards */}
                 <Grid container item spacing={2} sx>
                 {/* Thẻ Môn học */}
-                <Grid container spacing={2} sx={{ maxWidth: 600 }}> {/* Giới hạn chiều rộng tối đa */}
+                <Grid container spacing={2} sx={{ maxWidth: 600, marginTop: 0}} >
 
-                <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Grid item xs={12} sm={12} md={12} lg={12} >
                     <Paper elevation={3} sx={{
                         p: 2,
                         borderRadius: 2,
