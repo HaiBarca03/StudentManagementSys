@@ -64,19 +64,18 @@ const ChooseUser = ({ visitor }) => {
       role: 'Admin',
       icon: <AccountCircle fontSize="large" />,
       description:
-        'Login as an administrator to access the dashboard to manage app data.'
+        'Đăng nhập quản trị viên để truy cập bảng điều khiển và quản lý dữ liệu.'
     },
     {
       role: 'Student',
       icon: <School fontSize="large" />,
-      description:
-        'Login as a student to explore course materials and assignments.'
+      description: 'Đăng nhập sinh viên để theo dõi môn học và bài tập..'
     },
     {
       role: 'Teacher',
       icon: <Groups fontSize="large" />,
       description:
-        'Login as a teacher to create courses, assignments, and track student progress.'
+        'Đăng nhập giáo viên để quản lý môn học, bài tập và theo dõi tiến độ.'
     }
   ]
 
@@ -98,29 +97,31 @@ const ChooseUser = ({ visitor }) => {
               variant="h3"
               align="center"
               sx={{
-                mb: 6,
+                mb: 4,
                 color: '#ffffff',
                 fontWeight: 700,
                 textShadow: '0 2px 15px rgba(0,0,0,0.3)',
                 letterSpacing: '0.5px'
               }}
             >
-              Welcome to Learning Portal
+              Cổng thông tin học tập
             </Typography>
 
             <Typography
               variant="h6"
               align="center"
               sx={{
-                mb: 8,
+                mb: 4,
                 color: 'rgba(255,255,255,0.9)', // Chữ trắng nhẹ
                 maxWidth: 600,
                 mx: 'auto',
                 fontWeight: 300
               }}
             >
-              Select your role to continue{' '}
-              {visitor === 'guest' ? 'as guest' : 'to login'}
+              Chọn vai trò để{' '}
+              {visitor === 'guest'
+                ? 'để đăng nhập với tài khoản khách'
+                : 'để đăng nhập'}
             </Typography>
 
             <Grid container spacing={4} justifyContent="center">

@@ -1,105 +1,122 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Container, 
-  Grid, 
-  Box, 
-  Button, 
-  Typography, 
+import React from 'react'
+import { Link } from 'react-router-dom'
+import {
+  Container,
+  Grid,
+  Box,
+  Button,
+  Typography,
   Paper,
   useTheme,
   useMediaQuery
-} from '@mui/material';
-import { ArrowForward } from '@mui/icons-material';
-import Students from "../assets/students.png";
+} from '@mui/material'
+import { ArrowForward } from '@mui/icons-material'
+import Students from '../assets/students.png'
 
 const Homepage = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      py: 4,
-
-    }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        py: 4
+      }}
+    >
       <Container maxWidth="lg">
-        <Paper elevation={0} sx={{
-          borderRadius: 4,
-          overflow: 'hidden',
-          boxShadow: '0 15px 30px rgba(0,0,0,0.1)'
-        }}>
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: '0 15px 30px rgba(0,0,0,0.1)'
+          }}
+        >
           <Grid container>
             {!isMobile && (
-              <Grid item md={6} sx={{
-                display: 'flex',
-                alignItems: 'center',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                p: 4,
-              }}>
-                <img 
-                  src={Students} 
-                  alt="students" 
-                  style={{ 
+              <Grid
+                item
+                md={6}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  background:
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  p: 4
+                }}
+              >
+                <img
+                  src={Students}
+                  alt="students"
+                  style={{
                     width: '100%',
                     filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))',
                     transform: 'scale(1.05)'
-                  }} 
+                  }}
                 />
               </Grid>
             )}
-            
+
             <Grid item xs={12} md={6}>
-              <Box sx={{
-                p: { xs: 3, md: 6 },
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                
-              }}>
-              <Typography 
-                variant="h3" 
-                component="h1" 
+              <Box
                 sx={{
-                  fontWeight: 700,
-                  mb: 3,
-                  background: 'linear-gradient(90deg, #3f51b5 0%, #2196f3 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  lineHeight: 1.3,  // Increased line height for better readability
-                  textAlign: 'left',
-                  wordSpacing: 'normal',
-                  letterSpacing: 'normal',
-                  hyphens: 'auto',
-                  px: 2,
-                  textAlign: 'justify',
-                }}
-              >
-                CHÀO MỪNG ĐẾN VỚI HỆ THỐNG QUẢN LÝ TRƯỜNG HỌC
-              </Typography>
-                
-                <Typography variant="body1" sx={{
-                  color: 'text.secondary',
-                  mb: 4,
-                  fontSize: '1.1rem',
-                  lineHeight: 1.6,
-                  textAlign: 'justify',
-                }}>
-                    Đơn giản hóa việc quản lý trường học, tổ chức lớp học, thêm sinh viên và giảng viên.
-                    Theo dõi điểm danh, đánh giá hiệu suất và gửi phản hồi dễ dàng.
-                    Truy cập hồ sơ, xem điểm số và liên lạc thuận tiện.
-                </Typography>
-                
-                <Box sx={{
+                  p: { xs: 3, md: 6 },
+                  height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
-                  mb: 2
-                }}>
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography
+                  variant="h4"
+                  component="h4"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 3,
+                    background:
+                      'linear-gradient(90deg, #3f51b5 0%, #2196f3 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    lineHeight: 1.3, // Increased line height for better readability
+                    textAlign: 'left',
+                    wordSpacing: 'normal',
+                    letterSpacing: 'normal',
+                    hyphens: 'auto',
+                    px: 2,
+                    textAlign: 'center'
+                  }}
+                >
+                  CHÀO MỪNG <br /> ĐẾN VỚI HỆ THỐNG <br /> QUẢN LÝ TRƯỜNG HỌC
+                </Typography>
+
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'text.secondary',
+                    mb: 4,
+                    fontSize: '1.1rem',
+                    lineHeight: 1.6,
+                    textAlign: 'justify'
+                  }}
+                >
+                  Đơn giản hóa việc quản lý trường học, tổ chức lớp học, thêm
+                  sinh viên và giảng viên. Theo dõi điểm danh, đánh giá hiệu
+                  suất và gửi phản hồi dễ dàng. Truy cập hồ sơ, xem điểm số và
+                  liên lạc thuận tiện.
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    mb: 2
+                  }}
+                >
                   <Button
                     component={Link}
                     to="/choose"
@@ -111,13 +128,13 @@ const Homepage = () => {
                       borderRadius: 2,
                       boxShadow: 'none',
                       '&:hover': {
-                        boxShadow: '0 4px 14px rgba(33, 150, 243, 0.3)',
+                        boxShadow: '0 4px 14px rgba(33, 150, 243, 0.3)'
                       }
                     }}
                   >
                     Login
                   </Button>
-                  
+
                   <Button
                     component={Link}
                     to="/chooseasguest"
@@ -127,7 +144,7 @@ const Homepage = () => {
                       py: 1.5,
                       borderRadius: 2,
                       borderWidth: 2,
-                      '&:hover': { 
+                      '&:hover': {
                         borderWidth: 2,
                         backgroundColor: 'rgba(63, 81, 181, 0.04)'
                       }
@@ -136,19 +153,22 @@ const Homepage = () => {
                     Login as Guest
                   </Button>
                 </Box>
-                
-                <Typography variant="body2" sx={{ 
-                  textAlign: 'center',
-                  mt: 2,
-                  color: 'text.secondary',
-                  paddingBottom: 5
-                }}>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    textAlign: 'center',
+                    mt: 2,
+                    color: 'text.secondary',
+                    paddingBottom: 5
+                  }}
+                >
                   Don't have an account?{' '}
-                  <Button 
+                  <Button
                     component={Link}
                     to="/Adminregister"
                     size="small"
-                    sx={{ 
+                    sx={{
                       textTransform: 'none',
                       color: 'primary.main',
                       fontWeight: 500,
@@ -164,7 +184,7 @@ const Homepage = () => {
         </Paper>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default Homepage;
+export default Homepage

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
-import { getUserDetails } from '../../redux/userRelated/userHandle';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getSubjectList } from '../../redux/sclassRelated/sclassHandle'
+import { getUserDetails } from '../../redux/userRelated/userHandle'
 import {
   Box,
   BottomNavigation,
@@ -17,16 +17,16 @@ import {
   TableRow,
   Typography,
   useTheme
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CustomBarChart from '../../components/CustomBarChart';
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import SchoolIcon from '@mui/icons-material/School';
-import SubjectIcon from '@mui/icons-material/Subject';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
+import CustomBarChart from '../../components/CustomBarChart'
+import InsertChartIcon from '@mui/icons-material/InsertChart'
+import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined'
+import TableChartIcon from '@mui/icons-material/TableChart'
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined'
+import SchoolIcon from '@mui/icons-material/School'
+import SubjectIcon from '@mui/icons-material/Subject'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 
 // Custom styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -36,7 +36,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: '1rem'
   },
   borderBottom: `1px solid ${theme.palette.divider}`
-}));
+}))
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(even)': {
@@ -45,7 +45,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:last-child td, &:last-child th': {
     borderBottom: 0
   }
-}));
+}))
 
 const SectionHeader = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
@@ -59,49 +59,54 @@ const SectionHeader = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     fontSize: '1.5rem'
   }
-}));
+}))
 
 const StudentSubjects = () => {
-  const dispatch = useDispatch();
-  const theme = useTheme();
-  const { subjectsList } = useSelector((state) => state.sclass);
-  const { userDetails, currentUser, loading } = useSelector((state) => state.user);
-  
-  const [subjectMarks, setSubjectMarks] = useState([]);
-  const [selectedSection, setSelectedSection] = useState('table');
+  const dispatch = useDispatch()
+  const theme = useTheme()
+  const { subjectsList } = useSelector((state) => state.sclass)
+  const { userDetails, currentUser, loading } = useSelector(
+    (state) => state.user
+  )
+
+  const [subjectMarks, setSubjectMarks] = useState([])
+  const [selectedSection, setSelectedSection] = useState('table')
 
   useEffect(() => {
     if (currentUser?._id) {
-      dispatch(getUserDetails(currentUser._id, 'Student'));
+      dispatch(getUserDetails(currentUser._id, 'Student'))
     }
-  }, [dispatch, currentUser?._id]);
+  }, [dispatch, currentUser?._id])
 
   useEffect(() => {
     if (userDetails) {
-      setSubjectMarks(userDetails.examResult || []);
+      setSubjectMarks(userDetails.examResult || [])
     }
-  }, [userDetails]);
+  }, [userDetails])
 
   useEffect(() => {
     if (currentUser?.sclassName?._id && subjectMarks.length === 0) {
-      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'));
+      dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'))
     }
-  }, [subjectMarks, dispatch, currentUser?.sclassName?._id]);
+  }, [subjectMarks, dispatch, currentUser?.sclassName?._id])
 
   const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection);
-  };
+    setSelectedSection(newSection)
+  }
 
   const renderTableSection = () => (
     <Box sx={{ mb: 8, px: { xs: 1, sm: 3 } }}>
       <SectionHeader variant="h4" paddingTop={3}>
-        <EmojiEventsIcon fontSize="large" sx={{ color: theme.palette.warning.main }} />
+        <EmojiEventsIcon
+          fontSize="large"
+          sx={{ color: theme.palette.warning.main }}
+        />
         Điểm Môn Học
       </SectionHeader>
-      <TableContainer 
-        component={Paper} 
-        elevation={3} 
-        sx={{ 
+      <TableContainer
+        component={Paper}
+        elevation={3}
+        sx={{
           borderRadius: '12px',
           border: `1px solid ${theme.palette.divider}`,
           overflowX: 'auto',
@@ -116,18 +121,24 @@ const StudentSubjects = () => {
         <Table sx={{ minWidth: 300 }}>
           <TableHead>
             <StyledTableRow>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  color: '#fff',
+                  bgcolor: '#000',
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Môn Học
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  color: '#fff',
+                  bgcolor: '#000',
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Điểm
               </StyledTableCell>
             </StyledTableRow>
@@ -135,7 +146,7 @@ const StudentSubjects = () => {
           <TableBody>
             {subjectMarks.map((result, index) =>
               result.subName && result.marksObtained ? (
-                <StyledTableRow 
+                <StyledTableRow
                   key={index}
                   sx={{
                     '&:not(:last-child)': {
@@ -152,23 +163,26 @@ const StudentSubjects = () => {
         </Table>
       </TableContainer>
     </Box>
-  );
+  )
 
   const renderChartSection = () => (
     <Box sx={{ mb: 8, p: { xs: 1, sm: 3 } }}>
       <SectionHeader variant="h4">
-        <InsertChartIcon fontSize="large" sx={{ color: theme.palette.primary.main }} />
+        <InsertChartIcon
+          fontSize="large"
+          sx={{ color: theme.palette.primary.main }}
+        />
         Biểu Đồ Điểm Môn Học
       </SectionHeader>
       <Paper elevation={3} sx={{ p: 2, borderRadius: '12px' }}>
-        <CustomBarChart 
-          chartData={subjectMarks} 
-          dataKey="marksObtained" 
+        <CustomBarChart
+          chartData={subjectMarks}
+          dataKey="marksObtained"
           height={400}
         />
       </Paper>
     </Box>
-  );
+  )
 
   const renderClassDetailsSection = () => (
     <Container maxWidth="lg" sx={{ py: 4, px: { xs: 1, sm: 3 } }}>
@@ -176,11 +190,11 @@ const StudentSubjects = () => {
         <SchoolIcon fontSize="large" sx={{ color: theme.palette.info.main }} />
         Chi Tiết Lớp Học
       </SectionHeader>
-  
-      <Typography 
-        variant="h5" 
-        gutterBottom 
-        sx={{ 
+
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{
           fontWeight: 600,
           mb: 3,
           display: 'flex',
@@ -192,11 +206,11 @@ const StudentSubjects = () => {
         <SubjectIcon color="action" />
         Danh Sách Môn Học
       </Typography>
-  
-      <TableContainer 
-        component={Paper} 
-        elevation={3} 
-        sx={{ 
+
+      <TableContainer
+        component={Paper}
+        elevation={3}
+        sx={{
           borderRadius: '12px',
           border: `1px solid ${theme.palette.divider}`,
           mb: 8,
@@ -212,54 +226,66 @@ const StudentSubjects = () => {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <StyledTableRow>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 STT
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Tên Môn Học
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Mã Môn Học
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Số Buổi
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Ngày Tạo
               </StyledTableCell>
-              <StyledTableCell sx={{ 
-                fontWeight: 700, 
-                bgcolor: theme.palette.background.default,
-                borderBottom: `2px solid ${theme.palette.divider}`
-              }}>
+              <StyledTableCell
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: theme.palette.background.default,
+                  borderBottom: `2px solid ${theme.palette.divider}`
+                }}
+              >
                 Ngày Cập Nhật
               </StyledTableCell>
             </StyledTableRow>
           </TableHead>
           <TableBody>
             {subjectsList?.map((subject, index) => (
-              <StyledTableRow 
-                key={subject._id} 
+              <StyledTableRow
+                key={subject._id}
                 hover
                 sx={{
                   '&:not(:last-child)': {
@@ -283,19 +309,21 @@ const StudentSubjects = () => {
         </Table>
       </TableContainer>
     </Container>
-  );
+  )
 
   if (loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '80vh'
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh'
+        }}
+      >
         <CircularProgress size={60} thickness={4} />
       </Box>
-    );
+    )
   }
 
   return (
@@ -304,12 +332,12 @@ const StudentSubjects = () => {
         <>
           {selectedSection === 'table' && renderTableSection()}
           {selectedSection === 'chart' && renderChartSection()}
-          
+
           <Paper
-            sx={{ 
-              position: 'fixed', 
-              bottom: 0, 
-              left: 0, 
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
               right: 0,
               zIndex: theme.zIndex.appBar,
               borderTop: `1px solid ${theme.palette.divider}`,
@@ -366,7 +394,7 @@ const StudentSubjects = () => {
         renderClassDetailsSection()
       )}
     </>
-  );
-};
+  )
+}
 
-export default StudentSubjects;
+export default StudentSubjects
