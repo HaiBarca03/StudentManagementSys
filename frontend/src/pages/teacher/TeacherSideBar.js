@@ -46,7 +46,7 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary={`Class ${sclassName.sclassName}`} />
+          <ListItemText primary={`${sclassName.sclassName}`} />
         </ListItemButton>
         <ListItemButton component={Link} to="/Teacher/complain">
           <ListItemIcon>
@@ -58,16 +58,16 @@ const TeacherSideBar = () => {
               }
             />
           </ListItemIcon>
-          <ListItemText primary="Phản ảnh" />
+          <ListItemText primary="Phản ánh" />
         </ListItemButton>
 
         <ForumSideBar />
       </React.Fragment>
       <Divider sx={{ my: 1 }} />
       <React.Fragment>
-        <ListSubheader component="div" inset>
+        {/* <ListSubheader component="div" inset>
           Người dùng
-        </ListSubheader>
+        </ListSubheader> */}
         <ListItemButton component={Link} to="/Teacher/profile">
           <ListItemIcon>
             <AccountCircleOutlinedIcon

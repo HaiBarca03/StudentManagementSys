@@ -222,210 +222,250 @@ const StudentHomePage = () => {
                     </Paper>
                 </Grid>
                 </Grid>     
-            {/* Second row - Chart */}
-            <Grid item xs={12} md={6} lg={6}>
-                <Paper elevation={3} sx={{
-                        p: 3,
-                        borderRadius: 3,
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        background: theme.palette.background.paper,
-                        borderTop: `4px solid ${theme.palette.info.main}`
+        {/* Second row - Chart */}
+<Grid item xs={12} md={6} lg={6} sx={{ minHeight: { xs: 450, md: 400 } }}>
+  <Paper elevation={3} sx={{
+    p: { xs: 1.5, md: 3 },
+    borderRadius: 3,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    borderTop: `4px solid ${theme.palette.info.main}`
+  }}>
+    {/* Header section */}
+    <Box sx={{
+      display: 'flex',
+      flexDirection: { xs: 'column', sm: 'row' },
+      justifyContent: 'space-between',
+      alignItems: { xs: 'flex-start', sm: 'center' },
+      mb: 2,
+      gap: 1.5
+    }}>
+      <Typography variant="h6" sx={{ 
+        fontWeight: 'bold',
+        color: theme.palette.text.primary,
+        fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' }
+      }}>
+        THỐNG KÊ ĐIỂM DANH
+      </Typography>
+      
+      {!loading && !response && subjectAttendance?.length > 0 && (
+        <Box sx={{ 
+          display: 'flex', 
+          gap: { xs: 1, sm: 2 },
+          flexWrap: 'wrap'
+        }}>
+          <Chip 
+            label={`Có mặt: ${overallAttendancePercentage.toFixed(1)}%`}
+            size="small"
+            color="success"
+            variant="outlined"
+            sx={{ fontWeight: 'bold' }}
+          />
+          <Chip 
+            label={`Vắng mặt: ${overallAbsentPercentage.toFixed(1)}%`}
+            size="small"
+            color="error"
+            variant="outlined"
+            sx={{ fontWeight: 'bold' }}
+          />
+        </Box>
+      )}
+    </Box>
+
+    {/* Main content area */}
+    <Box sx={{ 
+      flex: 1,
+      minHeight: 300,
+      overflow: 'auto',
+      py: 1
+    }}>
+      {response ? (
+        <Box sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center'
+        }}>
+          <Typography variant="body1" color="text.secondary">
+            Không tìm thấy dữ liệu điểm danh
+          </Typography>
+        </Box>
+      ) : loading ? (
+        <Box sx={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <CircularProgress color="info" />
+        </Box>
+      ) : subjectAttendance?.length > 0 ? (
+        <Box sx={{ 
+          height: '100%',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: { xs: 2, md: 3 }
+        }}>
+          {/* Pie Chart */}
+          <Box sx={{ 
+            flex: 1,
+            minHeight: { xs: 200, sm: 250 },
+            position: 'relative'
+          }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  startAngle={90}
+                  endAngle={-270}
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index
+                  }) => {
+                    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+                    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="white"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          textShadow: '1px 1px 3px rgba(0,0,0,0.8)'
+                        }}
+                      >
+                        {`${(percent * 100).toFixed(0)}%`}
+                      </text>
+                    );
+                  }}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color} 
+                      stroke={theme.palette.background.paper}
+                      strokeWidth={2}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  content={<CustomTooltip />}
+                  wrapperStyle={{ zIndex: 1000 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </Box>
+
+          {/* Details section */}
+          <Box sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: { xs: 1, md: 2 },
+            p: { xs: 1, md: 2 },
+            overflow: 'auto'
+          }}>
+            <Typography variant="subtitle1" fontWeight="bold" sx={{ 
+              mb: 1,
+              fontSize: { xs: '0.875rem', md: '1rem' }
+            }}>
+              CHI TIẾT ĐIỂM DANH
+            </Typography>
+            
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 1
+            }}>
+              {chartData.map((item, index) => (
+                <Box key={index} sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: { xs: 1, md: 1.5 },
+                  borderRadius: 1,
+                  backgroundColor: `${item.color}10`,
+                  borderLeft: `4px solid ${item.color}`
+                }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1,
+                    overflow: 'hidden'
+                  }}>
+                    <Box sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      backgroundColor: item.color,
+                      flexShrink: 0
+                    }} />
+                    <Typography variant="body1" sx={{
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
                     }}>
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 2
-                        }}>
-                            <Typography variant="h6" sx={{ 
-                                fontWeight: 'bold',
-                                color: theme.palette.text.primary
-                            }}>
-                                THỐNG KÊ ĐIỂM DANH
-                            </Typography>
-                            
-                            {!loading && !response && subjectAttendance?.length > 0 && (
-                                <Box sx={{ display: 'flex', gap: 2 }}>
-                                    <Chip 
-                                        label={`Có mặt: ${overallAttendancePercentage.toFixed(1)}%`}
-                                        color="success"
-                                        variant="outlined"
-                                        sx={{ fontWeight: 'bold' }}
-                                    />
-                                    <Chip 
-                                        label={`Vắng mặt: ${overallAbsentPercentage.toFixed(1)}%`}
-                                        color="error"
-                                        variant="outlined"
-                                        sx={{ fontWeight: 'bold' }}
-                                    />
-                                </Box>
-                            )}
-                        </Box>
-        
-                        {response ? (
-                            <Box sx={{
-                                height: 300,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center'
-                            }}>
-                                <Typography variant="body1" color="text.secondary">
-                                    Không tìm thấy dữ liệu điểm danh
-                                </Typography>
-                            </Box>
-                        ) : loading ? (
-                            <Box sx={{
-                                height: 300,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
-                                <CircularProgress color="info" />
-                            </Box>
-                        ) : subjectAttendance?.length > 0 ? (
-                            <Box sx={{ 
-                                height: 300,
-                                display: 'flex',
-                                flexDirection: { xs: 'column', md: 'row' },
-                                gap: 3
-                            }}>
-                                {/* Biểu đồ tròn */}
-                                <Box sx={{ 
-                                    flex: 1,
-                                    minHeight: 250,
-                                    position: 'relative'
-                                }}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={chartData}
-                                                cx="50%"
-                                                cy="50%"
-                                                startAngle={90}
-                                                endAngle={-270}
-                                                innerRadius={70}
-                                                outerRadius={100}
-                                                paddingAngle={5}
-                                                dataKey="value"
-                                                label={({
-                                                    cx,
-                                                    cy,
-                                                    midAngle,
-                                                    innerRadius,
-                                                    outerRadius,
-                                                    percent,
-                                                    index
-                                                }) => {
-                                                    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                                                    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
-                                                    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
-        
-                                                    return (
-                                                        <text
-                                                            x={x}
-                                                            y={y}
-                                                            fill="white"
-                                                            textAnchor="middle"
-                                                            dominantBaseline="central"
-                                                            style={{
-                                                                fontSize: '14px',
-                                                                fontWeight: 'bold',
-                                                                textShadow: '1px 1px 3px rgba(0,0,0,0.8)'
-                                                            }}
-                                                        >
-                                                            {`${(percent * 100).toFixed(0)}%`}
-                                                        </text>
-                                                    );
-                                                }}
-                                            >
-                                                {chartData.map((entry, index) => (
-                                                    <Cell 
-                                                        key={`cell-${index}`} 
-                                                        fill={entry.color} 
-                                                        stroke={theme.palette.background.paper}
-                                                        strokeWidth={2}
-                                                    />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip 
-                                                content={<CustomTooltip />}
-                                                wrapperStyle={{
-                                                    zIndex: 1000
-                                                }}
-                                            />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </Box>
-        
-                                {/* Chi tiết tỷ lệ */}
-                                <Box sx={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    gap: 2,
-                                    p: 2
-                                }}>
-                                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                                        CHI TIẾT ĐIỂM DANH
-                                    </Typography>
-                                    
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                                        {chartData.map((item, index) => (
-                                            <Box key={index} sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                p: 1.5,
-                                                borderRadius: 1,
-                                                backgroundColor: `${item.color}10`,
-                                                borderLeft: `4px solid ${item.color}`
-                                            }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                    <Box sx={{
-                                                        width: 12,
-                                                        height: 12,
-                                                        borderRadius: '50%',
-                                                        backgroundColor: item.color
-                                                    }} />
-                                                    <Typography variant="body1">
-                                                        {item.name}
-                                                    </Typography>
-                                                </Box>
-                                                <Typography variant="body1" fontWeight="bold">
-                                                    {item.value.toFixed(1)}%
-                                                </Typography>
-                                            </Box>
-                                        ))}
-                                    </Box>
-        
-                                    <Box sx={{ mt: 2 }}>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Tổng số buổi học: {subjectAttendance.length}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            </Box>
-                        ) : (
-                            <Box sx={{
-                                height: 300,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center'
-                            }}>
-                                <Typography variant="body1" color="text.secondary">
-                                    Chưa có dữ liệu điểm danh
-                                </Typography>
-                            </Box>
-                        )}
-                    </Paper>                    
-                </Grid>
+                      {item.name}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" fontWeight="bold" sx={{
+                    fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                    ml: 1
+                  }}>
+                    {item.value.toFixed(1)}%
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Box sx={{ mt: { xs: 1, md: 2 } }}>
+              <Typography variant="body2" color="text.secondary" sx={{
+                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+              }}>
+                Tổng số buổi học: {subjectAttendance.length}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      ) : (
+        <Box sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center'
+        }}>
+          <Typography variant="body1" color="text.secondary">
+            Chưa có dữ liệu điểm danh
+          </Typography>
+        </Box>
+      )}
+    </Box>
+  </Paper>                    
+</Grid>
                 </Grid>          
                 {/* Third row - Notice */}
                 <Grid item xs={12}>

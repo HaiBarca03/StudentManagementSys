@@ -73,9 +73,9 @@ const StudentSideBar = () => {
       </React.Fragment>
       <Divider sx={{ my: 1 }} />
       <React.Fragment>
-        <ListSubheader component="div" inset>
+        {/* <ListSubheader component="div" inset>
           Người dùng
-        </ListSubheader>
+        </ListSubheader> */}
         <ListItemButton component={Link} to="/Student/profile">
           <ListItemIcon>
             <AccountCircleOutlinedIcon
