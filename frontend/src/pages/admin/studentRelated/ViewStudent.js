@@ -138,7 +138,7 @@ const ViewStudent = () => {
       })
   }
 
-  const setUserDetails = (e) => { }
+  const setUserDetails = (e) => {}
 
   const deleteHandler = () => {
     setShowPopup(true)
@@ -338,8 +338,8 @@ const ViewStudent = () => {
     return (
       <>
         {subjectAttendance &&
-          Array.isArray(subjectAttendance) &&
-          subjectAttendance.length > 0 ? (
+        Array.isArray(subjectAttendance) &&
+        subjectAttendance.length > 0 ? (
           <>
             {selectedSection === 'table' && renderTableSection()}
             {selectedSection === 'chart' && renderChartSection()}
@@ -441,8 +441,8 @@ const ViewStudent = () => {
     return (
       <>
         {subjectMarks &&
-          Array.isArray(subjectMarks) &&
-          subjectMarks.length > 0 ? (
+        Array.isArray(subjectMarks) &&
+        subjectMarks.length > 0 ? (
           <>
             {selectedSection === 'table' && renderTableSection()}
             {selectedSection === 'chart' && renderChartSection()}

@@ -120,7 +120,7 @@ const HeadForum = () => {
           </Box>
         </Box>
 
-        {!isMobile && (
+        {/* {!isMobile && (
           <TextField
             variant="outlined"
             placeholder="Search Topics"
@@ -135,7 +135,7 @@ const HeadForum = () => {
               endAdornment: <SearchIcon />
             }}
           />
-        )}
+        )} */}
 
         {!isMobile ? (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -197,9 +197,7 @@ const HeadForum = () => {
             )}
           </Box>
         ) : (
-          <IconButton color="inherit">
-            <SearchIcon />
-          </IconButton>
+          <IconButton color="inherit">{/* <SearchIcon /> */}</IconButton>
         )}
       </Toolbar>
 
