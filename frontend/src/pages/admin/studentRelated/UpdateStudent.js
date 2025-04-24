@@ -48,7 +48,9 @@ const UpdateStudent = ({ studentID, userDetails }) => {
     formData.append('email', localUserDetails.email)
     formData.append('phone', localUserDetails.phone)
     formData.append('major', localUserDetails.major)
+    formData.append('sex', localUserDetails.sex)
     formData.append('schoolEntryDay', localUserDetails.schoolEntryDay)
+    formData.append('dateOfBirth', localUserDetails.dateOfBirth)
     formData.append('status', localUserDetails.status)
     formData.append('nation', localUserDetails.nation)
     formData.append('religion', localUserDetails.religion)
@@ -111,7 +113,11 @@ const UpdateStudent = ({ studentID, userDetails }) => {
             variant="outlined"
             sx={{ mt: 2, backgroundColor: '#fff', borderRadius: 1 }}
           />
-          <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
             <InputLabel>Chuyên ngành</InputLabel>
             <Select
               name="major"
@@ -136,6 +142,43 @@ const UpdateStudent = ({ studentID, userDetails }) => {
               ))}
             </Select>
           </FormControl>
+          <TextField
+            fullWidth
+            label="Ngày sinh"
+            name="dateOfBirth"
+            type="date"
+            value={
+              localUserDetails.dateOfBirth.split('T')[0] ||
+              userDetails.dateOfBirth.split('T')[0]
+            }
+            onChange={changeHandler}
+            required
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            sx={{ mt: 2, backgroundColor: '#fff', borderRadius: 1 }}
+          />
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
+            <InputLabel>Giới tính</InputLabel>
+            <Select
+              name="sex"
+              value={localUserDetails.sex || userDetails.sex}
+              onChange={changeHandler}
+              label="Giới tính"
+            >
+              {[
+                { label: 'Nam', value: 'male' },
+                { label: 'Nữ', value: 'female' }
+              ].map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
 
         {/* Cột phải */}
@@ -155,7 +198,11 @@ const UpdateStudent = ({ studentID, userDetails }) => {
             InputLabelProps={{ shrink: true }}
             sx={{ backgroundColor: '#fff', borderRadius: 1 }}
           />
-          <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
             <InputLabel>Trạng thái</InputLabel>
             <Select
               name="status"
@@ -175,7 +222,11 @@ const UpdateStudent = ({ studentID, userDetails }) => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
             <InputLabel>Dân tộc</InputLabel>
             <Select
               name="nation"
@@ -190,7 +241,11 @@ const UpdateStudent = ({ studentID, userDetails }) => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
             <InputLabel>Tôn giáo</InputLabel>
             <Select
               name="religion"
@@ -207,7 +262,11 @@ const UpdateStudent = ({ studentID, userDetails }) => {
               )}
             </Select>
           </FormControl>
-          <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2, backgroundColor: '#fff' }}
+          >
             <InputLabel>Quốc gia</InputLabel>
             <Select
               name="nationality"

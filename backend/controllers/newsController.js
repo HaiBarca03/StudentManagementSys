@@ -348,12 +348,10 @@ const createNews = async (req, res) => {
 
     let validTopicId = topicId
     if (!topicId || topicId.trim() === '') {
-      // Nếu không có topicId, tự động tạo chủ đề mới
-      const newTopic = new Topic({ name: title }) // Hoặc đặt tên theo logic riêng
+      const newTopic = new Topic({ name: title })
       const savedTopic = await newTopic.save()
       validTopicId = savedTopic._id
     } else {
-      // Kiểm tra xem topicId có tồn tại không
       const existingTopic = await Topic.findById(topicId)
       if (!existingTopic) {
         return res.status(400).json({ error: 'Chủ đề không hợp lệ' })
@@ -363,7 +361,6 @@ const createNews = async (req, res) => {
     let thumbnailData = null
     let images = []
 
-    // Kiểm tra và upload thumbnail
     if (
       !req.files ||
       !req.files.thumbnail ||
@@ -384,7 +381,6 @@ const createNews = async (req, res) => {
     }
     fs.unlinkSync(thumbnailFile.path)
 
-    // Upload images nếu có
     if (req.files && req.files.images) {
       images = await Promise.all(
         req.files.images.map(async (file) => {
@@ -402,6 +398,10 @@ const createNews = async (req, res) => {
 
     const slug = await generateUniqueSlug(title)
 
+    const isAdmin = userType === 'Admin'
+    const publishedStatus = isAdmin ? true : published === 'true'
+    const approvedStatus = isAdmin ? true : false
+
     const newNews = new News({
       title,
       summary,
@@ -412,14 +412,16 @@ const createNews = async (req, res) => {
       userId,
       userType,
       topicId: validTopicId,
-      published: published === 'true',
-      approved: false
+      published: publishedStatus,
+      approved: approvedStatus
     })
 
     await newNews.save()
 
     res.status(201).json({
-      message: '🎉 Bài viết đã được tạo, chờ duyệt bởi admin.',
+      message: isAdmin
+        ? '🎉 Bài viết đã được tạo và đăng bởi Admin.'
+        : '🎉 Bài viết đã được tạo, chờ duyệt bởi admin.',
       data: newNews
     })
   } catch (error) {
